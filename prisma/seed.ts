@@ -1715,6 +1715,236 @@ const vehicleSpecs = [
     }
   },
 
+
+  // ===== 长城皮卡 =====
+  {
+    brand: "长城", model: "炮", yearRange: "2019-2025",
+    manufacturer: "长城汽车", vehicleType: "皮卡", releaseDate: "2019-08-01", energyType: "汽油/柴油",
+    specs: {
+      engine: { model: "GW4C20B", intake: "涡轮增压", displacement: "2.0", layout: "L", cylinders: "4", maxPowerKw: 145, maxPowerPs: 197, maxTorque: 360, fuelGrade: "92号/0号柴油", fuelSupply: "直喷" },
+      transmission: { type: "手自一体(AT)/手动", description: "8速手自一体 ZF/6速手动", gears: "6/8" },
+      body: { form: "皮卡", doors: 4, seats: 5, wheelbase: 3230, length: 5410, width: 1934, height: 1886, cargoBox: "1520x1520x538", curbWeight: 2045, towingCapacity: "2500kg", wadingDepth: 500 },
+      chassis: { drive: "前置后驱/前置四驱", frontSuspension: "双叉臂式", rearSuspension: "多连杆整体桥/钢板弹簧", diffLock: "后桥差速锁可选", lowRangeGear: true },
+      safety: { driverAirbag: true, frontSideAirbags: true, abs: true, cruiseControl: "自适应巡航可选", laneKeeping: "可选", panoramicCamera: "360可选", hillDescent: true, hillAssist: true },
+      exterior: { sunroof: "电动天窗可选", wheels: "铝合金 18寸", roofRails: true, rollBar: "可选", bedLiner: "可选", snorkelReady: true },
+      interior: { multiFunctionSteering: true, fullLCDCluster: true, ambientLight: "可选" },
+      seats: { material: "仿皮/真皮", heating: "前排可选", driverElectric: true },
+      media: { screen: "触控液晶屏 9寸", bluetooth: true, speakers: "6喇叭", carplay: true },
+      lights: { ledHeadlights: true, autoHeadlights: true, daytimeRunning: true },
+      ac: { type: "自动空调", rearVents: true, pm25Filter: true },
+    }
+  },
+
+  // ===== 江淮皮卡 =====
+  {
+    brand: "江淮", model: "T8", yearRange: "2018-2025",
+    manufacturer: "江淮汽车", vehicleType: "皮卡", releaseDate: "2018-01-01", energyType: "柴油",
+    specs: {
+      engine: { model: "HFC4DB2-1D", intake: "涡轮增压", displacement: "2.0", layout: "L", cylinders: "4", maxPowerKw: 110, maxPowerPs: 150, maxTorque: 360, fuelGrade: "0号柴油", fuelSupply: "高压共轨直喷" },
+      transmission: { type: "手动/自动", description: "6速手动/6速自动", gears: 6 },
+      body: { form: "皮卡", doors: 4, seats: 5, wheelbase: 3380, length: 5615, width: 1880, height: 1830, cargoBox: "1810x1520x470", curbWeight: 1995, payload: "约900kg", groundClearance: 220 },
+      chassis: { drive: "前置后驱/前置四驱", frontSuspension: "双横臂式螺旋弹簧", rearSuspension: "钢板弹簧", diffLock: "后桥差速锁可选" },
+      safety: { driverAirbag: true, abs: true, reverseRadar: true, hillAssist: "可选", tpms: "可选" },
+      exterior: { wheels: "铝合金 16/17寸", sideSteps: true, bedLiner: "可选" },
+      interior: { multiFunctionSteering: true, tripComputer: true, ac: "自动空调可选" },
+      seats: { material: "织物/仿皮" },
+      media: { screen: "触控液晶屏 8寸可选", bluetooth: true, speakers: "4-6喇叭", rearCamera: "可选" },
+      lights: { halogenHeadlights: true, ledDaytime: "可选", fogLights: true },
+    }
+  },
+  {
+    brand: "江淮", model: "悍途", yearRange: "2021-2025",
+    manufacturer: "江淮汽车", vehicleType: "皮卡", releaseDate: "2021-01-01", energyType: "柴油",
+    specs: {
+      engine: { model: "HFC4DB2-2E", intake: "涡轮增压", displacement: "2.0", layout: "L", cylinders: "4", maxPowerKw: 125, maxPowerPs: 170, maxTorque: 410, fuelGrade: "0号柴油", fuelSupply: "高压共轨直喷" },
+      transmission: { type: "手自一体(AT)/手动", description: "8AT/6MT", gears: "6/8" },
+      body: { form: "皮卡", doors: 4, seats: 5, wheelbase: 3400, length: 5620, width: 1965, height: 1920, cargoBox: "1810x1590x470", curbWeight: 2100, groundClearance: 230 },
+      chassis: { drive: "前置后驱/前置四驱", frontSuspension: "双横臂式", rearSuspension: "钢板弹簧/多连杆可选", diffLock: "后桥差速锁" },
+      safety: { driverAirbag: true, frontSideAirbags: true, abs: true, cruiseControl: "定速巡航", panoramicCamera: "360可选", hillDescent: true },
+      exterior: { wheels: "铝合金 18寸越野胎", rollBar: true, bedLiner: "喷涂货箱宝", snorkelReady: true, towHitch: "可选" },
+      interior: { multiFunctionSteering: true, fullLCDCluster: true, ambientLight: "可选", ac: "自动双区空调" },
+      seats: { material: "仿皮/真皮", heating: "前排可选", driverElectric: true },
+      media: { screen: "竖版触控液晶屏 10.4寸", bluetooth: true, speakers: "6喇叭", carplay: "可选" },
+      lights: { ledHeadlights: true, autoHeadlights: true, daytimeRunning: true },
+    }
+  },
+
+  // ===== 福田皮卡 =====
+  {
+    brand: "福田", model: "大将军G9", yearRange: "2021-2025",
+    manufacturer: "福田汽车", vehicleType: "皮卡", releaseDate: "2021-03-01", energyType: "柴油/汽油",
+    specs: {
+      engine: { model: "欧康4F20TC", intake: "涡轮增压", displacement: "2.0", layout: "L", cylinders: "4", maxPowerKw: 120, maxPowerPs: 163, maxTorque: 390, fuelGrade: "0号柴油", fuelSupply: "高压共轨直喷" },
+      transmission: { type: "手自一体(AT)/手动", description: "8AT ZF/6MT", gears: "6/8" },
+      body: { form: "皮卡", doors: 4, seats: 5, wheelbase: 3400, length: 5630, width: 1940, height: 1870, cargoBox: "1805x1580x440", curbWeight: 2050, towingCapacity: "3000kg" },
+      chassis: { drive: "前置后驱/前置四驱(borgwarner)", frontSuspension: "双叉臂式", rearSuspension: "钢板弹簧", diffLock: "后桥差速锁可选", lowRangeGear: true },
+      safety: { driverAirbag: true, abs: true, cruiseControl: "定速巡航可选", rearRadar: true, autonomousBraking: "可选", laneKeeping: "可选", tpms: true },
+      exterior: { wheels: "铝合金 18寸", rollBar: true, sideSteps: true, bedLiner: true, towHitch: "可选" },
+      interior: { multiFunctionSteering: true, fullLCDCluster: "可选", ambientLight: "可选" },
+      seats: { material: "仿皮/真皮", heating: "前排可选", driverElectric: true },
+      media: { screen: "触控液晶屏 10.25寸", bluetooth: true, speakers: "6-8喇叭", carplay: true },
+      lights: { ledHeadlights: true, autoHeadlights: true, daytimeRunning: true, fogLights: "LED" },
+      ac: { type: "自动空调", rearVents: true },
+    }
+  },
+
+  // ===== 宇通客车 =====
+  {
+    brand: "宇通", model: "ZK6122H", yearRange: "2016-2025",
+    manufacturer: "宇通客车", vehicleType: "大型客车", releaseDate: "2016-01-01", energyType: "柴油",
+    specs: {
+      engine: { model: "YC6L330-50", intake: "涡轮增压", displacement: "8.4", layout: "L", cylinders: "6", maxPowerKw: 243, maxPowerPs: 330, maxTorque: 1280, fuelGrade: "0号柴油", fuelSupply: "高压共轨", emissionStandard: "国五/国六" },
+      transmission: { type: "手动/自动", description: "6挡手动/6AT可选", gears: 6 },
+      body: { form: "大型客车", doors: 2, seats: "45-55", wheelbase: 6150, length: 12000, width: 2550, height: "3560/3780", curbWeight: 13700, gvw: 18000 },
+      chassis: { drive: "4x2后驱", frontSuspension: "空气悬架/钢板弹簧可选", rearSuspension: "空气悬架/钢板弹簧可选", frontBrake: "盘式", rearBrake: "鼓式", retarder: "电涡流缓速器可选", fuelTank: 400 },
+      safety: { abs: true, asr: "可选", tpms: true, fireExtinguisher: true, emergencyHammer: true, laneDeparture: "可选" },
+      exterior: { luggageCompartment: "贯通式 8-10m3", sunShadeBlinds: true, panoramicWindows: true },
+      interior: { ac: "顶置非独立空调", heater: "水暖+除霜器", seats: "高靠背可调", ceilingVents: true, readingLights: true, luggageRack: true },
+      media: { screen: "19寸液晶显示器可选", dvd: "可选", paSystem: true, microphone: true, speakers: "4-6喇叭" },
+      lights: { halogenHeadlights: true, ledHeadlights: "可选", fogLights: true },
+    }
+  },
+
+  // ===== 重汽 =====
+  {
+    brand: "中国重汽", model: "豪沃T7H", yearRange: "2016-2025",
+    manufacturer: "中国重汽", vehicleType: "牵引车", releaseDate: "2016-01-01", energyType: "柴油/天然气",
+    specs: {
+      engine: { model: "MC13.48-50", intake: "涡轮增压", displacement: "12.419", layout: "L", cylinders: "6", maxPowerKw: 353, maxPowerPs: 480, maxTorque: 2400, fuelGrade: "0号柴油", fuelSupply: "高压共轨", emissionStandard: "国五/国六" },
+      transmission: { type: "手动/AMT", description: "12挡/ZF自动挡", gears: 12 },
+      body: { form: "牵引车", doors: 2, seats: 2, wheelbase: "3200+1400", length: 6850, width: 2500, height: 3930, curbWeight: 8800, gvw: 49000, towingCapacity: 40000 },
+      chassis: { drive: "6x4", frontSuspension: "钢板弹簧", rearSuspension: "钢板弹簧/空气悬架可选", engineBrake: true, retarder: "液缓可选", fuelTank: "600+400L", frame: "高强度双层车架" },
+      safety: { abs: true, asr: true, esc: "可选", laneDeparture: "可选", forwardCollision: "可选", tpms: "可选", fatigueWarning: "可选", driveRecorder: true },
+      exterior: { sleeperCab: "高顶双卧", spoiler: "可选", wheels: "铝合金 12R22.5" },
+      interior: { multiFunctionSteering: true, ac: "自动空调", sleeperBunk: "双卧铺 宽800mm", storageBoxes: true, inverter: "可选" },
+      media: { screen: "触控屏可选", bluetooth: true, speakers: "4喇叭", fleetManagement: "重汽车联网" },
+      lights: { halogenHeadlights: true, ledDaytime: "可选", fogLights: true },
+    }
+  },
+  {
+    brand: "中国重汽", model: "豪沃轻卡", yearRange: "2016-2025",
+    manufacturer: "中国重汽", vehicleType: "轻卡", releaseDate: "2016-01-01", energyType: "柴油",
+    specs: {
+      engine: { model: "WP2.3NQ130E61", intake: "涡轮增压", displacement: "2.29", layout: "L", cylinders: "4", maxPowerKw: 96, maxPowerPs: 130, maxTorque: 380, fuelGrade: "0号柴油", fuelSupply: "高压共轨" },
+      transmission: { type: "手动", description: "6挡手动", gears: 6 },
+      body: { form: "轻卡", doors: 2, seats: 3, wheelbase: 3360, length: 5995, width: 2220, height: 3200, curbWeight: 2800, gvw: 4495, cargoVolume: "约22m3" },
+      chassis: { drive: "4x2", frontSuspension: "钢板弹簧", rearSuspension: "钢板弹簧", fuelTank: 120 },
+      safety: { abs: true, reverseRadar: "可选", driveRecorder: "可选" },
+      exterior: { cargoBox: "厢式/栏板/仓栅可选", rearCameras: "可选" },
+      interior: { ac: "手动空调", multiFunctionSteering: "可选" },
+      media: { screen: "触控屏可选", bluetooth: "可选", speakers: "2喇叭" },
+      lights: { halogenHeadlights: true, fogLights: "可选" },
+    }
+  },
+
+  // ===== 宝骏 (非洲小型车市场) =====
+  {
+    brand: "宝骏", model: "530", yearRange: "2018-2024",
+    manufacturer: "上汽通用五菱", vehicleType: "紧凑型SUV", releaseDate: "2018-03-01", energyType: "汽油",
+    specs: {
+      engine: { model: "L2B", intake: "自然吸气", displacement: "1.5", layout: "L", cylinders: "4", maxPowerKw: 77, maxPowerPs: 105, maxTorque: 135, fuelGrade: "92号", fuelSupply: "多点电喷" },
+      transmission: { type: "CVT/手动", description: "CVT模拟8挡/6MT", gears: "CVT/6" },
+      body: { form: "SUV", doors: 5, seats: "5/7", wheelbase: 2750, length: 4695, width: 1835, height: 1750, curbWeight: 1460 },
+      chassis: { drive: "前置前驱", frontSuspension: "麦弗逊式", rearSuspension: "扭力梁" },
+      safety: { driverAirbag: true, abs: true, cruiseControl: "定速巡航可选", rearRadar: "可选" },
+      exterior: { wheels: "铝合金 17寸", roofRails: true, sunroof: "电动天窗可选" },
+      interior: { multiFunctionSteering: true, tripComputer: true },
+      seats: { material: "织物/仿皮", thirdRowSeats: "可选" },
+      media: { screen: "触控液晶屏 8/10.4寸可选", bluetooth: true, speakers: "4-6喇叭", carplay: "可选" },
+      lights: { ledHeadlights: "可选", daytimeRunning: "可选", fogLights: "可选" },
+      ac: { type: "手动/自动空调可选", rearVents: true },
+    }
+  },
+  {
+    brand: "宝骏", model: "730", yearRange: "2016-2023",
+    manufacturer: "上汽通用五菱", vehicleType: "MPV", releaseDate: "2016-01-01", energyType: "汽油",
+    specs: {
+      engine: { model: "L2B", intake: "自然吸气", displacement: "1.5", layout: "L", cylinders: "4", maxPowerKw: 77, maxPowerPs: 105, maxTorque: 135, fuelGrade: "92号", fuelSupply: "多点电喷" },
+      transmission: { type: "CVT/手动", description: "CVT/6MT", gears: "CVT/6" },
+      body: { form: "MPV", doors: 5, seats: "7", wheelbase: 2750, length: 4780, width: 1780, height: 1740, curbWeight: 1500 },
+      chassis: { drive: "前置前驱", frontSuspension: "麦弗逊式", rearSuspension: "扭力梁" },
+      safety: { driverAirbag: true, abs: true, cruiseControl: "定速巡航可选", rearRadar: true },
+      exterior: { wheels: "铝合金 16寸", roofRails: true, sunroof: "电动天窗可选" },
+      interior: { multiFunctionSteering: true, fullLCDCluster: "可选" },
+      seats: { material: "仿皮", thirdRowSeats: true, foldFlat: true },
+      media: { screen: "触控液晶屏 8寸可选", bluetooth: true, speakers: "4-6喇叭" },
+      lights: { ledHeadlights: "可选", fogLights: true },
+      ac: { type: "手动/自动空调可选", rearVents: "后排空调出风口" },
+    }
+  },
+
+  // ===== 东风风行 =====
+  {
+    brand: "东风风行", model: "T5 EVO", yearRange: "2020-2025",
+    manufacturer: "东风风行", vehicleType: "紧凑型SUV", releaseDate: "2020-12-01", energyType: "汽油",
+    specs: {
+      engine: { model: "4A95TD", intake: "涡轮增压", displacement: "1.5", layout: "L", cylinders: "4", maxPowerKw: 145, maxPowerPs: 197, maxTorque: 285, fuelGrade: "92号", fuelSupply: "直喷", mitsubishiTech: true },
+      transmission: { type: "湿式双离合(DCT)", description: "7挡湿式双离合 麦格纳", gears: 7 },
+      body: { form: "SUV", doors: 5, seats: 5, wheelbase: 2715, length: 4565, width: 1860, height: 1690, curbWeight: 1550 },
+      chassis: { drive: "前置前驱", frontSuspension: "麦弗逊式", rearSuspension: "多连杆式", steeringAssist: "电动助力" },
+      safety: { driverAirbag: true, frontSideAirbags: true, abs: true, cruiseControl: "自适应巡航可选", laneKeeping: "可选", autonomousBraking: "可选", panoramicCamera: "360可选", tpms: true },
+      exterior: { sunroof: "电动天窗/全景天窗可选", wheels: "铝合金 18/19寸", sportBodykit: true },
+      interior: { multiFunctionSteering: true, fullLCDCluster: true, ambientLight: "64色可选", wirelessCharging: true },
+      seats: { material: "仿皮/真皮可选", heating: "前排可选" },
+      media: { screen: "双联屏 10.25+12.3寸", bluetooth: true, speakers: "6-8喇叭", carplay: true, otaUpgrade: true },
+      lights: { ledHeadlights: true, autoHeadlights: true, daytimeRunning: true },
+      ac: { type: "自动空调", rearVents: true, pm25Filter: true },
+    }
+  },
+  {
+    brand: "东风风行", model: "菱智", yearRange: "2016-2024",
+    manufacturer: "东风风行", vehicleType: "MPV", releaseDate: "2016-01-01", energyType: "汽油",
+    specs: {
+      engine: { model: "4A92", intake: "自然吸气", displacement: "1.6", layout: "L", cylinders: "4", maxPowerKw: 90, maxPowerPs: 122, maxTorque: 151, fuelGrade: "92号", fuelSupply: "多点电喷" },
+      transmission: { type: "手动", description: "5挡手动", gears: 5 },
+      body: { form: "MPV", doors: "4-5", seats: "7/9", wheelbase: 3000, length: 5145, width: 1720, height: 1960, curbWeight: 1620 },
+      chassis: { drive: "前置后驱", frontSuspension: "双横臂式", rearSuspension: "钢板弹簧" },
+      safety: { driverAirbag: "可选", abs: true, rearRadar: "可选" },
+      exterior: { slidingDoor: "右侧滑门", wheels: "钢/铝合金 15寸" },
+      interior: { seats: "织物", ac: "前后空调可选", seatingConfig: "2+2+3/2+2+2+3" },
+      media: { screen: "触控屏可选", bluetooth: "可选", usbAudio: true },
+      lights: { halogenHeadlights: true, fogLights: "可选" },
+    }
+  },
+
+  // ===== 路虎 (非洲高端市场热门) =====
+  {
+    brand: "路虎", model: "揽胜", yearRange: "2016-2025",
+    manufacturer: "路虎(进口)", vehicleType: "全尺寸豪华SUV", releaseDate: "2016-01-01", energyType: "汽油/柴油/混动",
+    specs: {
+      engine: { model: "AJ200P", intake: "涡轮增压/机械增压", displacement: "3.0", layout: "I", cylinders: "6", maxPowerKw: 294, maxPowerPs: 400, maxTorque: 550, fuelGrade: "95号", fuelSupply: "直喷", mildHybrid: "MHEV", mhev: "48V" },
+      transmission: { type: "手自一体(AT)", description: "8速手自一体 ZF", gears: 8 },
+      body: { form: "SUV", doors: 5, seats: "4/5/7可选", wheelbase: "2997/3197(LWB)", length: "5052/5252(LWB)", width: 2047, height: 1870, fuelTank: 90, curbWeight: 2495, groundClearance: 295, wadingDepth: 900, approachAngle: 34, departureAngle: 29 },
+      chassis: { drive: "前置四驱(全时四驱)", frontSuspension: "双叉臂式空气悬架", rearSuspension: "多连杆式空气悬架", airSuspension: true, terrainResponse: "第2代全地形反馈", diffLock: "中央+后桥差速锁", lowRangeGear: true, rearAxleSteering: true },
+      safety: { driverAirbag: true, frontSideAirbags: true, headCurtainAirbags: true, kneeAirbag: true, abs: true, cruiseControl: "全速自适应巡航", laneKeeping: true, autonomousBraking: true, panoramicCamera: "360 3D环绕", nightVision: "可选", clearSightGround: true, autoPark: true },
+      exterior: { sunroof: "全景滑动天窗", wheels: "铝合金 21/22/23寸", softCloseDoors: true, powerLiftgate: true, deployableSideSteps: true, pixelLaserLights: "可选", privacyGlass: true },
+      interior: { multiFunctionSteering: "真皮加热电动调节", steeringHeating: true, tripComputer: "13.7寸全液晶", fullLCDCluster: true, hud: true, ambientLight: "30色可选", piviPro: true, wirelessCharging: true, refrigerator: "可选", rearExecutiveSeats: "可选" },
+      seats: { material: "Semi-Aniline/全苯胺真皮可选", heating: "前后排", ventilation: "前后排", massage: "前后排热石按摩可选", driverMemory: true, rearRecline: "可选 40°仰角", rearFootrest: "可选" },
+      media: { screen: "双屏 13.1寸中控+11.4寸后排娱乐可选", bluetooth: true, speakers: "13-35喇叭 Meridian可选 1600W", carplay: true, rearEntertainment: "可选", noiseCancellation: true },
+      lights: { ledHeadlights: true, pixelLaser: "数字LED像素激光可选", autoHeadlights: true, daytimeRunning: true, adaptiveHighBeam: true },
+      mirrors: { adjustment: "电动调节", heating: true, folding: "电动折叠", memory: true, autoDimming: true },
+      wipers: { rainSensing: true },
+      ac: { type: "四区自动空调", rearVents: true, pm25Filter: true, ionizer: true, cabinAirPurification: true },
+    }
+  },
+  {
+    brand: "路虎", model: "卫士", yearRange: "2020-2025",
+    manufacturer: "路虎(进口)", vehicleType: "中大型越野SUV", releaseDate: "2020-06-01", energyType: "汽油/柴油/混动",
+    specs: {
+      engine: { model: "AJ300", intake: "涡轮增压", displacement: "3.0", layout: "I", cylinders: "6", maxPowerKw: 294, maxPowerPs: 400, maxTorque: 550, fuelGrade: "95号", fuelSupply: "直喷", mildHybrid: "48V" },
+      transmission: { type: "手自一体(AT)", description: "8速手自一体 ZF", gears: 8 },
+      body: { form: "越野SUV", doors: "3/5", seats: "5/7可选", wheelbase: "2587(90)/3022(110)/3022(130)", length: "4323(90)/4758(110)/5358(130)", width: 2008, height: 1967, groundClearance: 291, wadingDepth: 900, approachAngle: 38, departureAngle: 40 },
+      chassis: { drive: "全时四驱", frontSuspension: "双叉臂式空气悬架", rearSuspension: "多连杆式空气悬架", airSuspension: true, terrainResponse: "第2代全地形反馈", diffLock: "中央+后桥差速锁", lowRangeGear: true, configurableTerrain: true },
+      safety: { driverAirbag: true, frontSideAirbags: true, headCurtainAirbags: true, abs: true, cruiseControl: "全速自适应巡航", laneKeeping: true, autonomousBraking: true, panoramicCamera: "360 3D+透明底盘", wadeSensing: true, clearSightGround: true },
+      exterior: { sunroof: "全景天窗/折叠软顶可选", wheels: "铝合金 18/19/20/22寸", roofRails: true, sidemountedGearCarrier: "可选", ladder: "可选", snorkelReady: true, expeditionRack: "可选", spareTire: "后挂式" },
+      interior: { multiFunctionSteering: true, fullLCDCluster: true, hud: "可选", piviPro: true, rubberFlooring: "可选", washableInterior: "可选" },
+      seats: { material: "Resist织物/皮革/温莎真皮可选", heating: "前排可选", driverMemory: true },
+      media: { screen: "10/11.4寸中控屏", bluetooth: true, speakers: "6-15喇叭 Meridian可选", carplay: true },
+      lights: { ledHeadlights: true, matrixLed: "可选", autoHeadlights: true, daytimeRunning: true },
+      ac: { type: "双区/三区自动空调", rearVents: true, pm25Filter: true },
+    }
+  },
+
 ];
 
 async function main() {
