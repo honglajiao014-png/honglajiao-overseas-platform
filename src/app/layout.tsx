@@ -28,7 +28,6 @@ export const metadata: Metadata = {
   creator: "ChinaCarExport",
   publisher: "ChinaCarExport",
   robots: "index, follow",
-  googlebot: "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
   category: "automotive",
   formatDetection: { telephone: false, address: false, email: false },
   alternates: { canonical: "https://honglajiao1688.com" },
