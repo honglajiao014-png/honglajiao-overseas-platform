@@ -1,0 +1,99 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("dealer") // "admin" | "dealer"
+  phone     String?
+  company   String?
+  country   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  vehicles  Vehicle[]
+  inquiries Inquiry[]
+  orders    Order[]
+  chatMessages ChatMessage[]
+}
+
+model Vehicle {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  brand       String
+  model       String
+  year        Int
+  type        String   @default("Used Passenger Car")
+  mileage     Int?
+  transmission String? @default("Automatic")
+  fuel        String?  @default("Petrol")
+  steering    String?  @default("LHD")
+  color       String?
+  condition   String   @default("Excellent")
+  supplier    String?
+  location    String   @default("China")
+  images      String[] @default([]) // JSON array of URLs
+  basePrice   Float    @default(0)    // Dealer's cost
+  markup      Float    @default(0)    // Admin configurable markup
+  salePrice   Float    @default(0)    // Final displayed price = basePrice + markup
+  profit      Float    @default(0)    // Calculated from salePrice - basePrice
+  status      String   @default("available") // "available" | "sold" | "pending"
+  soldAt      DateTime?
+  soldTo      String?
+  dealerId    String?
+  dealer      User?    @relation(fields: [dealerId], references: [id])
+  published   Boolean  @default(true)
+  featured    Boolean  @default(false)
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  inquiries   Inquiry[]
+  orders      Order[]
+}
+
+model Inquiry {
+  id          String   @id @default(cuid())
+  name        String
+  contact     String
+  country     String?
+  vehicleType String?
+  message     String
+  vehicleId   String?
+  vehicle     Vehicle? @relation(fields: [vehicleId], references: [id])
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
+  status      String   @default("new") // "new" | "replied" | "closed"
+  createdAt   DateTime @default(now())
+}
+
+model Order {
+  id          String   @id @default(cuid())
+  vehicleId   String
+  vehicle     Vehicle  @relation(fields: [vehicleId], references: [id])
+  buyerName   String
+  buyerContact String
+  salePrice   Float
+  profit      Float
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
+  status      String   @default("pending") // "pending" | "confirmed" | "shipped" | "completed" | "cancelled"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  sessionId String
+  role      String   // "user" | "bot"
+  content   String
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
