@@ -28,29 +28,15 @@ model VehicleSpec {
   id          String   @id @default(cuid())
   brand       String
   model       String
-  yearRange   String   @default("2016-2026") // e.g. "2018-2022"
-  manufacturer String? // 厂商
-  vehicleType String?  // 生产方式
-  releaseDate String?  // 上市时间
-  energyType  String?  // 能源形式
-  specs       String   @default("{}") // JSON - all config key-value pairs
-  // specs JSON structure example:
-  // {
-  //   "engine": {"model":"EA211-DJS","intake":"涡轮增压","displacement":"1.4","cylinders":"4","maxPower":"110","maxTorque":"250",...},
-  //   "transmission": {"type":"湿式双离合","gears":"7",...},
-  //   "body": {"structure":"SUV","doors":"5","seats":"5","wheelbase":"2680","length":"4495",...},
-  //   "chassis": {"drive":"前置前驱","frontSuspension":"麦弗逊式","rearSuspension":"多连杆式",...},
-  //   "safety": {"airbags":["驾驶座","前排侧"],"abs":true,...},
-  //   "exterior": {"sunroof":"可开启全景天窗","wheels":"铝合金",...},
-  //   "interior": {"steering":"多功能方向盘","display":"全液晶仪表盘",...},
-  //   "seats": {"material":"皮/Alcantara混搭","heating":"前排",...},
-  //   "media": {"screen":"触控液晶屏","bluetooth":true,"speakers":"10-11喇叭",...},
-  //   "lights": {"daytimeRunning":true,"autoHeadlights":true,...},
-  //   "mirrors": {"adjustment":"电动调节","heating":true,"folding":"锁车自动折叠",...},
-  //   "ac": {"type":"自动空调","rearVents":true,"zoneControl":true}
-  // }
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  yearRange   String   @default("2016-2026")
+  manufacturer String?
+  vehicleType String?
+  releaseDate String?
+  energyType  String?
+  specs       String   @default("{}")
+  vehicles    Vehicle[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Vehicle {
@@ -81,7 +67,6 @@ model Vehicle {
   published   Boolean  @default(true)
   featured    Boolean  @default(false)
   description String?
-  // Auto-linked spec
   specId      String?
   spec        VehicleSpec? @relation(fields: [specId], references: [id])
   createdAt   DateTime @default(now())
