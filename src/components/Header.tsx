@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
-const LANGS = [
+type LangCode = "en" | "zh" | "fr" | "pt" | "sw";
+
+const LANGS: { code: LangCode; label: string; flag: string }[] = [
   { code: "en", label: "English", flag: "🇬🇧" },
   { code: "zh", label: "中文", flag: "🇨🇳" },
   { code: "fr", label: "Français", flag: "🇫🇷" },
@@ -19,10 +21,59 @@ const NAV_LINKS = [
   { href: "/blog", label: "Blog" },
 ];
 
+function getStoredLang(): LangCode {
+  if (typeof window === "undefined") return "en";
+  const stored = localStorage.getItem("lang");
+  if (stored && LANGS.some(l => l.code === stored)) return stored as LangCode;
+  return "en";
+}
+
 export function Header() {
   const pathname = usePathname();
-  const [currentLang, setCurrentLang] = useState("en");
+  const [currentLang, setCurrentLang] = useState<LangCode>("en");
   const [langOpen, setLangOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const initialized = useRef(false);
+
+  // Init from localStorage on mount
+  useEffect(() => {
+    if (initialized.current) return;
+    initialized.current = true;
+    const lang = getStoredLang();
+    setCurrentLang(lang);
+    document.documentElement.lang = lang;
+  }, []);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    if (!langOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setLangOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [langOpen]);
+
+  // Close on Escape
+  useEffect(() => {
+    if (!langOpen) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setLangOpen(false);
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [langOpen]);
+
+  const switchLang = (code: LangCode) => {
+    setCurrentLang(code);
+    localStorage.setItem("lang", code);
+    document.documentElement.lang = code;
+    setLangOpen(false);
+  };
+
+  const current = LANGS.find(l => l.code === currentLang) || LANGS[0];
 
   return (
     <header className="bg-white sticky top-0 z-50 border-b border-gray-200">
@@ -71,36 +122,40 @@ export function Header() {
             </div>
 
             {/* Lang Switcher */}
-            <div className="relative">
+            <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setLangOpen(!langOpen)}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors border border-gray-200"
+                aria-expanded={langOpen}
+                aria-haspopup="listbox"
               >
-                <span>{LANGS.find(l => l.code === currentLang)?.flag}</span>
-                <span className="font-semibold text-xs uppercase">{currentLang}</span>
-                <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <span>{current.flag}</span>
+                <span className="font-semibold text-xs uppercase">{current.code}</span>
+                <svg className={`w-3 h-3 text-gray-400 transition-transform ${langOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
 
               {langOpen && (
-                <>
-                  <div className="fixed inset-0 z-10" onClick={() => setLangOpen(false)} />
-                  <div className="absolute right-0 mt-2 w-44 bg-white rounded-xl shadow-lg border border-gray-200 z-20 py-1 overflow-hidden">
-                    {LANGS.map((l) => (
-                      <button
-                        key={l.code}
-                        onClick={() => { setCurrentLang(l.code); setLangOpen(false); }}
-                        className={`w-full text-left px-4 py-2.5 text-sm transition-colors flex items-center gap-2 ${
-                          currentLang === l.code ? "bg-guazi-green-light text-guazi-green font-semibold" : "text-gray-700 hover:bg-gray-50"
-                        }`}
-                      >
-                        <span className="text-base">{l.flag}</span>
-                        <span>{l.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                </>
+                <div className="absolute right-0 mt-2 w-44 bg-white rounded-xl shadow-lg border border-gray-200 z-20 py-1 overflow-hidden animate-in fade-in zoom-in-95 origin-top-right">
+                  {LANGS.map((l) => (
+                    <button
+                      key={l.code}
+                      onClick={() => switchLang(l.code)}
+                      className={`w-full text-left px-4 py-2.5 text-sm transition-colors flex items-center gap-2 ${
+                        currentLang === l.code ? "bg-guazi-green-light text-guazi-green font-semibold" : "text-gray-700 hover:bg-gray-50"
+                      }`}
+                    >
+                      <span className="text-base">{l.flag}</span>
+                      <span>{l.label}</span>
+                      {currentLang === l.code && (
+                        <svg className="w-4 h-4 ml-auto text-guazi-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </button>
+                  ))}
+                </div>
               )}
             </div>
 
