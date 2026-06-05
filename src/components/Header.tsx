@@ -54,6 +54,23 @@ export function Header() {
           </div>
 
           <div className="flex items-center gap-3">
+            {/* Register / Login */}
+            <div className="hidden sm:flex items-center gap-2">
+              <Link
+                href="/login"
+                className="text-sm text-gray-600 hover:text-guazi-green px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Login
+              </Link>
+              <Link
+                href="/register"
+                className="text-sm bg-guazi-green text-white px-4 py-1.5 rounded-lg font-semibold hover:bg-guazi-green-dark transition-all"
+              >
+                Register
+              </Link>
+            </div>
+
+            {/* Lang Switcher */}
             <div className="relative">
               <button
                 onClick={() => setLangOpen(!langOpen)}
