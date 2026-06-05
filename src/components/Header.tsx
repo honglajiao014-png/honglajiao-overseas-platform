@@ -6,6 +6,7 @@ import { useState } from "react";
 
 const LANGS = [
   { code: "en", label: "English", flag: "🇬🇧" },
+  { code: "zh", label: "中文", flag: "🇨🇳" },
   { code: "fr", label: "Français", flag: "🇫🇷" },
   { code: "pt", label: "Português", flag: "🇧🇷" },
   { code: "sw", label: "Kiswahili", flag: "🇹🇿" },
@@ -27,7 +28,6 @@ export function Header() {
     <header className="bg-white sticky top-0 z-50 border-b border-gray-200">
       <div className="max-w-[1600px] mx-auto px-4">
         <div className="flex items-center justify-between h-[56px]">
-          {/* Left: Logo + Nav */}
           <div className="flex items-center gap-8">
             <Link href="/" className="flex-shrink-0">
               <img src="/logo.png" alt="ChinaCarExport" className="h-9 w-auto object-contain" />
@@ -53,7 +53,6 @@ export function Header() {
             </nav>
           </div>
 
-          {/* Right: Language Switcher */}
           <div className="flex items-center gap-3">
             <div className="relative">
               <button
@@ -88,7 +87,6 @@ export function Header() {
               )}
             </div>
 
-            {/* Mobile Menu Button */}
             <button className="md:hidden p-2 text-gray-600">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
