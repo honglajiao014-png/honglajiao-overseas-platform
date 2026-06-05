@@ -4,6 +4,7 @@ import { HomeHero } from "@/components/HomeHero";
 import { HomeVehicles } from "@/components/HomeVehicles";
 import { HomeProcess } from "@/components/HomeProcess";
 import { HomeInquiry } from "@/components/HomeInquiry";
+import Link from "next/link";
 
 export default function Home() {
   return (

@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { ChatWidget } from "@/components/ChatWidget";
 
 export const metadata: Metadata = {
   title: "ChinaCarExport | Used Car & Vehicle Export Sourcing from China",
   description:
-    "Source used cars, commercial trucks, EVs and construction machinery from China. Supplier verification, real photo inspection and export coordination support. Serving Central Asia, Russia, Africa and worldwide markets.",
+    "Source used cars, commercial trucks, EVs and construction machinery from China. Supplier verification, real photo inspection and export coordination support. Serving Central Asia, Africa and worldwide markets.",
   keywords: [
     "China used car export sourcing",
     "source vehicles from China",
@@ -14,13 +15,10 @@ export const metadata: Metadata = {
     "Chinese EV export sourcing",
     "commercial vehicles from China",
     "China machinery export",
-    "China car export to Kazakhstan",
-    "China used cars Central Asia",
+    "China car export to Africa",
+    "China used cars Africa",
     "supplier verification China",
     "vehicle inspection China export",
-    "китайские автомобили",
-    "авто из Китая",
-    "экспорт авто из Китая",
     "中国二手车出口",
     "中国汽车出口采购",
   ],
@@ -38,24 +36,20 @@ export const metadata: Metadata = {
       "Source used cars, commercial trucks, EVs and construction machinery from China. Supplier verification, real photo inspection and export coordination support.",
     url: "https://honglajiao1688.com",
     siteName: "ChinaCarExport",
-    locale: "zh_CN",
+    locale: "en",
     type: "website",
   },
-  twitter: {
-    card: "summary_large_image",
-    title: "ChinaCarExport | Used Car & Vehicle Export Sourcing from China",
-    description:
-      "Source used cars, commercial trucks, EVs and construction machinery from China.",
-  },
-  verification: { google: "7kuVqqd5ahwieWZAhj-UbOVZmeytI79FbUyD4DFCYWo" },
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="zh">
-      <body className="min-h-screen flex flex-col">{children}</body>
+    <html lang="en">
+      <body className="min-h-screen flex flex-col">
+        {children}
+        <ChatWidget />
+      </body>
     </html>
   );
 }
