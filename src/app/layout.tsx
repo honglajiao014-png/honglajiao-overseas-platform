@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { ChatWidget } from "@/components/ChatWidget";
-import { LangProvider } from "@/i18n/LangContext";
 
 export const metadata: Metadata = {
-  title: "Honglajiao Auto Export | Used Car & Vehicle Export Sourcing from China",
+  title: "ChinaCarExport | Used Car & Vehicle Export Sourcing from China",
   description:
-    "Source used cars, commercial trucks, EVs and construction machinery from China. Supplier verification, real photo inspection and export coordination support. Serving Africa, Middle East and worldwide LHD markets.",
+    "Source used cars, commercial trucks, EVs and construction machinery from China. Supplier verification, real photo inspection and export coordination support. Serving Central Asia, Russia, Africa and worldwide markets.",
   keywords: [
     "China used car export sourcing",
     "source vehicles from China",
@@ -16,70 +14,49 @@ export const metadata: Metadata = {
     "Chinese EV export sourcing",
     "commercial vehicles from China",
     "China machinery export",
-    "China car export to Africa",
-    "China used cars Middle East",
+    "China car export to Kazakhstan",
+    "China used cars Central Asia",
     "supplier verification China",
     "vehicle inspection China export",
-    "中国二手车出口",
-    "中国汽车出口采购",
-    "中国电动车出口",
     "китайские автомобили",
     "авто из Китая",
+    "экспорт авто из Китая",
+    "中国二手车出口",
+    "中国汽车出口采购",
   ],
-  authors: [{ name: "Honglajiao Auto Export" }],
-  creator: "Honglajiao Auto Export",
-  publisher: "Honglajiao Auto Export",
+  authors: [{ name: "ChinaCarExport" }],
+  creator: "ChinaCarExport",
+  publisher: "ChinaCarExport",
   robots: "index, follow",
   googlebot: "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
   category: "automotive",
   formatDetection: { telephone: false, address: false, email: false },
-  alternates: {
-    canonical: "https://honglajiao1688.com",
-    languages: {
-      en: "https://honglajiao1688.com",
-      es: "https://honglajiao1688.com/es",
-    },
-  },
-  icons: {
-    icon: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
-  },
+  alternates: { canonical: "https://honglajiao1688.com" },
+  icons: { icon: "/favicon.ico" },
   openGraph: {
-    title: "Honglajiao Auto Export | Used Car & Vehicle Export Sourcing from China",
+    title: "ChinaCarExport | Used Car & Vehicle Export Sourcing from China",
     description:
-      "Source used cars, commercial trucks, EVs and construction machinery from China. Supplier verification, real photo inspection and export coordination support. Serving Africa, Middle East and worldwide LHD markets.",
+      "Source used cars, commercial trucks, EVs and construction machinery from China. Supplier verification, real photo inspection and export coordination support.",
     url: "https://honglajiao1688.com",
-    siteName: "Honglajiao Auto Export",
-    locale: "en",
+    siteName: "ChinaCarExport",
+    locale: "zh_CN",
     type: "website",
-    images: [
-      {
-        url: "https://honglajiao1688.com/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Honglajiao Auto Export - Vehicle Export Sourcing from China",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Honglajiao Auto Export | Used Car & Vehicle Export Sourcing from China",
+    title: "ChinaCarExport | Used Car & Vehicle Export Sourcing from China",
     description:
-      "Source used cars, commercial trucks, EVs and construction machinery from China. Supplier verification, real photo inspection and export coordination support. Serving Africa, Middle East and worldwide LHD markets.",
-    images: ["https://honglajiao1688.com/og-image.jpg"],
+      "Source used cars, commercial trucks, EVs and construction machinery from China.",
   },
+  verification: { google: "7kuVqqd5ahwieWZAhj-UbOVZmeytI79FbUyD4DFCYWo" },
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
-      <body className="min-h-screen flex flex-col">
-        <LangProvider>{children}<ChatWidget /></LangProvider>
-      </body>
+    <html lang="zh">
+      <body className="min-h-screen flex flex-col">{children}</body>
     </html>
   );
 }
