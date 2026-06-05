@@ -1,10 +1,10 @@
 import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcryptjs";
+// @ts-nocheck
+const bcrypt = require("bcryptjs");
 
 const prisma = new PrismaClient();
 
 async function main() {
-  // 管理员账号
   const adminEmail = "admin@honglajiao1688.com";
   const adminPassword = bcrypt.hashSync("Admin@1688#hj", 12);
 
@@ -22,9 +22,10 @@ async function main() {
     },
   });
 
-  console.log("✅ Admin account seeded: admin@honglajiao1688.com / Admin@1688#hj");
+  console.log("✅ Admin account seeded");
+  console.log("   Email: admin@honglajiao1688.com");
+  console.log("   Password: Admin@1688#hj");
 
-  // 样例经销商
   const dealerEmail = "dealer@honglajiao1688.com";
   await prisma.user.upsert({
     where: { email: dealerEmail },
