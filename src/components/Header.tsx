@@ -69,9 +69,11 @@ export function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 flex-shrink-0 group">
-            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white font-extrabold text-sm shadow-lg group-hover:shadow-primary/30 transition-shadow">
-              CCE
-            </div>
+            <img
+              src="/logo.png"
+              alt="ChinaCarExport"
+              className="w-10 h-10 rounded-xl object-cover shadow-lg group-hover:shadow-primary/30 transition-shadow"
+            />
             <div className="hidden sm:block">
               <div className="text-sm font-bold text-white leading-tight">{t(T.site.name)}</div>
               <div className="text-[10px] text-gray-400 leading-tight tracking-wide">{t(T.site.tagline)}</div>

@@ -51,6 +51,21 @@ export const metadata: Metadata = {
     siteName: "ChinaCarExport",
     locale: "en",
     type: "website",
+    images: [
+      {
+        url: "https://honglajiao1688.com/logo.png",
+        width: 384,
+        height: 384,
+        alt: "ChinaCarExport",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary",
+    title: "ChinaCarExport | Used Car & Vehicle Export Sourcing from China",
+    description:
+      "Source used cars, commercial trucks, EVs and construction machinery from China.",
+    images: ["https://honglajiao1688.com/logo.png"],
   },
 };
 
