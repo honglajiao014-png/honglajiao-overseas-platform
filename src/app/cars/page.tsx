@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import Link from "next/link";
+
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { useT, T } from "@/i18n/useT";
@@ -108,7 +108,7 @@ export default function CarsPage() {
         <div className="max-w-[1400px] mx-auto px-4 py-6">
           {/* 面包屑 */}
           <div className="text-xs text-gray-400 mb-4">
-            <Link href="/" prefetch={false} className="hover:text-primary">首页</Link>
+            <a href="/" className="hover:text-primary">首页</a>
             <span className="mx-2">›</span>
             <span className="text-gray-600">全部车源</span>
           </div>
@@ -237,7 +237,7 @@ export default function CarsPage() {
               ) : (
                 <div className="space-y-4">
                   {filtered.map(v => (
-                    <Link
+                    <a
                       key={v.slug}
                       href={`/cars/${v.slug}`}
                       className="flex bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg hover:border-gray-200 transition-all group"
@@ -269,7 +269,7 @@ export default function CarsPage() {
                           </span>
                         </div>
                       </div>
-                    </Link>
+                    </a>
                   ))}
                 </div>
               )}

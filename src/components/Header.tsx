@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { useLang } from "@/i18n/LangContext";
@@ -68,7 +67,7 @@ export function Header() {
       <div className="max-w-[1400px] mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" prefetch={false} className="flex items-center gap-3 flex-shrink-0 group">
+          <a href="/" className="flex items-center gap-3 flex-shrink-0 group">
             <img
               src="/logo.png"
               alt="ChinaCarExport"
@@ -78,17 +77,16 @@ export function Header() {
               <div className="text-sm font-bold text-white leading-tight">{t(T.site.name)}</div>
               <div className="text-[10px] text-gray-400 leading-tight tracking-wide">{t(T.site.tagline)}</div>
             </div>
-          </Link>
+          </a>
 
           {/* 导航 */}
           <nav className="hidden lg:flex items-center gap-1">
             {NAV_LINKS.map((link) => {
               const active = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
               return (
-                <Link
+                <a
                   key={link.href}
                   href={link.href}
-                  prefetch={false}
                   className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                     active
                       ? "text-primary bg-white/10"
@@ -96,7 +94,7 @@ export function Header() {
                   }`}
                 >
                   {link.label}
-                </Link>
+                </a>
               );
             })}
           </nav>
@@ -161,21 +159,19 @@ export function Header() {
 
             {/* 登录/注册 */}
             <div className="hidden sm:flex items-center gap-1 ml-2">
-              <Link
+              <a
                 href="/login"
-                prefetch={false}
                 className="text-sm text-gray-400 hover:text-white px-3 py-2 rounded-lg hover:bg-white/5 transition-all"
               >
                 {t(T.header.login)}
-              </Link>
+              </a>
               <span className="text-gray-600">/</span>
-              <Link
+              <a
                 href="/register"
-                prefetch={false}
                 className="text-sm text-gray-400 hover:text-white px-3 py-2 rounded-lg hover:bg-white/5 transition-all"
               >
                 {t(T.header.register)}
-              </Link>
+              </a>
             </div>
 
             {/* 移动端菜单按钮 */}
@@ -226,7 +222,7 @@ export function Header() {
               {NAV_LINKS.map((link) => {
                 const active = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
                 return (
-                  <Link
+                  <a
                     key={link.href}
                     href={link.href}
                     onClick={() => setMobileOpen(false)}
@@ -235,16 +231,16 @@ export function Header() {
                     }`}
                   >
                     {link.label}
-                  </Link>
+                  </a>
                 );
               })}
               <div className="flex gap-2 mt-3 px-4">
-                <Link href="/login" prefetch={false} onClick={() => setMobileOpen(false)} className="flex-1 text-center text-sm font-medium text-gray-300 border border-gray-700 py-2.5 rounded-lg hover:bg-white/5 transition-colors">
+                <a href="/login" onClick={() => setMobileOpen(false)} className="flex-1 text-center text-sm font-medium text-gray-300 border border-gray-700 py-2.5 rounded-lg hover:bg-white/5 transition-colors">
                   {t(T.header.login)}
-                </Link>
-                <Link href="/register" prefetch={false} onClick={() => setMobileOpen(false)} className="flex-1 text-center text-sm font-medium bg-primary text-white py-2.5 rounded-lg hover:bg-primary-dark transition-colors">
+                </a>
+                <a href="/register" onClick={() => setMobileOpen(false)} className="flex-1 text-center text-sm font-medium bg-primary text-white py-2.5 rounded-lg hover:bg-primary-dark transition-colors">
                   {t(T.header.register)}
-                </Link>
+                </a>
               </div>
             </nav>
           </div>

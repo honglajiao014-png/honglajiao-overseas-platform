@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Image from "next/image";
-import Link from "next/link";
+
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { useT, T } from "@/i18n/useT";
@@ -314,14 +314,14 @@ export default function Home() {
               <div className="text-5xl mb-4">🚗</div>
               <h3 className="text-lg font-bold text-gray-400 mb-2">暂无匹配车源</h3>
               <p className="text-sm text-gray-400">试试调整筛选条件，或提交采购需求让我们帮您找车</p>
-              <Link href="/inquiry" prefetch={false} className="inline-block mt-4 bg-primary text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-primary-dark transition-all">
+              <a href="/inquiry" className="inline-block mt-4 bg-primary text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-primary-dark transition-all">
                 提交采购需求
-              </Link>
+              </a>
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {filtered.map(v => (
-                <Link
+                <a
                   key={v.slug}
                   href={`/cars/${v.slug}`}
                   className="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg hover:border-gray-200 transition-all duration-300 flex flex-col"
@@ -369,14 +369,14 @@ export default function Home() {
                       </span>
                     </div>
                   </div>
-                </Link>
+                </a>
               ))}
             </div>
           )}
 
           {/* 底部CTA */}
           <div className="text-center mt-10">
-            <Link
+            <a
               href="/cars"
               className="inline-flex items-center gap-2 bg-white border-2 border-primary text-primary px-8 py-3 rounded-xl text-sm font-bold hover:bg-primary hover:text-white transition-all"
             >
@@ -384,7 +384,7 @@ export default function Home() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
-            </Link>
+            </a>
           </div>
         </div>
       </main>

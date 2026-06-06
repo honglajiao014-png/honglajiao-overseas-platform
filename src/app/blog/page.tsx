@@ -2,7 +2,7 @@
 
 import { Header } from "@/components/Header";
 import { Footer, ResourceSection } from "@/components/Footer";
-import Link from "next/link";
+
 import { useT, T } from "@/i18n/useT";
 
 const articles = [
@@ -72,7 +72,7 @@ export default function BlogPage() {
         <section className="max-w-[900px] mx-auto px-4 py-10">
           <div className="space-y-6">
             {articles.map(a => (
-              <Link
+              <a
                 key={a.slug}
                 href={`/blog/${a.slug}`}
                 className="block bg-white rounded-2xl border border-gray-100 p-6 hover:shadow-lg hover:border-gray-200 transition-all group"
@@ -92,7 +92,7 @@ export default function BlogPage() {
                 <span className="text-sm font-bold text-primary group-hover:underline">
                   Read more →
                 </span>
-              </Link>
+              </a>
             ))}
           </div>
 
@@ -100,12 +100,12 @@ export default function BlogPage() {
           <div className="mt-12 bg-primary-light rounded-2xl p-8 text-center">
             <h2 className="text-xl font-bold text-gray-900 mb-2">{t(T.newsletter.heading)}</h2>
             <p className="text-sm text-gray-500 mb-4">{t(T.newsletter.desc)}</p>
-            <Link
+            <a
               href="/contact"
               className="inline-block bg-primary text-white px-8 py-3 rounded-xl text-sm font-bold hover:bg-primary-dark transition-all"
             >
               Contact Us
-            </Link>
+            </a>
           </div>
         </section>
 
