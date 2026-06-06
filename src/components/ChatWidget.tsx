@@ -248,11 +248,6 @@ export function ChatWidget() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
           </svg>
         )}
-        {!open && (
-          <span className="absolute -top-1 -right-1 w-4 h-4 bg-danger rounded-full border-2 border-white flex items-center justify-center">
-            <span className="text-[8px] text-white font-bold">1</span>
-          </span>
-        )}
       </button>
     </>
   );
