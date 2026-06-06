@@ -53,15 +53,7 @@ export default function Home() {
   const [sortBy, setSortBy] = useState<string>("default");
   const [customMinPrice, setCustomMinPrice] = useState("");
   const [customMaxPrice, setCustomMaxPrice] = useState("");
-  const [brandSearch, setBrandSearch] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-
-  // 品牌搜索过滤
-  const filteredBrands = useMemo(() => {
-    if (!brandSearch.trim()) return BRANDS;
-    const q = brandSearch.toLowerCase();
-    return BRANDS.filter(b => b.name.toLowerCase().includes(q) || b.letter.toLowerCase().includes(q));
-  }, [brandSearch]);
 
   // 筛选逻辑
   const filtered = useMemo(() => {
@@ -148,32 +140,10 @@ export default function Home() {
         {/* 筛选条件区域 */}
         <div className="bg-white border-b border-gray-200">
           <div className="max-w-[1400px] mx-auto px-4 py-6">
-            {/* 品牌筛选 — 官方Logo网格 + 搜索框 */}
             <div className="mb-6">
-              <div className="flex items-center gap-4 mb-4">
-                <span className="text-base font-bold text-gray-700 shrink-0">{t(T.homeFilter.brand)}：</span>
-                {/* 品牌搜索框 */}
-                <div className="relative w-56">
-                  <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                  <input
-                    type="text"
-                    value={brandSearch}
-                    onChange={e => { setBrandSearch(e.target.value); }}
-                    placeholder={t(T.homeFilter.searchBrand)}
-                    className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-base focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-                  />
-                </div>
-                {brandSearch && (
-                  <span className="text-sm text-gray-400">
-                    {t(T.homeFilter.found)} {filteredBrands.length} {t(T.homeFilter.brands)}
-                  </span>
-                )}
-              </div>
               {/* 品牌Logo网格 */}
               <div className="flex flex-wrap gap-1.5">
-                {(brandSearch ? filteredBrands : BRANDS).map(b => (
+                {BRANDS.map(b => (
                   <button
                     key={b.name}
                     onClick={() => setBrandFilter(b.name)}
