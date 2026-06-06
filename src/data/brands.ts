@@ -17,38 +17,52 @@ const B = (name: string, letter: string, _domain: string, color: string): Brand 
 });
 
 export const BRANDS: Brand[] = [
+  // A
   B("奥迪", "A", "audi.com", "#000000"),
+  // B
   B("宝马", "B", "bmw.com", "#0066B1"),
   B("保时捷", "B", "porsche.com", "#B12B28"),
-  B("本田", "B", "honda.com", "#CC0000"),
-  B("比亚迪", "B", "byd.com", "#294636"),
-  B("别克", "B", "buick.com", "#C8102E"),
   B("奔驰", "B", "mercedes-benz.com", "#000000"),
+  B("本田", "B", "honda.com", "#CC0000"),
+  B("别克", "B", "buick.com", "#C8102E"),
+  B("比亚迪", "B", "byd.com", "#294636"),
+  // C
   B("长安", "C", "changan.com.cn", "#003DA5"),
   B("长城", "C", "gwm-global.com", "#CC0000"),
+  // D
   B("大众", "D", "volkswagen.com", "#00386B"),
   B("东风", "D", "dfmc.com.cn", "#C8102E"),
+  // F
   B("丰田", "F", "toyota.com", "#EB0A1E"),
   B("福特", "F", "ford.com", "#003478"),
+  // H
   B("红旗", "H", "hongqi-auto.com", "#C8102E"),
+  // J
   B("吉利", "J", "geely.com", "#0066CC"),
-  B("理想", "L", "lixiang.com", "#00A870"),
+  // L
   B("雷克萨斯", "L", "lexus.com", "#333333"),
   B("领克", "L", "lynkco.com", "#000000"),
+  B("理想", "L", "lixiang.com", "#00A870"),
   B("路虎", "L", "landrover.com", "#0A2E1F"),
+  // M
   B("马自达", "M", "mazda.com", "#101010"),
   B("名爵", "M", "mgmotor.com", "#C41230"),
+  // Q
+  B("奇瑞", "Q", "cheryinternational.com", "#E60012"),
+  B("起亚", "Q", "kia.com", "#05141F"),
+  // R
   B("日产", "R", "nissan-global.com", "#C3002F"),
   B("荣威", "R", "roewe.com.cn", "#C41230"),
+  // T
   B("特斯拉", "T", "tesla.com", "#CC0000"),
-  B("五菱", "W", "wuling.com", "#C8102E"),
-  B("沃尔沃", "W", "volvocars.com", "#003057"),
+  // W
   B("蔚来", "W", "nio.com", "#000000"),
+  B("沃尔沃", "W", "volvocars.com", "#003057"),
+  B("五菱", "W", "wuling.com", "#C8102E"),
+  // X
   B("现代", "X", "hyundai.com", "#003469"),
   B("小鹏", "X", "xiaopeng.com", "#005AFF"),
   B("雪佛兰", "X", "chevrolet.com", "#CD9834"),
-  B("起亚", "Q", "kia.com", "#05141F"),
-  B("奇瑞", "Q", "cheryinternational.com", "#E60012"),
 ];
 
 export const HOT_BRANDS = BRANDS.slice(0, 10);
