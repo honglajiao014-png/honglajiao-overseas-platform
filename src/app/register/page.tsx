@@ -87,7 +87,7 @@ export default function RegisterPage() {
                   </div>
                   <div>
                     <label className="inline-block px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium cursor-pointer hover:bg-gray-200 transition-all">
-                      {avatarPreview ? "Change Avatar" : "Upload Avatar"}
+                      {avatarPreview ? "{t(T.registerPage.changeAvatar)}" : "{t(T.registerPage.uploadAvatar)}"}
                       <input type="file" accept="image/*" onChange={handleAvatarFile} className="hidden" />
                     </label>
                     <p className="text-xs text-gray-400 mt-1">JPG, PNG, GIF</p>
