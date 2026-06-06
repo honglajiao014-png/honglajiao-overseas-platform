@@ -96,12 +96,6 @@ export default function CarsPage() {
 
   const activeFilterCount = [brandFilter, priceRange >= 0, ageRange >= 0, mileageRange >= 0, transmissionFilter !== "不限", fuelFilter !== "不限", bodyTypeFilter !== "不限"].filter(Boolean).length;
 
-  const FilterBtn = ({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) => (
-    <button onClick={onClick} className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${active ? "bg-primary text-white font-bold" : "text-gray-600 hover:bg-gray-100"}`}>
-      {children}
-    </button>
-  );
-
   return (
     <>
       <Header />
@@ -159,64 +153,91 @@ export default function CarsPage() {
                   </div>
                 </div>
 
-                {/* 价格 */}
-                <div className="mb-5">
-                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t(T.carsFilter.price)}</h4>
-                  <div className="space-y-0.5">
-                    {PRICE_RANGES.map((r, i) => (
-                      <FilterBtn key={i} active={priceRange === i} onClick={() => setPriceRange(i)}>{r.label}</FilterBtn>
+                {/* 价格下拉 */}
+                <div className="mb-4">
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">{t(T.carsFilter.price)}</label>
+                  <select
+                    value={priceRange}
+                    onChange={e => setPriceRange(Number(e.target.value))}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                  >
+                    <option value={-1}>不限</option>
+                    {PRICE_RANGES.slice(1).map((r, i) => (
+                      <option key={i} value={i+1}>{r.label}</option>
                     ))}
-                  </div>
+                  </select>
                 </div>
 
-                {/* 车龄 */}
-                <div className="mb-5">
-                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t(T.carsFilter.age)}</h4>
-                  <div className="space-y-0.5">
-                    {AGE_RANGES.map((r, i) => (
-                      <FilterBtn key={i} active={ageRange === i} onClick={() => setAgeRange(i)}>{r.label}</FilterBtn>
+                {/* 车龄下拉 */}
+                <div className="mb-4">
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">{t(T.carsFilter.age)}</label>
+                  <select
+                    value={ageRange}
+                    onChange={e => setAgeRange(Number(e.target.value))}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                  >
+                    <option value={-1}>不限</option>
+                    {AGE_RANGES.slice(1).map((r, i) => (
+                      <option key={i} value={i+1}>{r.label}</option>
                     ))}
-                  </div>
+                  </select>
                 </div>
 
-                {/* 里程 */}
-                <div className="mb-5">
-                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t(T.carsFilter.mileage)}</h4>
-                  <div className="space-y-0.5">
-                    {MILEAGE_RANGES.map((r, i) => (
-                      <FilterBtn key={i} active={mileageRange === i} onClick={() => setMileageRange(i)}>{r.label}</FilterBtn>
+                {/* 里程下拉 */}
+                <div className="mb-4">
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">{t(T.carsFilter.mileage)}</label>
+                  <select
+                    value={mileageRange}
+                    onChange={e => setMileageRange(Number(e.target.value))}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                  >
+                    <option value={-1}>不限</option>
+                    {MILEAGE_RANGES.slice(1).map((r, i) => (
+                      <option key={i} value={i+1}>{r.label}</option>
                     ))}
-                  </div>
+                  </select>
                 </div>
 
-                {/* 变速箱 */}
-                <div className="mb-5">
-                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t(T.carsFilter.transmission)}</h4>
-                  <div className="space-y-0.5">
+                {/* 变速箱下拉 */}
+                <div className="mb-4">
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">{t(T.carsFilter.transmission)}</label>
+                  <select
+                    value={transmissionFilter}
+                    onChange={e => setTransmissionFilter(e.target.value)}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                  >
                     {TRANSMISSION_OPTIONS.map(o => (
-                      <FilterBtn key={o} active={transmissionFilter === o} onClick={() => setTransmissionFilter(o)}>{o}</FilterBtn>
+                      <option key={o} value={o}>{o}</option>
                     ))}
-                  </div>
+                  </select>
                 </div>
 
-                {/* 燃料类型 */}
-                <div className="mb-5">
-                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t(T.carsFilter.fuel)}</h4>
-                  <div className="space-y-0.5">
+                {/* 燃料类型下拉 */}
+                <div className="mb-4">
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">{t(T.carsFilter.fuel)}</label>
+                  <select
+                    value={fuelFilter}
+                    onChange={e => setFuelFilter(e.target.value)}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                  >
                     {FUEL_OPTIONS.map(o => (
-                      <FilterBtn key={o} active={fuelFilter === o} onClick={() => setFuelFilter(o)}>{o}</FilterBtn>
+                      <option key={o} value={o}>{o}</option>
                     ))}
-                  </div>
+                  </select>
                 </div>
 
-                {/* 车身类型 */}
+                {/* 车身类型下拉 */}
                 <div>
-                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t(T.carsFilter.bodyType)}</h4>
-                  <div className="space-y-0.5">
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">{t(T.carsFilter.bodyType)}</label>
+                  <select
+                    value={bodyTypeFilter}
+                    onChange={e => setBodyTypeFilter(e.target.value)}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                  >
                     {BODY_TYPES.map(o => (
-                      <FilterBtn key={o} active={bodyTypeFilter === o} onClick={() => setBodyTypeFilter(o)}>{o}</FilterBtn>
+                      <option key={o} value={o}>{o}</option>
                     ))}
-                  </div>
+                  </select>
                 </div>
               </div>
             </aside>
