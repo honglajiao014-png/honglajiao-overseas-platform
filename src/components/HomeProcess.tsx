@@ -1,3 +1,4 @@
+"use client";
 import { useT } from "@/i18n/useT";
 import { T } from "@/i18n/translations";
 
