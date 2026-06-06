@@ -550,6 +550,9 @@ export const T = {
     loginHere: E("Login here", "Connectez-vous ici", "Inicie sesión aquí", "在此登录"),
     success: E("Registration successful!", "Inscription réussie !", "¡Registro exitoso!", "注册成功！"),
     successDesc: E("You can now log in to your dealer dashboard.", "Vous pouvez maintenant vous connecter.", "Ahora puede iniciar sesión.", "您现在可以登录车商后台。"),
+    avatar: E("Avatar (optional)", "Avatar (optionnel)", "Avatar (opcional)", "头像（选填）"),
+    uploadAvatar: E("Upload Avatar", "Upload Avatar", "Subir avatar", "上传头像"),
+    changeAvatar: E("Change Avatar", "Changer avatar", "Cambiar avatar", "更换头像"),
   },
 
   // Newsletter
