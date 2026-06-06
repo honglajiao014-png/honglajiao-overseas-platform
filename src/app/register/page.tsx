@@ -59,7 +59,7 @@ export default function RegisterPage() {
               </div>
               <h2 className="text-xl font-bold text-dark">{t(T.registerPage.success)}</h2>
               <p className="text-gray-500 text-sm mt-2">{t(T.registerPage.successDesc)}</p>
-              <Link href="/login" className="mt-6 inline-block bg-brand text-white px-8 py-3 rounded-xl font-bold text-sm hover:bg-brand-dark transition-all">{t(T.registerPage.loginHere)}</Link>
+                            <a href="/login" className="mt-6 block w-full bg-brand text-white py-4 rounded-xl font-bold text-base hover:bg-brand-dark transition-all text-center">{t(T.registerPage.loginHere)}</a>
             </div>
           ) : (
             <div className="bg-white rounded-2xl border border-border p-8">
