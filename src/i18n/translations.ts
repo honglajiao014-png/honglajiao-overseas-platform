@@ -507,14 +507,7 @@ export const T = {
     success: E("Message sent! We'll get back to you within 24 hours.", "Message envoyé ! Nous vous répondrons sous 24h.", "¡Mensaje enviado! Le responderemos en 24h.", "消息已发送！我们将在24小时内回复。"),
   },
 
-  // Blog page
-  blogPage: {
-    heading: E("Blog", "Blog", "Blog", "博客"),
-    subheading: E("China car export guides, market insights, and sourcing tips", "Guides d'exportation, analyses de marché et conseils d'approvisionnement", "Guías de exportación, análisis de mercado y consejos de abastecimiento", "中国汽车出口指南、市场洞察和采购技巧"),
-    readMore: E("Read More", "Lire plus", "Leer más", "阅读更多"),
-    category: E("Category", "Catégorie", "Categoría", "分类"),
-    date: E("Date", "Date", "Fecha", "日期"),
-  },
+  // Blog page (旧版已合并到下方新版)
 
   // Login page
   loginPage: {
@@ -577,6 +570,92 @@ export const T = {
     emailTitle: E("Send us an Email", "Envoyez-nous un e-mail", "Envíenos un correo", "发送邮件"),
     emailDesc: E("We reply to all inquiries within 24 hours", "Nous répondons à toutes les demandes sous 24 heures", "Respondemos a todas las consultas en 24 horas", "所有咨询24小时内回复"),
     footerHint: E("⚡ Smart AI 24/7 · Live agent during business hours (UTC+8)", "⚡ IA intelligente 24/7 · Agent en direct pendant les heures de bureau (UTC+8)", "⚡ IA inteligente 24/7 · Agente en vivo en horario laboral (UTC+8)", "⚡ 智能AI 24/7 · 工作时间真人客服 (UTC+8)"),
+  },
+
+  // 首页筛选器
+  homeFilter: {
+    brand: E("Brand", "Marque", "Marca", "品牌"),
+    searchBrand: E("Search brand...", "Rechercher marque...", "Buscar marca...", "搜索品牌..."),
+    found: E("found", "trouvé(s)", "encontrado(s)", "找到"),
+    brands: E("brands", "marques", "marcas", "个品牌"),
+    all: E("All", "Tout", "Todo", "不限"),
+    price: E("Price", "Prix", "Precio", "价格"),
+    level: E("Level", "Niveau", "Nivel", "级别"),
+    age: E("Age", "Âge", "Edad", "车龄"),
+    expand: E("Expand ▼", "Déplier ▼", "Expandir ▼", "展开 ▼"),
+    collapse: E("Collapse ▲", "Replier ▲", "Colapsar ▲", "收起 ▲"),
+    results: E("results", "résultats", "resultados", "辆车源"),
+    foundTotal: E("Found", "Trouvé", "Encontrado", "共找到"),
+    sort: E("Sort", "Trier", "Ordenar", "排序"),
+    viewAll: E("View All Vehicles", "Voir tous", "Ver todos", "查看全部车源"),
+    noResult: E("No matching vehicles", "Aucun véhicule", "Sin resultados", "暂无匹配车源"),
+    noResultDesc: E("Try adjusting your filters or submit a buying request", "Essayez d'ajuster vos filtres", "Intente ajustar sus filtros", "试试调整筛选条件，或提交采购需求"),
+    submitRequest: E("Submit Buying Request", "Soumettre une demande", "Enviar solicitud", "提交采购需求"),
+    viewDetail: E("View Details →", "Voir détails →", "Ver detalles →", "查看详情 →"),
+    reset: E("Reset Filters", "Réinitialiser", "Restablecer", "重置筛选"),
+    filter: E("Filters", "Filtres", "Filtros", "筛选"),
+    breadcrumbHome: E("Home", "Accueil", "Inicio", "首页"),
+    breadcrumbCars: E("All Vehicles", "Tous véhicules", "Todos vehículos", "全部车源"),
+  },
+
+  // 车辆列表页侧边栏
+  carsFilter: {
+    breadcrumbHome: E("Home", "Accueil", "Inicio", "首页"),
+    breadcrumbCars: E("All Vehicles", "Tous véhicules", "Todos vehículos", "全部车源"),
+    brand: E("Brand", "Marque", "Marca", "品牌"),
+    searchBrand: E("Search brand...", "Rechercher...", "Buscar...", "搜索品牌..."),
+    allBrands: E("All Brands", "Toutes marques", "Todas marcas", "不限品牌"),
+    price: E("Price (10k RMB)", "Prix (10k RMB)", "Precio (10k RMB)", "价格（万元）"),
+    age: E("Vehicle Age", "Âge du véhicule", "Edad del vehículo", "车龄"),
+    mileage: E("Mileage", "Kilométrage", "Kilometraje", "里程"),
+    transmission: E("Transmission", "Transmission", "Transmisión", "变速箱"),
+    fuel: E("Fuel Type", "Type de carburant", "Tipo de combustible", "燃料类型"),
+    bodyType: E("Body Type", "Type de carrosserie", "Tipo de carrocería", "车身类型"),
+    reset: E("Reset Filters", "Réinitialiser", "Restablecer", "重置筛选"),
+    filter: E("Filters", "Filtres", "Filtros", "筛选"),
+    foundTotal: E("Found", "Trouvé", "Encontrado", "共找到"),
+    results: E("vehicles", "véhicules", "vehículos", "辆车源"),
+    noResult: E("No matching vehicles", "Aucun véhicule", "Sin resultados", "暂无匹配车源"),
+    noResultDesc: E("Try adjusting your filters", "Essayez d'ajuster vos filtres", "Intente ajustar sus filtros", "试试调整筛选条件"),
+    viewDetail: E("View Details →", "Voir détails →", "Ver detalles →", "查看详情 →"),
+  },
+
+  // 提交需求页
+  inquiryPage: {
+    breadcrumbHome: E("Home", "Accueil", "Inicio", "首页"),
+    breadcrumbInquiry: E("Submit Request", "Soumettre demande", "Enviar solicitud", "提交需求"),
+    heading: E("Submit Buying Request", "Soumettre une demande d'achat", "Enviar solicitud de compra", "提交采购需求"),
+    subheading: E("Fill in the form below, we will contact you within 24 hours", "Remplissez le formulaire, nous vous contacterons sous 24h", "Complete el formulario, lo contactaremos en 24h", "填写以下信息，我们将在24小时内与您联系"),
+    name: E("Name", "Nom", "Nombre", "姓名"),
+    namePlaceholder: E("Your name", "Votre nom", "Su nombre", "您的姓名"),
+    nameRequired: E("Please enter your name", "Veuillez entrer votre nom", "Por favor ingrese su nombre", "请填写姓名"),
+    country: E("Country/Region", "Pays/Région", "País/Región", "国家/地区"),
+    email: E("Email", "E-mail", "Correo electrónico", "电子邮箱"),
+    phone: E("Phone Number", "Téléphone", "Teléfono", "手机号"),
+    whatsapp: E("WhatsApp", "WhatsApp", "WhatsApp", "WhatsApp"),
+    telegram: E("Telegram", "Telegram", "Telegram", "Telegram"),
+    vehicleType: E("Vehicle Type", "Type de véhicule", "Tipo de vehículo", "车辆类型"),
+    brand: E("Preferred Brand", "Marque préférée", "Marca preferida", "意向品牌"),
+    model: E("Preferred Model", "Modèle préféré", "Modelo preferido", "意向车型"),
+    budget: E("Budget Range", "Budget", "Presupuesto", "预算区间"),
+    quantity: E("Purchase Quantity", "Quantité", "Cantidad", "采购数量"),
+    destinationPort: E("Destination Port/City", "Port/Ville de destination", "Puerto/Ciudad de destino", "目的港/城市"),
+    description: E("Requirement Description", "Description des besoins", "Descripción de requisitos", "需求说明"),
+    descriptionPlaceholder: E("Please describe your specific requirements, e.g. year range, mileage, color preference, configuration...", "Décrivez vos besoins spécifiques...", "Describa sus requisitos específicos...", "请描述您的具体需求，例如：年份范围、里程要求、颜色偏好、配置要求等"),
+    submit: E("Submit Request", "Soumettre", "Enviar", "提交需求"),
+    submitting: E("Submitting...", "Soumission...", "Enviando...", "提交中..."),
+    success: E("Submitted Successfully!", "Soumis avec succès !", "¡Enviado con éxito!", "提交成功！"),
+    successDesc: E("We will contact you within 24 hours. Please keep your phone available.", "Nous vous contacterons sous 24h.", "Lo contactaremos en 24h.", "我们将在24小时内与您联系，请保持手机畅通。"),
+    backHome: E("Back to Home", "Retour à l'accueil", "Volver al inicio", "返回首页"),
+    error: E("Submission failed, please try again later", "Échec, veuillez réessayer", "Error, intente de nuevo", "提交失败，请稍后重试"),
+  },
+
+  // 博客页
+  blogPage: {
+    heading: E("China Car Export Blog", "Blog Export Auto Chine", "Blog Exportación Auto China", "中国汽车出口博客"),
+    subheading: E("Expert guides, market insights, and tips for importing used cars from China.", "Guides experts, analyses de marché et conseils pour l'importation.", "Guías expertas, análisis de mercado y consejos de importación.", "专家指南、市场洞察和从中国进口二手车的技巧。"),
+    readMore: E("Read more →", "Lire plus →", "Leer más →", "阅读更多 →"),
+    contactUs: E("Contact Us", "Contactez-nous", "Contáctenos", "联系我们"),
   },
 
 };

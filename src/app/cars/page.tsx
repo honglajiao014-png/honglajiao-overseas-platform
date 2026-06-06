@@ -108,9 +108,9 @@ export default function CarsPage() {
         <div className="max-w-[1400px] mx-auto px-4 py-6">
           {/* 面包屑 */}
           <div className="text-xs text-gray-400 mb-4">
-            <a href="/" className="hover:text-primary">首页</a>
+            <a href="/" className="hover:text-primary">{t(T.carsFilter.breadcrumbHome)}</a>
             <span className="mx-2">›</span>
-            <span className="text-gray-600">全部车源</span>
+            <span className="text-gray-600">{t(T.carsFilter.breadcrumbCars)}</span>
           </div>
 
           <div className="flex gap-6">
@@ -119,22 +119,22 @@ export default function CarsPage() {
               <div className="bg-white rounded-2xl border border-gray-100 p-5 sticky top-24">
                 <div className="flex items-center justify-between mb-5">
                   <h3 className="font-extrabold text-gray-900 text-sm">
-                    筛选 {activeFilterCount > 0 && `(${activeFilterCount})`}
+                    {t(T.carsFilter.filter)} {activeFilterCount > 0 && `(${activeFilterCount})`}
                   </h3>
                   {activeFilterCount > 0 && (
-                    <button onClick={resetFilters} className="text-xs text-primary hover:underline">重置筛选</button>
+                    <button onClick={resetFilters} className="text-xs text-primary hover:underline">{t(T.carsFilter.reset)}</button>
                   )}
                 </div>
 
                 {/* 品牌 */}
                 <div className="mb-5">
-                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">品牌</h4>
+                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t(T.carsFilter.brand)}</h4>
                   <input
                     type="text" value={brandSearch} onChange={e => setBrandSearch(e.target.value)}
-                    placeholder="搜索品牌..." className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs mb-2 focus:outline-none focus:border-primary"
+                    placeholder={t(T.carsFilter.searchBrand)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs mb-2 focus:outline-none focus:border-primary"
                   />
                   <div className="max-h-48 overflow-y-auto space-y-0.5">
-                    <FilterBtn active={!brandFilter} onClick={() => setBrandFilter("")}>不限品牌</FilterBtn>
+                    <FilterBtn active={!brandFilter} onClick={() => setBrandFilter("")}>{t(T.carsFilter.allBrands)}</FilterBtn>
                     {(brandSearch ? filteredBrands : BRANDS).map(b => (
                       <FilterBtn key={b.name} active={brandFilter === b.name} onClick={() => setBrandFilter(b.name)}>
                         <span className="flex items-center gap-2">
@@ -148,7 +148,7 @@ export default function CarsPage() {
 
                 {/* 价格 */}
                 <div className="mb-5">
-                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">价格（万元）</h4>
+                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t(T.carsFilter.price)}</h4>
                   <div className="space-y-0.5">
                     {PRICE_RANGES.map((r, i) => (
                       <FilterBtn key={i} active={priceRange === i} onClick={() => setPriceRange(i)}>{r.label}</FilterBtn>
@@ -158,7 +158,7 @@ export default function CarsPage() {
 
                 {/* 车龄 */}
                 <div className="mb-5">
-                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">车龄</h4>
+                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t(T.carsFilter.age)}</h4>
                   <div className="space-y-0.5">
                     {AGE_RANGES.map((r, i) => (
                       <FilterBtn key={i} active={ageRange === i} onClick={() => setAgeRange(i)}>{r.label}</FilterBtn>
@@ -168,7 +168,7 @@ export default function CarsPage() {
 
                 {/* 里程 */}
                 <div className="mb-5">
-                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">里程</h4>
+                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t(T.carsFilter.mileage)}</h4>
                   <div className="space-y-0.5">
                     {MILEAGE_RANGES.map((r, i) => (
                       <FilterBtn key={i} active={mileageRange === i} onClick={() => setMileageRange(i)}>{r.label}</FilterBtn>
@@ -178,7 +178,7 @@ export default function CarsPage() {
 
                 {/* 变速箱 */}
                 <div className="mb-5">
-                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">变速箱</h4>
+                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t(T.carsFilter.transmission)}</h4>
                   <div className="space-y-0.5">
                     {TRANSMISSION_OPTIONS.map(o => (
                       <FilterBtn key={o} active={transmissionFilter === o} onClick={() => setTransmissionFilter(o)}>{o}</FilterBtn>
@@ -188,7 +188,7 @@ export default function CarsPage() {
 
                 {/* 燃料类型 */}
                 <div className="mb-5">
-                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">燃料类型</h4>
+                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t(T.carsFilter.fuel)}</h4>
                   <div className="space-y-0.5">
                     {FUEL_OPTIONS.map(o => (
                       <FilterBtn key={o} active={fuelFilter === o} onClick={() => setFuelFilter(o)}>{o}</FilterBtn>
@@ -198,7 +198,7 @@ export default function CarsPage() {
 
                 {/* 车身类型 */}
                 <div>
-                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">车身类型</h4>
+                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t(T.carsFilter.bodyType)}</h4>
                   <div className="space-y-0.5">
                     {BODY_TYPES.map(o => (
                       <FilterBtn key={o} active={bodyTypeFilter === o} onClick={() => setBodyTypeFilter(o)}>{o}</FilterBtn>
@@ -213,7 +213,7 @@ export default function CarsPage() {
               {/* 结果统计 + 排序 */}
               <div className="flex items-center justify-between mb-5">
                 <p className="text-sm text-gray-500">
-                  共找到 <span className="font-bold text-gray-900">{filtered.length}</span> 辆车源
+                  {t(T.carsFilter.foundTotal)} <span className="font-bold text-gray-900">{filtered.length}</span> {t(T.carsFilter.results)}
                 </p>
                 <select
                   value={sortBy}
@@ -230,9 +230,9 @@ export default function CarsPage() {
               {filtered.length === 0 ? (
                 <div className="text-center py-20 bg-white rounded-2xl border border-gray-100">
                   <div className="text-5xl mb-4">🚗</div>
-                  <h3 className="text-lg font-bold text-gray-400 mb-2">暂无匹配车源</h3>
-                  <p className="text-sm text-gray-400 mb-4">试试调整筛选条件</p>
-                  <button onClick={resetFilters} className="text-primary text-sm font-bold hover:underline">重置筛选</button>
+                  <h3 className="text-lg font-bold text-gray-400 mb-2">{t(T.carsFilter.noResult)}</h3>
+                  <p className="text-sm text-gray-400 mb-4">{t(T.carsFilter.noResultDesc)}</p>
+                  <button onClick={resetFilters} className="text-primary text-sm font-bold hover:underline">{t(T.carsFilter.reset)}</button>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -265,7 +265,7 @@ export default function CarsPage() {
                             ¥{v.price.toLocaleString()} <span className="text-xs font-normal text-gray-400">CNY</span>
                           </span>
                           <span className="text-xs text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                            查看详情 →
+                            {t(T.carsFilter.viewDetail)}
                           </span>
                         </div>
                       </div>

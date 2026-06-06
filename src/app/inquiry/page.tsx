@@ -23,7 +23,7 @@ export default function InquiryPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name.trim()) { setErrorMsg("请填写姓名"); setStatus("error"); return; }
+    if (!form.name.trim()) { setErrorMsg(t(T.inquiryPage.nameRequired)); setStatus("error"); return; }
     setStatus("loading");
     try {
       const res = await fetch("/api/inquiry", {
@@ -35,7 +35,7 @@ export default function InquiryPage() {
       if (data.error) { setErrorMsg(data.error); setStatus("error"); }
       else { setStatus("success"); }
     } catch {
-      setErrorMsg("提交失败，请稍后重试");
+      setErrorMsg(t(T.inquiryPage.error));
       setStatus("error");
     }
   };
@@ -54,10 +54,10 @@ export default function InquiryPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h2 className="text-xl font-bold text-gray-900 mb-2">提交成功！</h2>
-            <p className="text-gray-500 text-sm mb-6">我们将在24小时内与您联系，请保持手机畅通。</p>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">{t(T.inquiryPage.success)}</h2>
+            <p className="text-gray-500 text-sm mb-6">{t(T.inquiryPage.successDesc)}</p>
             <a href="/" className="inline-block bg-primary text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-primary-dark transition-all">
-              返回首页
+              {t(T.inquiryPage.backHome)}
             </a>
           </div>
         </main>
@@ -73,15 +73,15 @@ export default function InquiryPage() {
         <div className="max-w-2xl mx-auto px-4 py-10">
           {/* 面包屑 */}
           <div className="text-xs text-gray-400 mb-6">
-            <a href="/" className="hover:text-primary">首页</a>
+            <a href="/" className="hover:text-primary">{t(T.inquiryPage.breadcrumbHome)}</a>
             <span className="mx-2">›</span>
-            <span className="text-gray-600">提交需求</span>
+            <span className="text-gray-600">{t(T.inquiryPage.breadcrumbInquiry)}</span>
           </div>
 
           <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
             <div className="mb-8">
-              <h1 className="text-2xl font-extrabold text-gray-900">提交采购需求</h1>
-              <p className="text-gray-500 text-sm mt-2">填写以下信息，我们将在24小时内与您联系</p>
+              <h1 className="text-2xl font-extrabold text-gray-900">{t(T.inquiryPage.heading)}</h1>
+              <p className="text-gray-500 text-sm mt-2">{t(T.inquiryPage.subheading)}</p>
             </div>
 
             {status === "error" && (
@@ -91,33 +91,33 @@ export default function InquiryPage() {
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                  <label className={labelClass}>姓名 <span className="text-red-500">*</span></label>
-                  <input name="name" value={form.name} onChange={handleChange} className={inputClass} placeholder="您的姓名" required />
+                  <label className={labelClass}>{t(T.inquiryPage.name)} <span className="text-red-500">*</span></label>
+                  <input name="name" value={form.name} onChange={handleChange} className={inputClass} placeholder={t(T.inquiryPage.namePlaceholder)} required />
                 </div>
                 <div>
-                  <label className={labelClass}>国家/地区</label>
+                  <label className={labelClass}>{t(T.inquiryPage.country)}</label>
                   <input name="country" value={form.country} onChange={handleChange} className={inputClass} placeholder="例如：Nigeria" />
                 </div>
                 <div>
-                  <label className={labelClass}>电子邮箱</label>
+                  <label className={labelClass}>{t(T.inquiryPage.email)}</label>
                   <input name="email" type="email" value={form.email} onChange={handleChange} className={inputClass} placeholder="your@email.com" />
                 </div>
                 <div>
-                  <label className={labelClass}>手机号</label>
+                  <label className={labelClass}>{t(T.inquiryPage.phone)}</label>
                   <input name="phone" type="tel" value={form.phone} onChange={handleChange} className={inputClass} placeholder="+86 138 0000 0000" />
                 </div>
                 <div>
-                  <label className={labelClass}>WhatsApp</label>
+                  <label className={labelClass}>{t(T.inquiryPage.whatsapp)}</label>
                   <input name="whatsapp" value={form.whatsapp} onChange={handleChange} className={inputClass} placeholder="WhatsApp号码" />
                 </div>
                 <div>
-                  <label className={labelClass}>Telegram</label>
+                  <label className={labelClass}>{t(T.inquiryPage.telegram)}</label>
                   <input name="telegram" value={form.telegram} onChange={handleChange} className={inputClass} placeholder="@username" />
                 </div>
               </div>
 
               <div>
-                <label className={labelClass}>车辆类型</label>
+                <label className={labelClass}>{t(T.inquiryPage.vehicleType)}</label>
                 <select name="vehicleType" value={form.vehicleType} onChange={handleChange} className={inputClass}>
                   {VEHICLE_TYPES.map(o => (
                     <option key={o} value={o === "请选择车辆类型" ? "" : o}>{o}</option>
@@ -127,37 +127,37 @@ export default function InquiryPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                  <label className={labelClass}>意向品牌</label>
+                  <label className={labelClass}>{t(T.inquiryPage.brand)}</label>
                   <input name="brand" value={form.brand} onChange={handleChange} className={inputClass} placeholder="例如：Toyota, BMW" />
                 </div>
                 <div>
-                  <label className={labelClass}>意向车型</label>
+                  <label className={labelClass}>{t(T.inquiryPage.model)}</label>
                   <input name="model" value={form.model} onChange={handleChange} className={inputClass} placeholder="例如：Corolla, X5" />
                 </div>
                 <div>
-                  <label className={labelClass}>预算区间</label>
+                  <label className={labelClass}>{t(T.inquiryPage.budget)}</label>
                   <input name="budget" value={form.budget} onChange={handleChange} className={inputClass} placeholder="例如：$5,000 - $10,000" />
                 </div>
                 <div>
-                  <label className={labelClass}>采购数量</label>
+                  <label className={labelClass}>{t(T.inquiryPage.quantity)}</label>
                   <input name="quantity" type="number" value={form.quantity} onChange={handleChange} className={inputClass} placeholder="例如：5" />
                 </div>
               </div>
 
               <div>
-                <label className={labelClass}>目的港/城市</label>
+                <label className={labelClass}>{t(T.inquiryPage.destinationPort)}</label>
                 <input name="destinationPort" value={form.destinationPort} onChange={handleChange} className={inputClass} placeholder="例如：Lagos, Nigeria" />
               </div>
 
               <div>
-                <label className={labelClass}>需求说明</label>
+                <label className={labelClass}>{t(T.inquiryPage.description)}</label>
                 <textarea
                   name="description"
                   value={form.description}
                   onChange={handleChange}
                   rows={4}
                   className={inputClass}
-                  placeholder="请描述您的具体需求，例如：年份范围、里程要求、颜色偏好、配置要求等"
+                  placeholder={t(T.inquiryPage.descriptionPlaceholder)}
                 />
               </div>
 
@@ -166,7 +166,7 @@ export default function InquiryPage() {
                 disabled={status === "loading"}
                 className="w-full bg-primary text-white py-3.5 rounded-xl font-bold text-sm hover:bg-primary-dark transition-all disabled:opacity-50 active:scale-[0.99]"
               >
-                {status === "loading" ? "提交中..." : "提交需求"}
+                {status === "loading" ? t(T.inquiryPage.submitting) : t(T.inquiryPage.submit)}
               </button>
             </form>
           </div>

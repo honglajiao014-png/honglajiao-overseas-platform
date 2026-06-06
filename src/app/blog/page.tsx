@@ -61,10 +61,8 @@ export default function BlogPage() {
         {/* Hero */}
         <section className="bg-white border-b border-gray-100">
           <div className="max-w-[1200px] mx-auto px-4 py-12 text-center">
-            <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-3">China Car Export Blog</h1>
-            <p className="text-gray-500 text-sm md:text-base max-w-xl mx-auto">
-              Expert guides, market insights, and tips for importing used cars from China.
-            </p>
+            <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-3">{t(T.blogPage.heading)}</h1>
+            <p className="text-gray-500 text-sm md:text-base max-w-xl mx-auto">{t(T.blogPage.subheading)}</p>
           </div>
         </section>
 
@@ -90,7 +88,7 @@ export default function BlogPage() {
                   {a.summary}
                 </p>
                 <span className="text-sm font-bold text-primary group-hover:underline">
-                  Read more →
+                  {t(T.blogPage.readMore)}
                 </span>
               </a>
             ))}
@@ -104,7 +102,7 @@ export default function BlogPage() {
               href="/contact"
               className="inline-block bg-primary text-white px-8 py-3 rounded-xl text-sm font-bold hover:bg-primary-dark transition-all"
             >
-              Contact Us
+              {t(T.blogPage.contactUs)}
             </a>
           </div>
         </section>

@@ -76,7 +76,7 @@ export default function Home() {
   // 筛选状态
   const [brandFilter, setBrandFilter] = useState<string>("");
   const [priceRange, setPriceRange] = useState<number>(-1);
-  const [levelFilter, setLevelFilter] = useState<string>("不限");
+  const [levelFilter, setLevelFilter] = useState<string>("{t(T.homeFilter.all)}");
   const [ageRange, setAgeRange] = useState<number>(-1);
   const [sortBy, setSortBy] = useState<string>("default");
   const [customMinPrice, setCustomMinPrice] = useState("");
@@ -113,7 +113,7 @@ export default function Home() {
     if (customMaxPrice) result = result.filter(v => v.price <= Number(customMaxPrice) * 10000);
 
     // 级别筛选
-    if (levelFilter !== "不限") {
+    if (levelFilter !== "{t(T.homeFilter.all)}") {
       result = result.filter(v => v.level === levelFilter);
     }
 
@@ -155,7 +155,7 @@ export default function Home() {
             {/* 品牌筛选 — 官方Logo网格 + 搜索框 */}
             <div className="mb-6">
               <div className="flex items-center gap-4 mb-4">
-                <span className="text-sm font-bold text-gray-700 shrink-0">品牌：</span>
+                <span className="text-sm font-bold text-gray-700 shrink-0">{t(T.homeFilter.brand)}：</span>
                 {/* 品牌搜索框 */}
                 <div className="relative w-56">
                   <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -165,13 +165,13 @@ export default function Home() {
                     type="text"
                     value={brandSearch}
                     onChange={e => { setBrandSearch(e.target.value); setShowAllBrands(true); }}
-                    placeholder="搜索品牌..."
+                    placeholder={t(T.homeFilter.searchBrand)}
                     className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
                 {brandSearch && (
                   <span className="text-xs text-gray-400">
-                    找到 {filteredBrands.length} 个品牌
+                    {t(T.homeFilter.found)} {filteredBrands.length} {t(T.homeFilter.brands)}
                   </span>
                 )}
               </div>
@@ -183,7 +183,7 @@ export default function Home() {
                     !brandFilter ? "bg-primary text-white shadow-md" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                   }`}
                 >
-                  不限
+                  {t(T.homeFilter.all)}
                 </button>
                 {(brandSearch ? filteredBrands : displayBrands).map(b => (
                   <button
@@ -205,7 +205,7 @@ export default function Home() {
                     onClick={() => setShowAllBrands(!showAllBrands)}
                     className="px-3 py-2 rounded-lg text-xs font-medium text-primary hover:bg-primary-light transition-all"
                   >
-                    {showAllBrands ? "收起 ▲" : "展开 ▼"}
+                    {showAllBrands ? t(T.homeFilter.collapse) : t(T.homeFilter.expand)}
                   </button>
                 )}
               </div>
@@ -213,7 +213,7 @@ export default function Home() {
 
             {/* 价格筛选 */}
             <div className="flex items-center gap-4 mb-4">
-              <span className="text-sm font-bold text-gray-700 shrink-0">价格：</span>
+              <span className="text-sm font-bold text-gray-700 shrink-0">{t(T.homeFilter.price)}：</span>
               <div className="flex flex-wrap gap-2 items-center">
                 {PRICE_RANGES.map((r, i) => (
                   <button
@@ -249,7 +249,7 @@ export default function Home() {
 
             {/* 级别筛选 */}
             <div className="flex items-center gap-4 mb-4">
-              <span className="text-sm font-bold text-gray-700 shrink-0">级别：</span>
+              <span className="text-sm font-bold text-gray-700 shrink-0">{t(T.homeFilter.level)}：</span>
               <div className="flex flex-wrap gap-2">
                 {CAR_LEVELS.map(l => (
                   <button
@@ -267,7 +267,7 @@ export default function Home() {
 
             {/* 车龄筛选 */}
             <div className="flex items-center gap-4">
-              <span className="text-sm font-bold text-gray-700 shrink-0">车龄：</span>
+              <span className="text-sm font-bold text-gray-700 shrink-0">{t(T.homeFilter.age)}：</span>
               <div className="flex flex-wrap gap-2">
                 {AGE_RANGES.map((r, i) => (
                   <button
@@ -290,10 +290,10 @@ export default function Home() {
           {/* 结果统计 + 排序 */}
           <div className="flex items-center justify-between mb-6">
             <p className="text-sm text-gray-500">
-              共找到 <span className="font-bold text-gray-900">{filtered.length}</span> 辆车源
+              <span>{t(T.homeFilter.foundTotal)}</span> <span className="font-bold text-gray-900">{filtered.length}</span> {t(T.homeFilter.results)}
             </p>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-400">排序：</span>
+              <span className="text-xs text-gray-400">{t(T.homeFilter.sort)}：</span>
               {SORT_OPTIONS.map(o => (
                 <button
                   key={o.value}
@@ -312,10 +312,10 @@ export default function Home() {
           {filtered.length === 0 ? (
             <div className="text-center py-20 bg-white rounded-2xl border border-gray-100">
               <div className="text-5xl mb-4">🚗</div>
-              <h3 className="text-lg font-bold text-gray-400 mb-2">暂无匹配车源</h3>
-              <p className="text-sm text-gray-400">试试调整筛选条件，或提交采购需求让我们帮您找车</p>
+              <h3 className="text-lg font-bold text-gray-400 mb-2">{t(T.homeFilter.noResult)}</h3>
+              <p className="text-sm text-gray-400">{t(T.homeFilter.noResultDesc)}</p>
               <a href="/inquiry" className="inline-block mt-4 bg-primary text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-primary-dark transition-all">
-                提交采购需求
+                {t(T.homeFilter.submitRequest)}
               </a>
             </div>
           ) : (
@@ -365,7 +365,7 @@ export default function Home() {
                         <span className="text-xs text-gray-400 ml-1">CNY</span>
                       </div>
                       <span className="text-xs text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                        查看详情 →
+                        {t(T.homeFilter.viewDetail)}
                       </span>
                     </div>
                   </div>
@@ -380,7 +380,7 @@ export default function Home() {
               href="/cars"
               className="inline-flex items-center gap-2 bg-white border-2 border-primary text-primary px-8 py-3 rounded-xl text-sm font-bold hover:bg-primary hover:text-white transition-all"
             >
-              查看全部车源
+              {t(T.homeFilter.viewAll)}
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
