@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ChatWidget } from "@/components/ChatWidget";
+import { FloatingContact } from "@/components/FloatingContact";
 import { LangProvider } from "@/i18n/LangContext";
 
 export const metadata: Metadata = {
@@ -62,6 +63,7 @@ export default function RootLayout({
         <LangProvider>
           {children}
           <ChatWidget />
+          <FloatingContact />
         </LangProvider>
       </body>
     </html>

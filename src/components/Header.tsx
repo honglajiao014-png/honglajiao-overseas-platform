@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { useLang } from "@/i18n/LangContext";
 import { useT, T } from "@/i18n/useT";
@@ -16,11 +16,13 @@ const FLAGS: Record<Lang, string> = {
 
 export function Header() {
   const pathname = usePathname();
+  const router = useRouter();
   const { lang: currentLang, setLang } = useLang();
   const t = useT();
   const [langOpen, setLangOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const NAV_LINKS = [
@@ -31,140 +33,151 @@ export function Header() {
   ];
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  useEffect(() => {
-    if (!langOpen) return;
     const handler = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) setLangOpen(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
-  }, [langOpen]);
+  }, []);
 
   useEffect(() => {
-    if (!langOpen) return;
-    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") setLangOpen(false); };
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") { setLangOpen(false); setSearchOpen(false); } };
     document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
-  }, [langOpen]);
+  }, []);
 
   const switchLang = (code: Lang) => {
     setLang(code);
     setLangOpen(false);
   };
 
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchValue.trim()) {
+      router.push(`/cars?search=${encodeURIComponent(searchValue.trim())}`);
+      setSearchOpen(false);
+      setSearchValue("");
+    }
+  };
+
   const current = FLAGS[currentLang] || "🇬🇧";
 
   return (
-    <header
-      className={`sticky top-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100"
-          : "bg-white border-b border-transparent"
-      }`}
-    >
-      <div className="container-wide">
+    <header className="bg-[#1a1a1a] sticky top-0 z-50">
+      {/* 顶部栏 */}
+      <div className="max-w-[1400px] mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <div className="flex items-center gap-10">
-            <Link href="/" className="flex items-center gap-3 flex-shrink-0 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary-dark rounded-xl flex items-center justify-center text-white font-extrabold text-sm shadow-md group-hover:shadow-lg transition-shadow">
-                CCE
-              </div>
-              <div className="hidden sm:block">
-                <div className="text-sm font-bold text-gray-900 leading-tight">{t(T.site.name)}</div>
-                <div className="text-[10px] text-gray-500 leading-tight tracking-wide">{t(T.site.tagline)}</div>
-              </div>
-            </Link>
-
-            <nav className="hidden lg:flex items-center gap-1">
-              {NAV_LINKS.map((link) => {
-                const active = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={`relative px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 ${
-                      active
-                        ? "text-primary bg-primary-light"
-                        : "text-gray-600 hover:text-primary hover:bg-gray-50"
-                    }`}
-                  >
-                    {link.label}
-                    {active && (
-                      <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-primary rounded-full" />
-                    )}
-                  </Link>
-                );
-              })}
-            </nav>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <div className="hidden sm:flex items-center gap-2">
-              <Link
-                href="/login"
-                className="text-sm font-medium text-gray-600 hover:text-primary px-3 py-2 rounded-lg hover:bg-gray-50 transition-all"
-              >
-                {t(T.header.login)}
-              </Link>
-              <Link
-                href="/register"
-                className="text-sm font-semibold bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark hover:shadow-md transition-all active:scale-95"
-              >
-                {t(T.header.register)}
-              </Link>
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-3 flex-shrink-0 group">
+            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white font-extrabold text-sm shadow-lg group-hover:shadow-primary/30 transition-shadow">
+              CCE
             </div>
+            <div className="hidden sm:block">
+              <div className="text-sm font-bold text-white leading-tight">{t(T.site.name)}</div>
+              <div className="text-[10px] text-gray-400 leading-tight tracking-wide">{t(T.site.tagline)}</div>
+            </div>
+          </Link>
 
-            <div className="hidden sm:block w-px h-6 bg-gray-200 mx-1" />
+          {/* 导航 */}
+          <nav className="hidden lg:flex items-center gap-1">
+            {NAV_LINKS.map((link) => {
+              const active = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                    active
+                      ? "text-primary bg-white/10"
+                      : "text-gray-300 hover:text-white hover:bg-white/5"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+          </nav>
 
+          {/* 右侧操作区 */}
+          <div className="flex items-center gap-2">
+            {/* 搜索按钮 */}
+            <button
+              onClick={() => setSearchOpen(!searchOpen)}
+              className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-all"
+              aria-label="搜索"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </button>
+
+            {/* 电话 */}
+            <a
+              href="tel:+8613877284681"
+              className="hidden md:flex items-center gap-1.5 text-sm text-gray-300 hover:text-white transition-colors px-3 py-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+              </svg>
+              +86 138 7728 4681
+            </a>
+
+            {/* 语言切换 */}
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setLangOpen(!langOpen)}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-all border border-gray-200 hover:border-gray-300"
+                className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 transition-all"
                 aria-expanded={langOpen}
-                aria-haspopup="listbox"
               >
                 <span className="text-base">{current}</span>
-                <span className="uppercase text-xs font-bold">{currentLang.toUpperCase()}</span>
-                <svg className={`w-3 h-3 text-gray-400 transition-transform duration-200 ${langOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <span className="uppercase text-xs font-bold hidden sm:inline">{currentLang === "zh" ? "中" : currentLang.toUpperCase()}</span>
+                <svg className={`w-3 h-3 transition-transform duration-200 ${langOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
 
               {langOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 z-20 py-1 overflow-hidden animate-scale-in origin-top-right">
-                  <div className="px-3 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider">{t(T.header.language)}</div>
+                <div className="absolute right-0 mt-2 w-40 bg-[#2a2a2a] rounded-xl shadow-xl border border-gray-700 z-20 py-1 overflow-hidden">
                   {LANGS.map((l) => (
                     <button
                       key={l}
                       onClick={() => switchLang(l)}
                       className={`w-full text-left px-4 py-2.5 text-sm transition-colors flex items-center gap-3 ${
                         currentLang === l
-                          ? "bg-primary-light text-primary font-semibold"
-                          : "text-gray-700 hover:bg-gray-50"
+                          ? "bg-primary/20 text-primary font-semibold"
+                          : "text-gray-300 hover:bg-white/5"
                       }`}
                     >
                       <span className="text-lg">{FLAGS[l]}</span>
                       <span>{LANG_NAMES[l]}</span>
-                      {currentLang === l && (
-                        <svg className="w-4 h-4 ml-auto text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
-                        </svg>
-                      )}
                     </button>
                   ))}
                 </div>
               )}
             </div>
 
+            {/* 登录/注册 */}
+            <div className="hidden sm:flex items-center gap-1 ml-2">
+              <Link
+                href="/login"
+                className="text-sm text-gray-400 hover:text-white px-3 py-2 rounded-lg hover:bg-white/5 transition-all"
+              >
+                {t(T.header.login)}
+              </Link>
+              <span className="text-gray-600">/</span>
+              <Link
+                href="/register"
+                className="text-sm text-gray-400 hover:text-white px-3 py-2 rounded-lg hover:bg-white/5 transition-all"
+              >
+                {t(T.header.register)}
+              </Link>
+            </div>
+
+            {/* 移动端菜单按钮 */}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="lg:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-              aria-label="Toggle menu"
+              className="lg:hidden p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+              aria-label="菜单"
             >
               {mobileOpen ? (
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -179,8 +192,31 @@ export function Header() {
           </div>
         </div>
 
+        {/* 搜索栏展开 */}
+        {searchOpen && (
+          <form onSubmit={handleSearch} className="pb-4">
+            <div className="flex gap-2 max-w-xl">
+              <input
+                type="text"
+                value={searchValue}
+                onChange={e => setSearchValue(e.target.value)}
+                placeholder="搜索品牌、车型..."
+                className="flex-1 bg-[#2a2a2a] border border-gray-700 rounded-lg px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+                autoFocus
+              />
+              <button
+                type="submit"
+                className="bg-primary text-white px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-primary-dark transition-all"
+              >
+                搜索
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* 移动端菜单 */}
         {mobileOpen && (
-          <div className="lg:hidden border-t border-gray-100 py-4 animate-fade-in-up">
+          <div className="lg:hidden border-t border-gray-800 py-4">
             <nav className="flex flex-col gap-1">
               {NAV_LINKS.map((link) => {
                 const active = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
@@ -189,8 +225,8 @@ export function Header() {
                     key={link.href}
                     href={link.href}
                     onClick={() => setMobileOpen(false)}
-                    className={`px-4 py-3 rounded-lg text-sm font-semibold transition-colors ${
-                      active ? "bg-primary-light text-primary" : "text-gray-600 hover:bg-gray-50"
+                    className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                      active ? "bg-white/10 text-primary" : "text-gray-300 hover:bg-white/5"
                     }`}
                   >
                     {link.label}
@@ -198,10 +234,10 @@ export function Header() {
                 );
               })}
               <div className="flex gap-2 mt-3 px-4">
-                <Link href="/login" onClick={() => setMobileOpen(false)} className="flex-1 text-center text-sm font-semibold text-gray-600 border border-gray-200 py-2.5 rounded-lg hover:bg-gray-50 transition-colors">
+                <Link href="/login" onClick={() => setMobileOpen(false)} className="flex-1 text-center text-sm font-medium text-gray-300 border border-gray-700 py-2.5 rounded-lg hover:bg-white/5 transition-colors">
                   {t(T.header.login)}
                 </Link>
-                <Link href="/register" onClick={() => setMobileOpen(false)} className="flex-1 text-center text-sm font-semibold bg-primary text-white py-2.5 rounded-lg hover:bg-primary-dark transition-colors">
+                <Link href="/register" onClick={() => setMobileOpen(false)} className="flex-1 text-center text-sm font-medium bg-primary text-white py-2.5 rounded-lg hover:bg-primary-dark transition-colors">
                   {t(T.header.register)}
                 </Link>
               </div>
