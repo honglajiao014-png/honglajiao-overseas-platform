@@ -31,8 +31,18 @@ export default function AccountPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const saved = localStorage.getItem("hlj_token");
-    if (saved) setToken(saved);
+    // Check URL for OAuth token
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlToken = urlParams.get("token");
+    if (urlToken) {
+      localStorage.setItem("hlj_token", urlToken);
+      setToken(urlToken);
+      // Clean URL without reload
+      window.history.replaceState({}, "", window.location.pathname);
+    } else {
+      const saved = localStorage.getItem("hlj_token");
+      if (saved) setToken(saved);
+    }
     setLoaded(true);
   }, []);
 
