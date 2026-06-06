@@ -57,7 +57,7 @@ export const BRANDS: Brand[] = [
   B("荣威", "R", "roewe.com.cn", "#C41230"),
   B("三一", "S", "sanyglobal.com", "#C8102E"),
   B("山河智能", "S", "sunward.com.cn", "#003DA5"),
-  B("特斯��", "T", "tesla.com", "#CC0000"),
+  B("特斯拉", "T", "tesla.com", "#CC0000"),
   B("五菱", "W", "wuling.com", "#C8102E"),
   B("沃尔沃", "W", "volvocars.com", "#003057"),
   B("蔚来", "W", "nio.com", "#000000"),
