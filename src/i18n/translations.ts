@@ -576,6 +576,8 @@ export const T = {
   homeFilter: {
     brand: E("Brand", "Marque", "Marca", "品牌"),
     searchBrand: E("Search brand...", "Rechercher marque...", "Buscar marca...", "搜索品牌..."),
+    searchVehicle: E("Search vehicle model / brand...", "Rechercher modèle/marque...", "Buscar modelo/marca...", "搜索车型/品牌..."),
+    searchBtn: E("Search", "Rechercher", "Buscar", "搜索"),
     found: E("found", "trouvé(s)", "encontrado(s)", "找到"),
     brands: E("brands", "marques", "marcas", "个品牌"),
     all: E("All", "Tout", "Todo", "不限"),

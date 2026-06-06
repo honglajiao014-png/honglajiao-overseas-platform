@@ -119,6 +119,32 @@ export default function Home() {
     <>
       <Header />
       <main className="flex-1 bg-gray-50">
+        {/* 🔍 搜索区域 — 全宽醒目 */}
+        <div className="bg-gradient-to-r from-primary/90 to-primary shadow-lg">
+          <div className="max-w-[1400px] mx-auto px-4 py-8">
+            <div className="flex items-center gap-3 max-w-3xl mx-auto">
+              <div className="relative flex-1">
+                <svg className="absolute left-5 top-1/2 -translate-y-1/2 w-6 h-6 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && e.currentTarget.blur()}
+                  placeholder={t(T.homeFilter.searchVehicle)}
+                  className="w-full pl-14 pr-6 py-4 rounded-2xl text-base bg-white/95 backdrop-blur-sm border-2 border-white/30 focus:outline-none focus:border-white focus:bg-white focus:ring-4 focus:ring-white/30 placeholder-gray-400 shadow-inner"
+                />
+              </div>
+              <button
+                onClick={() => {}}
+                className="px-8 py-4 bg-white text-primary font-extrabold text-base rounded-2xl hover:bg-gray-100 hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 shadow-lg border-2 border-white/50"
+              >
+                {t(T.homeFilter.searchBtn)}
+              </button>
+            </div>
+          </div>
+        </div>
         {/* 筛选条件区域 */}
         <div className="bg-white border-b border-gray-200">
           <div className="max-w-[1400px] mx-auto px-4 py-6">
