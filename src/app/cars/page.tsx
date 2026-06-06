@@ -4,8 +4,9 @@ import { useState, useMemo } from "react";
 
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { BrandLogo } from "@/components/BrandLogo";
 import { useT, T } from "@/i18n/useT";
-import { BRANDS, PRICE_RANGES, AGE_RANGES, MILEAGE_RANGES, TRANSMISSION_OPTIONS, FUEL_OPTIONS, BODY_TYPES, SORT_OPTIONS, type Brand } from "@/data/brands";
+import { BRANDS, PRICE_RANGES, AGE_RANGES, MILEAGE_RANGES, TRANSMISSION_OPTIONS, FUEL_OPTIONS, BODY_TYPES, SORT_OPTIONS } from "@/data/brands";
 
 const ALL_VEHICLES = [
   {
@@ -138,7 +139,7 @@ export default function CarsPage() {
                     {(brandSearch ? filteredBrands : BRANDS).map(b => (
                       <FilterBtn key={b.name} active={brandFilter === b.name} onClick={() => setBrandFilter(b.name)}>
                         <span className="flex items-center gap-2">
-                          <img src={`/brands/${b.name}.png`} alt={b.name} className="w-5 h-5 object-contain shrink-0" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                          <BrandLogo brand={b} size={28} />
                           {b.name}
                         </span>
                       </FilterBtn>

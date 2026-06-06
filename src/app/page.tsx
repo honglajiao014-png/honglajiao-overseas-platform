@@ -4,35 +4,9 @@ import { useState, useMemo } from "react";
 
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { BrandLogo } from "@/components/BrandLogo";
 import { useT, T } from "@/i18n/useT";
-import { HOT_BRANDS, BRANDS, PRICE_RANGES, CAR_LEVELS, AGE_RANGES, SORT_OPTIONS, type Brand } from "@/data/brands";
-
-// 品牌Logo组件 — 加载本地PNG图片，失败时fallback到品牌色首字母
-function BrandLogo({ brand, size = 20 }: { brand: Brand; size?: number }) {
-  const [imgError, setImgError] = useState(false);
-
-  if (imgError) {
-    return (
-      <span
-        className="inline-flex items-center justify-center rounded-full text-[10px] font-bold text-white shrink-0"
-        style={{ width: size, height: size, backgroundColor: brand.color }}
-      >
-        {brand.name.charAt(0)}
-      </span>
-    );
-  }
-
-  return (
-    <img
-      src={brand.logo}
-      alt={brand.name}
-      width={size}
-      height={size}
-      className="rounded-sm object-contain shrink-0"
-      onError={() => setImgError(true)}
-    />
-  );
-}
+import { HOT_BRANDS, BRANDS, PRICE_RANGES, CAR_LEVELS, AGE_RANGES, SORT_OPTIONS } from "@/data/brands";
 
 // 车源数据（后续可从API获取）
 const ALL_VEHICLES = [
@@ -194,7 +168,7 @@ export default function Home() {
                     }`}
                   >
                     {/* 官方Logo图片 + fallback */}
-                    <BrandLogo brand={b} size={20} />
+                    <BrandLogo brand={b} size={36} />
                     <span className={brandFilter === b.name ? "font-bold" : ""}>{b.name}</span>
                   </button>
                 ))}

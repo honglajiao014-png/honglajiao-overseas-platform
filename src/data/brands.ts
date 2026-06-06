@@ -7,12 +7,12 @@ export interface Brand {
   color: string;
 }
 
-// 品牌按字母顺序排列，logo使用本地PNG图片
-// 有本地PNG的品牌用 /brands/品牌名.png，没有的fallback到品牌色首字母
+// 品牌按字母顺序排列，logo使用本地图片
+// 优先 PNG，其次 SVG，都加载失败则 fallback 到品牌色首字母
 const B = (name: string, letter: string, _domain: string, color: string): Brand => ({
   name,
   letter,
-  logo: `/brands/${name}.png`,
+  logo: `/brands/${name}`,
   color,
 });
 
@@ -26,51 +26,29 @@ export const BRANDS: Brand[] = [
   B("奔驰", "B", "mercedes-benz.com", "#000000"),
   B("长安", "C", "changan.com.cn", "#003DA5"),
   B("长城", "C", "gwm-global.com", "#CC0000"),
-  B("传祺", "C", "gac-motor.com", "#C8102E"),
-  B("重汽", "Z", "sinotruk.com", "#C8102E"),
-  B("大通", "D", "saicmaxus.com", "#003DA5"),
   B("大众", "D", "volkswagen.com", "#00386B"),
   B("东风", "D", "dfmc.com.cn", "#C8102E"),
-  B("斗山", "D", "doosan.com", "#003DA5"),
   B("丰田", "F", "toyota.com", "#EB0A1E"),
   B("福特", "F", "ford.com", "#003478"),
-  B("福田", "F", "foton.com.cn", "#003DA5"),
   B("红旗", "H", "hongqi-auto.com", "#C8102E"),
   B("吉利", "J", "geely.com", "#0066CC"),
-  B("江淮", "J", "jac.com.cn", "#003DA5"),
-  B("解放", "J", "fawjiefang.com.cn", "#003DA5"),
-  B("捷途", "J", "jetour.com.cn", "#00A0E9"),
-  B("卡特彼勒", "K", "cat.com", "#FFC72C"),
-  B("凯斯", "K", "casece.com", "#C8102E"),
   B("理想", "L", "lixiang.com", "#00A870"),
   B("雷克萨斯", "L", "lexus.com", "#333333"),
-  B("雷沃", "L", "lovol.com", "#003DA5"),
   B("领克", "L", "lynkco.com", "#000000"),
-  B("临工", "L", "sdlingong.com", "#F7941D"),
-  B("柳工", "L", "liugong.com", "#F7941D"),
-  B("龙工", "L", "lonking.cn", "#003DA5"),
   B("路虎", "L", "landrover.com", "#0A2E1F"),
   B("马自达", "M", "mazda.com", "#101010"),
   B("名爵", "M", "mgmotor.com", "#C41230"),
   B("日产", "R", "nissan-global.com", "#C3002F"),
-  B("日立", "R", "hitachi.com", "#E60012"),
   B("荣威", "R", "roewe.com.cn", "#C41230"),
-  B("三一", "S", "sanyglobal.com", "#C8102E"),
-  B("山河智能", "S", "sunward.com.cn", "#003DA5"),
   B("特斯拉", "T", "tesla.com", "#CC0000"),
   B("五菱", "W", "wuling.com", "#C8102E"),
   B("沃尔沃", "W", "volvocars.com", "#003057"),
   B("蔚来", "W", "nio.com", "#000000"),
   B("现代", "X", "hyundai.com", "#003469"),
-  B("现代重工", "X", "hyundai.com", "#003469"),
-  B("厦工", "X", "xiagong.com", "#E60012"),
   B("小鹏", "X", "xiaopeng.com", "#005AFF"),
-  B("小松", "X", "komatsu.com", "#003DA5"),
   B("雪佛兰", "X", "chevrolet.com", "#CD9834"),
-  B("徐工", "X", "xcmg.com", "#E60012"),
   B("起亚", "Q", "kia.com", "#05141F"),
   B("奇瑞", "Q", "cheryinternational.com", "#E60012"),
-  B("中联", "Z", "zoomlion.com", "#003DA5"),
 ];
 
 export const HOT_BRANDS = BRANDS.slice(0, 10);
