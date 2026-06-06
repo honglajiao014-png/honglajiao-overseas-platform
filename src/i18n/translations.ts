@@ -13,205 +13,274 @@ export const T = {
     copyright: E("Copyright 2026 Honglajiao Auto Export All Rights Reserved", "Copyright 2026 Honglajiao Auto Export Tous droits réservés", "Copyright 2026 Honglajiao Auto Export Todos los derechos reservados", "Copyright 2026 红辣椒汽车出口 版权所有"),
     footerTag: E("Honglajiao Auto Export | China Used Car & Vehicle Export Sourcing", "Honglajiao Auto Export | Approvisionnement export de voitures et véhicules de Chine", "Honglajiao Auto Export | Abastecimiento de autos y vehículos de China", "红辣椒汽车出口 | 中国二手车及车辆出口采购"),
   },
-
-  // === Navigation ===
-
   nav: {
-    home: E('Home', 'Accueil', 'Inicio', '首页'),
-    vehicles: E('Vehicles', 'Véhicules', 'Vehículos', '车辆'),
-    services: E('Services', 'Services', 'Servicios', '服务'),
-    inquiry: E('Inquiry', 'Demande', 'Consulta', '询价'),
-    about: E('About', 'À propos', 'Acerca de', '关于我们'),
-    blog: E('Blog', 'Blog', 'Blog', '博客'),
-    contact: E('Contact', 'Contact', 'Contacto', '联系'),
+    home: E("Home", "Accueil", "Inicio", "首页"),
+    vehicles: E("Vehicles", "Véhicules", "Vehículos", "车辆"),
+    machinery: E("Machinery", "Machines", "Maquinaria", "工程机械"),
+    inquiry: E("Inquiry", "Demande", "Consulta", "询价"),
+    services: E("Services", "Services", "Servicios", "服务"),
+    about: E("About", "À propos", "Acerca de", "关于我们"),
+    contact: E("Contact", "Contact", "Contacto", "联系我们"),
+    autoExport: E("Auto Export", "Export Auto", "Exportación Auto", "汽车出口"),
+    china: E("China", "Chine", "China", "中国"),
   },
-
-  // === Hero section ===
-
   hero: {
-    title: E("Source Vehicles from China with Confidence", "Importez des véhicules de Chine en toute confiance", "Importe vehículos de China con confianza", "放心从中国采购车辆"),
-    subtitle: E("Your trusted partner for sourcing verified used cars, EVs, trucks and construction machinery from China to African left-hand-drive markets.", "Votre partenaire de confiance pour l'importation de voitures d'occasion, VE, camions et engins de Chine vers l'Afrique.", "Su socio de confianza para importar autos usados, VE, camiones y maquinaria de China a África.", "从中国采购经过验证的二手车、电动车、卡车和工程机械至非洲左舵市场。"),
-    cta1: E("Browse Vehicles →", "Voir les véhicules →", "Ver vehículos →", "浏览车辆 →"),
-    cta2: E("Submit Request", "Soumettre une demande", "Enviar solicitud", "提交需求"),
+    badge: E("Trusted by buyers across 30+ African countries", "Approuvé par des acheteurs dans plus de 30 pays africains", "Confiado por compradores en más de 30 países africanos", "来自30多个非洲国家买家的信赖"),
+    title: E("Source Used Cars, Commercial Vehicles & Machinery from China", "Approvisionnement en voitures d'occasion, véhicules utilitaires et engins de Chine", "Abastecimiento de autos usados, vehículos comerciales y maquinaria de China", "从中国采购二手车、商用车和工程机械"),
+    subtitle: E("We help African buyers source verified used cars, commercial vehicles, EVs, and construction machinery from China", "Nous aidons les acheteurs africains à s'approvisionner en voitures d'occasion, véhicules utilitaires, VE et engins de chantier de Chine", "Ayudamos a compradores africanos a abastecerse de autos usados, vehículos comerciales, VE y maquinaria de construcción de China", "帮助非洲买家从中国采购经过验证的二手车、商用车、电动车和工程机械"),
+    promise: E("Real photos + video inspection + full export support — before you pay", "Photos réelles + inspection vidéo + support export complet — avant de payer", "Fotos reales + inspección por video + soporte completo de exportación — antes de pagar", "真实照片 + 视频验车 + 全程出口服务 — 先验货后付款"),
+    submitBtn: E("Submit Inquiry", "Soumettre une demande", "Enviar consulta", "提交询价"),
+    browseBtn: E("Browse Vehicles", "Voir les véhicules", "Explorar vehículos", "浏览车辆"),
+    howBtn: E("How It Works", "Comment ça marche", "Cómo funciona", "采购流程"),
+    trust1: E("259-Point Inspection", "Inspection en 259 points", "Inspección de 259 puntos", "259项检测"),
+    trust2: E("Real Photo & Video Inspection", "Inspection réelle photo et vidéo", "Inspección real con fotos y video", "真实照片和视频检测"),
+    trust3: E("Full Export Service", "Service export complet", "Servicio completo de exportación", "完整出口服务"),
+    trust4: E("EN/FR/ZH Trilingual", "Trilingue EN/FR/ZH", "Trilingüe EN/FR/ZH", "中英法三语服务"),
   },
-
-  // === Services ===
-
   services: {
-    title: E("Our Services", "Nos services", "Nuestros servicios", "我们的服务"),
-    subtitle: E("End-to-end vehicle sourcing and export support", "Approvisionnement et support export de A à Z", "Abastecimiento y soporte de exportación integrales", "端到端车辆采购和出口支持"),
-
-    sourcing: E("Vehicle Sourcing", "Approvisionnement de véhicules", "Abastecimiento de vehículos", "车辆采购"),
-    sourcingDesc: E("Access China's largest automotive inventory with real photos, verified pricing, and transparent sourcing process.", "Accès au plus grand inventaire automobile de Chine avec photos réelles, prix vérifiés et processus transparent.", "Acceda al inventario automotriz más grande de China con fotos reales, precios verificados y proceso transparente.", "获取中国最大的汽车库存资源，真实照片、价格透明、采购流程可视化。"),
-
-    inspection: E("Inspection & Verification", "Inspection et vérification", "Inspección y verificación", "检测与验证"),
-    inspectionDesc: E("Professional third-party inspection reports including vehicle condition, mileage verification, and accident checks.", "Rapports d'inspection professionnels incluant état, kilométrage et historique d'accidents.", "Informes de inspección profesionales: estado, kilometraje e historial de accidentes.", "专业第三方检测报告，包括车况、里程验证、事故记录。"),
-
-    logistics: E("Export & Logistics", "Exportation et logistique", "Exportación y logística", "出口与物流"),
-    logisticsDesc: E("Full export documentation, shipping arrangements, customs clearance support to your destination port.", "Documentation complète, expédition et dédouanement vers votre port de destination.", "Documentación completa, envío y despacho de aduana a su puerto de destino.", "全套出口文件、船运安排、目的港清关支持。"),
-
-    payment: E("Secure Payment", "Paiement sécurisé", "Pago seguro", "安全支付"),
-    paymentDesc: E("Multiple secure payment options including T/T, escrow services, and trade assurance for peace of mind.", "Options de paiement sécurisé multiples: T/T, séquestre, assurance commerciale.", "Opciones de pago seguro: T/T, depósito en garantía, seguro comercial.", "多种安全付款方式：T/T、第三方托管、贸易保障。"),
+    subheading: E("Sourcing Services", "Services d'approvisionnement", "Servicios de abastecimiento", "采购服务"),
+    heading: E("What We Source", "Ce que nous approvisionnons", "Lo que abastecemos", "我们的采购范围"),
+    s1_title: E("Passenger Cars", "Voitures particulières", "Autos de pasajeros", "乘用车"),
+    s1_desc: E("Sedans, SUVs, MPVs, sports cars — all major brands and models available for export", "Berlines, SUV, monospaces, voitures de sport — toutes les grandes marques et modèles disponibles à l'export", "Berlina, SUV, monovolumen, deportivos — todas las marcas y modelos disponibles para exportación", "轿车、SUV、MPV、跑车 — 所有主流品牌及车型均可出口"),
+    s2_title: E("New Energy Vehicles", "Véhicules à énergie nouvelle", "Vehículos de nueva energía", "新能源车"),
+    s2_desc: E("BYD, NIO, Xpeng, Li Auto, Tesla China — full coverage of EV and hybrid vehicles", "BYD, NIO, Xpeng, Li Auto, Tesla Chine — couverture complète des véhicules électriques et hybrides", "BYD, NIO, Xpeng, Li Auto, Tesla China — cobertura completa de vehículos eléctricos e híbridos", "比亚迪、蔚来、小鹏、理想、特斯拉中国 — 电动及混动车型全覆盖"),
+    s3_title: E("Commercial Vehicles & Machinery", "Véhicules utilitaires et engins", "Vehículos comerciales y maquinaria", "商用车辆和工程机械"),
+    s3_desc: E("Trucks, vans, buses, excavators, loaders, bulldozers — heavy duty and construction equipment", "Camions, fourgonnettes, bus, excavatrices, chargeuses, bulldozers — véhicules lourds et équipements de construction", "Camiones, furgonetas, autobuses, excavadoras, cargadoras, bulldozers — vehículos pesados y equipos de construcción", "卡车、面包车、客车、挖掘机、装载机、推土机 — 重型车辆和工程设备"),
+    s4_title: E("Supplier Verification & Inspection", "Vérification des fournisseurs et inspection", "Verificación de proveedores e inspección", "供应商验证与检测"),
+    s4_desc: E("Supplier background checks, on-site factory visits, vehicle condition verification, document review", "Vérification des antécédents, visites d'usine, contrôle de l'état des véhicules, examen des documents", "Verificación de antecedentes, visitas a fábrica, control de estado, revisión de documentos", "供应商背景调查、实地验厂、车况验证、文件审核"),
+    s5_title: E("Export Coordination", "Coordination export", "Coordinación de exportación", "出口协调"),
+    s5_desc: E("Customs documentation, shipping logistics, and destination port clearance support", "Documents douaniers, logistique d'expédition et support de dédouanement au port de destination", "Documentación aduanera, logística de envío y apoyo en despacho de aduana en destino", "报关文件、物流运输、目的港清关支持"),
   },
-
-  // === Process ===
-
   process: {
-    title: E("How It Works", "Comment ça marche", "Cómo funciona", "采购流程"),
-    step1: E("Submit your requirements", "Soumettez vos besoins", "Envíe sus requisitos", "提交您的需求"),
-    step2: E("We source and match", "Nous recherchons et faisons correspondre", "Buscamos y hacemos coincidir", "我们寻找匹配车源"),
-    step3: E("Inspection and verification", "Inspection et vérification", "Inspección y verificación", "检测验证"),
-    step4: E("Quote and confirm", "Devis et confirmation", "Cotización y confirmación", "报价确认"),
-    step5: E("Ship and deliver", "Expédition et livraison", "Envío y entrega", "发运交付"),
+    heading: E("Our Sourcing Process", "Notre processus d'approvisionnement", "Nuestro proceso de abastecimiento", "采购流程"),
+    subheading: E("How we source and deliver", "Comment nous approvisionnons et livrons", "Cómo abastecemos y entregamos", "采购和交付流程"),
+    p1_title: E("Submit Your Requirements", "Soumettez vos besoins", "Envíe sus requisitos", "提交需求"),
+    p1_desc: E("Tell us the vehicle type, brand, budget, and destination country you need", "Indiquez le type de véhicule, la marque, le budget et le pays de destination", "Indíquenos el tipo de vehículo, marca, presupuesto y país de destino", "告诉我们您需要的车型、品牌、预算和目的国"),
+    p2_title: E("Supplier Matching", "Recherche de fournisseurs", "Búsqueda de proveedores", "供应商匹配"),
+    p2_desc: E("We connect with verified suppliers to find vehicles matching your requirements", "Nous contactons des fournisseurs vérifiés pour trouver des véhicules correspondant à vos besoins", "Conectamos con proveedores verificados para encontrar vehículos que coincidan con sus requisitos", "联系认证供应商，匹配合适车源"),
+    p3_title: E("Inspection & Quotation", "Inspection et devis", "Inspección y cotización", "检测与报价"),
+    p3_desc: E("On-site vehicle inspection with real photos/videos, confirmed pricing", "Inspection sur site avec photos/vidéos réelles, prix confirmé", "Inspección en sitio con fotos/videos reales, precio confirmado", "实地验车拍照拍视频，确认最终价格"),
+    p4_title: E("Contract & Documentation", "Contrat et documentation", "Contrato y documentación", "合同与单证"),
+    p4_desc: E("Confirm pricing, export documents, shipping plan, and sign purchase agreement", "Confirmation du prix, documents d'exportation, plan d'expédition et signature du contrat", "Confirmar precio, documentos de exportación, plan de envío y firmar acuerdo de compra", "确认价格、出口文件、物流方案，签署采购合同"),
+    p5_title: E("Payment & Logistics", "Paiement et logistique", "Pago y logística", "付款与物流"),
+    p5_desc: E("Coordinate payment settlement, export customs, international shipping, and destination delivery", "Coordination du règlement, dédouanement export, expédition internationale et livraison à destination", "Coordinar liquidación de pago, aduana de exportación, envío internacional y entrega en destino", "协调付款结算、出口报关、国际运输、目的港交付"),
   },
-
-  // === Vehicle listings ===
-
   vehicles: {
-    title: E("Vehicles for Export", "Véhicules à exporter", "Vehículos para exportar", "出口车辆"),
-    subtitle: E("Browse our curated inventory. All vehicles come with real photos and verified reports.", "Parcourez notre inventaire. Tous les véhicules ont des photos réelles et des rapports vérifiés.", "Explore nuestro inventario. Todos los vehículos tienen fotos reales e informes verificados.", "浏览我们精选的车源，所有车辆都配有真实照片和检测报告。"),
-    sortBy: E("Sort by", "Trier par", "Ordenar por", "排序"),
-    latest: E("Latest", "Plus récents", "Más recientes", "最新"),
-    priceAsc: E("Price: Low to High", "Prix: croissant", "Precio: menor a mayor", "价格从低到高"),
-    priceDesc: E("Price: High to Low", "Prix: décroissant", "Precio: mayor a menor", "价格从高到低"),
-    yearDesc: E("Year: New to Old", "Année: récent à ancien", "Año: nuevo a viejo", "年份从新到旧"),
-    yearAsc: E("Year: Old to New", "Année: ancien à récent", "Año: viejo a nuevo", "年份从旧到新"),
-    loading: E("Loading vehicles...", "Chargement des véhicules...", "Cargando vehículos...", "车辆加载中..."),
-    tryAgain: E("Try adjusting your filters or contact us directly.", "Essayez d'ajuster vos filtres ou contactez-nous.", "Ajuste los filtros o contáctenos.", "请尝试调整筛选条件或直接联系我们。"),
-    noResults: E("No vehicles found", "Aucun véhicule trouvé", "No se encontraron vehículos", "未找到车辆"),
-    // Vehicles Page
-    searchSummary: E("Vehicles matching \"{keyword}\"", "Véhicules correspondant à \"{keyword}\"", "Vehículos que coinciden con \"{keyword}\"", "与 \"{keyword}\" 匹配的车辆"),
-    clearFilters: E("Clear Filters", "Effacer les filtres", "Limpiar filtros", "清除筛选"),
-    total: E("Total: {count} vehicles", "Total : {count} véhicules", "Total: {count} vehículos", "共 {count} 辆车"),
-    filters: E("Filters", "Filtres", "Filtros", "筛选"),
-    allBrands: E("All Brands", "Toutes les marques", "Todas las marcas", "所有品牌"),
-    allTypes: E("All Types", "Tous les types", "Todos los tipos", "所有类型"),
-    budgetAny: E("Any Budget", "Tous budgets", "Cualquier presupuesto", "不限预算"),
+    verified: E("Verified Vehicles", "Véhicules vérifiés", "Vehículos verificados", "已验证车辆"),
+    browse: E("Browse Vehicle Listings", "Parcourir les annonces", "Explorar anuncios de vehículos", "浏览车源"),
+    comingSoon: E("Verified Vehicles Coming Soon", "Véhicules vérifiés bientôt disponibles", "Vehículos verificados próximamente", "已验证车辆即将上线"),
+    comingDesc: E("No verified vehicles are currently available. Listings will appear here after photo masking, on-site inspection, and supplier confirmation.", "Aucun véhicule vérifié n'est actuellement disponible. Les annonces apparaîtront après masquage des photos, inspection sur site et confirmation du fournisseur.", "No hay vehículos verificados disponibles. Los anuncios aparecerán después del enmascaramiento de fotos, inspección y confirmación.", "暂无已验证车源。照片打码、实车检测、供应商确认后车源将自动上架展示。"),
+    cantFind: E("Can't find what you need? Submit an inquiry", "Vous ne trouvez pas? Soumettez une demande", "¿No encuentra lo que busca? Envíe una consulta", "没有找到想要的？提交采购需求"),
+    priceLabel: E("Price Indication", "Indication de prix", "Indicación de precio", "参考价格"),
+    manual: E("Manual", "Manuelle", "Manual", "手动"),
+    automatic: E("Automatic", "Automatique", "Automático", "自动"),
+    viewAll: E("View All Vehicles", "Voir tous les véhicules", "Ver todos los vehículos", "查看全部车辆"),
+    viewDetail: E("View Details", "Voir les détails", "Ver detalles", "查看详情"),
+    allBrands: E("All Brands", "Toutes les marques", "Todas las marcas", "全部品牌"),
+    allTypes: E("All Types", "Tous les types", "Todos los tipos", "全部类型"),
+    allYears: E("All Years", "Toutes les années", "Todos los años", "全部年份"),
+    allFuel: E("All Fuel Types", "Tous les carburants", "Todos los combustibles", "全部燃料"),
+    km: E("km", "km", "km", "公里"),
+    unit: E("Unit", "Unité", "Unidad", "辆"),
+    units: E("units", "unités", "unidades", "辆"),
+ 
+
+    year: E('Year', 'Année', 'Año', '年份'),
+
+    mileage: E('Mileage', 'Kilométrage', 'Kilometraje', '里程'),
+
+    fuelType: E('Fuel Type', 'Type de carburant', 'Tipo de combustible', '燃料类型'),
+
+    auto: E('Auto', 'Auto', 'Auto', '自动'),
+    transmission: E('Transmission', 'Transmission', 'Transmisión', '变速箱'),
+
+    location: E('Location', 'Emplacement', 'Ubicación', '所在地'),
+
+    available: E('vehicles available', 'véhicules disponibles', 'vehículos disponibles', '辆车可用'),
+
   },
-
-  // === Inquiry ===
-
   inquiry: {
-    title: E("Vehicle Buying Request", "Demande d'achat de véhicule", "Solicitud de compra de vehículo", "购车需求提交"),
-    subtitle: E("Tell us what you need and we'll find the best options for you", "Dites-nous ce dont vous avez besoin et nous trouverons les meilleures options", "Cuéntenos sus necesidades y encontraremos las mejores opciones", "告诉我们您的需求，我们将为您寻找最合适的车源"),
-    name: E("Your Name", "Votre nom", "Su nombre", "您的姓名"),
-    email: E("Email Address", "Adresse e-mail", "Correo electrónico", "邮箱地址"),
-    phone: E("Phone Number (with country code)", "Téléphone (avec indicatif)", "Teléfono (con código de país)", "电话号码（含国家代码）"),
-    company: E("Company Name", "Nom de l'entreprise", "Nombre de la empresa", "公司名称"),
-    country: E("Destination Country", "Pays de destination", "País de destino", "目的国家"),
+    heading: E("Send Us Your Requirements", "Envoyez-nous vos besoins", "Envíenos sus requisitos", "提交采购需求"),
+    desc: E("Fill in the details below and we will contact you within 24 hours", "Remplissez les détails ci-dessous et nous vous contacterons sous 24 heures", "Complete los detalles y lo contactaremos en 24 horas", "填写以下信息，我们会在24小时内联系您"),
+    submitted: E("Inquiry Submitted!", "Demande envoyée!", "¡Consulta enviada!", "提交成功！"),
+    thanks: E("Thank you for your inquiry. We will contact you within 24 hours.", "Merci pour votre demande. Nous vous contacterons sous 24 heures.", "Gracias por su consulta. Lo contactaremos en 24 horas.", "感谢您的询价，我们将在24小时内与您联系。"),
+    submitAnother: E("Submit another inquiry", "Soumettre une autre demande", "Enviar otra consulta", "再提交一条"),
+    selectedVehicle: E("Selected Vehicle", "Véhicule sélectionné", "Vehículo seleccionado", "已选车辆"),
+    name: E("Your Name", "Votre nom", "Su nombre", "姓名"),
+    namePlaceholder: E("Enter your full name", "Entrez votre nom complet", "Ingrese su nombre completo", "请输入您的姓名"),
+    country: E("Country / Region", "Pays / Région", "País / Región", "国家/地区"),
+    countryPlaceholder: E("Enter your country or region", "Entrez votre pays ou région", "Ingrese su país o región", "请输入您的国家或地区"),
+    email: E("Your Email", "Votre email", "Su email", "邮箱"),
+    emailPlaceholder: E("Enter your email address", "Entrez votre adresse email", "Ingrese su dirección de email", "请输入您的邮箱地址"),
+    phone: E("Phone / WhatsApp", "Téléphone / WhatsApp", "Teléfono / WhatsApp", "电话/WhatsApp"),
+    phonePlaceholder: E("Enter your phone number", "Entrez votre numéro de téléphone", "Ingrese su número de teléfono", "请输入您的电话号码"),
+    whatsapp: E("WhatsApp Number", "Numéro WhatsApp", "Número de WhatsApp", "WhatsApp号码"),
+    whatsappPlaceholder: E("Enter your WhatsApp number", "Entrez votre numéro WhatsApp", "Ingrese su número de WhatsApp", "请输入您的WhatsApp号码"),
+    telegram: E("Telegram Username", "Identifiant Telegram", "Usuario de Telegram", "Telegram用户名"),
+    telegramPlaceholder: E("Enter your Telegram username", "Entrez votre identifiant Telegram", "Ingrese su usuario de Telegram", "请输入您的Telegram用户名"),
+    message: E("Your message...", "Votre message...", "Su mensaje...", "您的留言..."),
+    messageDesc: E("Describe your specific requirements (model, year, budget, etc.)", "Décrivez vos besoins spécifiques (modèle, année, budget, etc.)", "Describa sus requisitos específicos (modelo, año, presupuesto, etc.)", "描述您的具体需求（车型、年份、预算等）"),
     vehicleType: E("Vehicle Type", "Type de véhicule", "Tipo de vehículo", "车辆类型"),
-    brand: E("Preferred Brand", "Marque préférée", "Marca preferida", "意向品牌"),
-    model: E("Preferred Model", "Modèle préféré", "Modelo preferido", "意向车型"),
-    budget: E("Budget Range (USD)", "Budget (USD)", "Presupuesto (USD)", "预算范围（美元）"),
+    brand: E("Preferred Brand", "Marque préférée", "Marca preferida", "偏好品牌"),
+    model: E("Preferred Model", "Modèle préféré", "Modelo preferido", "偏好型号"),
+    budget: E("Budget Range", "Budget", "Presupuesto", "预算范围"),
     quantity: E("Quantity", "Quantité", "Cantidad", "数量"),
-    destinationPort: E("Destination Port / City", "Port / Ville de destination", "Puerto / Ciudad de destino", "目的港/城市"),
-    description: E("Requirement Description", "Description des besoins", "Descripción de requisitos", "需求描述"),
-    descriptionPlaceholder: E("Describe in detail — year range, mileage, color, configuration, condition, etc.", "Décrivez en détail — année, kilométrage, couleur, configuration, état, etc.", "Describa en detalle — año, kilometraje, color, configuración, estado, etc.", "请详细描述——年份范围、里程、颜色、配置、车况等"),
-    submit: E("Submit Request", "Soumettre la demande", "Enviar solicitud", "提交需求"),
-    submitting: E("Submitting...", "Envoi en cours...", "Enviando...", "提交中..."),
-    success: E("Request Submitted!", "Demande soumise !", "¡Solicitud enviada!", "需求已提交！"),
-    successDesc: E("We will review your requirements and get back to you within 24 hours.", "Nous examinerons vos besoins et vous répondrons sous 24h.", "Revisaremos sus requisitos y le responderemos en 24h.", "我们将审核您的需求，并在24小时内与您联系。"),
-    backHome: E("Back to Homepage", "Retour à l'accueil", "Volver al inicio", "返回首页"),
+    destination: E("Destination Port / City", "Port / Ville de destination", "Puerto / Ciudad de destino", "目的港/城市"),
+    submit: E("Submit Inquiry", "Soumettre une demande", "Enviar consulta", "提交询价"),
+    sending: E("Sending...", "Envoi en cours...", "Enviando...", "发送中..."),
+ 
+
+    success: E('Inquiry Submitted!', 'Demande envoyée!', '¡Consulta enviada!', '提交成功！'),
+
+    successDesc: E('Thank you! We will contact you within 24 hours.', 'Merci! Nous vous contacterons sous 24 heures.', '¡Gracias! Lo contactaremos en 24 horas.', '谢谢！我们将在24小时内联系您。'),
+
+    another: E('Submit another', 'Soumettre une autre', 'Enviar otra', '再提交一条'),
+
+    additionalPlaceholder: E('Any additional requirements or questions', 'Exigences ou questions supplémentaires', 'Requisitos o preguntas adicionales', '其他需求或问题'),
+
+    additional: E('Additional Info', 'Infos supplémentaires', 'Info adicional', '补充信息'),
+
+    selectType: E('Select vehicle type', 'Sélectionnez le type', 'Seleccione tipo', '选择车辆类型'),
+
+    prefBrand: E('Preferred Brand', 'Marque préférée', 'Marca preferida', '偏好品牌'),
+
+    prefModel: E('Preferred Model', 'Modèle préféré', 'Modelo preferido', '偏好型号'),
+    quantityPlaceholder: E('Enter quantity', 'Entrez la quantité', 'Ingrese cantidad', '输入数量'),
+    destPlaceholder: E('Enter destination port or city', 'Entrez le port ou la ville de destination', 'Ingrese puerto o ciudad de destino', '输入目的港或城市'),
+
   },
-
-  // === Vehicle Types (used in inquiry form and filters) ===
-
   vehicleTypes: {
-    sedan: E("Sedan", "Berline", "Sedán", "轿车"),
-    suv: E("SUV", "SUV", "SUV", "SUV"),
-    pickup: E("Pickup", "Pick-up", "Camioneta", "皮卡"),
-    truck: E("Truck", "Camion", "Camión", "卡车"),
-    van: E("Van / Minibus", "Fourgon / Minibus", "Furgoneta / Minibús", "面包车/小巴"),
-    bus: E("Bus / Coach", "Bus / Autocar", "Autobús / Autocar", "大巴/客车"),
-    ev: E("Electric Vehicle", "Véhicule électrique", "Vehículo eléctrico", "电动车"),
-    machinery: E("Construction Machinery", "Engins de chantier", "Maquinaria de construcción", "工程机械"),
+    label: E("Select vehicle type", "Sélectionnez le type de véhicule", "Seleccione tipo de vehículo", "选择车辆类型"),
+    passenger: E("Used Passenger Car", "Voiture particulière d'occasion", "Auto de pasajeros usado", "二手乘用车"),
+    suv: E("SUV / Off-Road", "SUV / Tout-terrain", "SUV / Todo terreno", "SUV/越野车"),
+    truck: E("Truck / Van", "Camion / Fourgonnette", "Camión / Furgoneta", "卡车/面包车"),
+    bus: E("Bus / Coach", "Bus / Autocar", "Autobús / Autocar", "客车/大巴"),
+    ev: E("New Energy Vehicle", "Véhicule à énergie nouvelle", "Vehículo de nueva energía", "新能源车"),
     motorcycle: E("Motorcycle", "Moto", "Motocicleta", "摩托车"),
+    parts: E("Auto Parts", "Pièces automobiles", "Repuestos automotrices", "汽车配件"),
     other: E("Other", "Autre", "Otro", "其他"),
+ 
+
+    machinery: E('Machinery', 'Machines', 'Maquinaria', '工程机械'),
+
   },
-
-  // === Budget Ranges ===
-
   budgetRanges: {
-    under3k: E("Under $3,000", "Moins de 3 000 $", "Menos de $3,000", "3,000美元以下"),
-    under5k: E("$3,000 – $5,000", "3 000 – 5 000 $", "$3,000 – $5,000", "3,000–5,000美元"),
-    under10k: E("$5,000 – $10,000", "5 000 – 10 000 $", "$5,000 – $10,000", "5,000–10,000美元"),
-    under15k: E("$10,000 – $15,000", "10 000 – 15 000 $", "$10,000 – $15,000", "10,000–15,000美元"),
-    under25k: E("$15,000 – $25,000", "15 000 – 25 000 $", "$15,000 – $25,000", "15,000–25,000美元"),
-    above25k: E("Above $25,000", "Plus de 25 000 $", "Más de $25,000", "25,000美元以上"),
-    flexible: E("Flexible", "Flexible", "Flexible", "灵活预算"),
+    label: E("Select a category", "Sélectionnez une catégorie", "Seleccione una categoría", "选择类别"),
+    b1: E("Under $5,000", "Moins de 5 000 $", "Menos de $5,000", "$5,000以下"),
+    b2: E("$5,000 - $10,000", "5 000 $ - 10 000 $", "$5,000 - $10,000", "$5,000-$10,000"),
+    b3: E("$10,000 - $20,000", "10 000 $ - 20 000 $", "$10,000 - $20,000", "$10,000-$20,000"),
+    b4: E("$20,000 - $50,000", "20 000 $ - 50 000 $", "$20,000 - $50,000", "$20,000-$50,000"),
+    b5: E("$50,000 - $100,000", "50 000 $ - 100 000 $", "$50,000 - $100,000", "$50,000-$100,000"),
+    b6: E("Above $100,000", "Plus de 100 000 $", "Más de $100,000", "$100,000以上"),
+    b7: E("Not sure yet", "Pas encore sûr", "Aún no estoy seguro", "还不确定"),
   },
-
-  // === WhatsApp / Contact ===
-
   whatsapp: {
-    label: E("WhatsApp", "WhatsApp", "WhatsApp", "WhatsApp"),
-    chat: E("Chat on WhatsApp", "Discuter sur WhatsApp", "Chatear en WhatsApp", "WhatsApp聊天"),
-    quickReply1: E("Hi! I'm interested in your vehicles", "Bonjour ! Je suis intéressé par vos véhicules", "¡Hola! Estoy interesado en sus vehículos", "您好，我对你们的车辆感兴趣"),
-    quickReply2: E("I want to buy a vehicle", "Je veux acheter un véhicule", "Quiero comprar un vehículo", "我想购买车辆"),
-    quickReply3: E("Send me your catalog", "Envoyez-moi votre catalogue", "Envíeme su catálogo", "请发给我产品目录"),
-    quickReply4: E("Do you ship to my country?", "Livrez-vous dans mon pays ?", "¿Envían a mi país?", "你们能发货到我的国家吗？"),
+    message: E("Hi, I am interested in sourcing vehicles from China.", "Bonjour, je suis intéressé par l'approvisionnement de véhicules de Chine.", "Hola, estoy interesado en abastecer vehículos de China.", "你好，我对从中国采购车辆感兴趣。"),
+ 
+
+    default: E('Hi, I am interested in sourcing vehicles from China.', 'Bonjour, je suis intéressé par l\'approvisionnement de véhicules de Chine.', 'Hola, estoy interesado en abastecer vehículos de China.', '你好，我对从中国采购车辆感兴趣。'),
+
   },
-
-  // === Machinery ===
-
   machinery: {
-    title: E("Construction Machinery", "Engins de chantier", "Maquinaria de construcción", "工程机械"),
-    excavator: E("Excavator", "Pelle mécanique", "Excavadora", "挖掘机"),
+    heading: E("Construction Machinery & Heavy Equipment", "Engins de chantier et équipement lourd", "Maquinaria de construcción y equipo pesado", "工程机械和重型设备"),
+    subheading: E("Excavators, loaders, bulldozers, cranes and more — sourced from China", "Excavatrices, chargeuses, bulldozers, grues et plus — approvisionnés de Chine", "Excavadoras, cargadoras, bulldozers, grúas y más — abastecidos de China", "挖掘机、装载机、推土机、起重机等 — 中国采购"),
+    all: E("All Machinery", "Tous les engins", "Toda la maquinaria", "全部机械"),
+    excavator: E("Excavator", "Excavatrice", "Excavadora", "挖掘机"),
     loader: E("Wheel Loader", "Chargeuse sur pneus", "Cargadora de ruedas", "装载机"),
-    bulldozer: E("Bulldozer", "Bulldozer", "Bulldózer", "推土机"),
+    bulldozer: E("Bulldozer", "Bulldozer", "Bulldozer", "推土机"),
     crane: E("Crane", "Grue", "Grúa", "起重机"),
+    truckCrane: E("Truck Crane", "Grue mobile", "Camión grúa", "汽车吊"),
     forklift: E("Forklift", "Chariot élévateur", "Montacargas", "叉车"),
-    roller: E("Road Roller", "Rouleau compresseur", "Apisonadora", "压路机"),
+    roller: E("Road Roller", "Rouleau compresseur", "Compactadora", "压路机"),
     grader: E("Motor Grader", "Niveleuse", "Motoniveladora", "平地机"),
+    drilling: E("Drilling Rig", "Foreuse", "Perforadora", "钻机"),
+    paver: E("Paver", "Finisseur", "Pavimentadora", "摊铺机"),
+    crusher: E("Crusher", "Concasseur", "Trituradora", "破碎机"),
     dumpTruck: E("Dump Truck", "Camion-benne", "Camión volquete", "自卸车"),
-    concreteMixer: E("Concrete Mixer", "Bétonnière", "Mezcladora de concreto", "混凝土搅拌车"),
+    mixer: E("Concrete Mixer", "Bétonnière", "Hormigonera", "搅拌车"),
     tractor: E("Tractor", "Tracteur", "Tractor", "拖拉机"),
-    trailer: E("Trailer", "Remorque", "Remolque", "拖车"),
+    dumper: E('Dump Truck', 'Camion-benne', 'Camión volquete', '自卸车'),
+    other: E("Other Equipment", "Autre équipement", "Otro equipo", "其他设备"),
+    empty: E("No machinery currently available. Submit an inquiry with your requirements.", "Aucun engin disponible actuellement. Soumettez une demande avec vos besoins.", "No hay maquinaria disponible. Envíe una consulta con sus requisitos.", "暂无机械。提交需求量身寻机。"),
+    browseBtn: E("Browse Machinery", "Parcourir les engins", "Explorar maquinaria", "浏览机械"),
+    workingHours: E("Working Hours", "Heures de travail", "Horas de trabajo", "工作小时"),
+    tonnage: E("Tonnage", "Tonnage", "Tonelaje", "吨位"),
+    engine: E("Engine", "Moteur", "Motor", "发动机"),
+    equipmentType: E("Equipment Type", "Type d'équipement", "Tipo de equipo", "设备类型"),
+ 
+
+    noItems: E('No machinery currently available', 'Aucun engin disponible', 'No hay maquinaria disponible', '暂无机械'),
+
   },
-
-  // === Countries / Regions ===
-
   country: {
-    africa: E("African Countries", "Pays africains", "Países africanos", "非洲国家"),
-    nigeria: E("Nigeria", "Nigeria", "Nigeria", "尼日利亚"),
-    ghana: E("Ghana", "Ghana", "Ghana", "加纳"),
-    kenya: E("Kenya", "Kenya", "Kenya", "肯尼亚"),
-    tanzania: E("Tanzania", "Tanzanie", "Tanzania", "坦桑尼亚"),
-    southAfrica: E("South Africa", "Afrique du Sud", "Sudáfrica", "南非"),
-    ethiopia: E("Ethiopia", "Éthiopie", "Etiopía", "埃塞俄比亚"),
-    uganda: E("Uganda", "Ouganda", "Uganda", "乌干达"),
-    drc: E("DR Congo", "RD Congo", "RD Congo", "刚果民主共和国"),
-    zambia: E("Zambia", "Zambie", "Zambia", "赞比亚"),
-    cameroon: E("Cameroon", "Cameroun", "Camerún", "喀麦隆"),
-    cotedIvoire: E("Côte d'Ivoire", "Côte d'Ivoire", "Costa de Marfil", "科特迪瓦"),
-    senegal: E("Senegal", "Sénégal", "Senegal", "塞内加尔"),
-    mali: E("Mali", "Mali", "Mali", "马里"),
-    botswana: E("Botswana", "Botswana", "Botsuana", "博茨瓦纳"),
+    heading: E("Importing to", "Importation vers", "Importando a", "进口至"),
+    contactUs: E("Contact us for personalized import guidance to", "Contactez-nous pour des conseils d'importation personnalisés vers", "Contáctenos para orientación personalizada de importación a", "联系我们获取个性化进口指导"),
+    keyInfo: E("Key Import Info", "Informations clés d'importation", "Información clave de importación", "关键进口信息"),
+    capital: E("Capital", "Capitale", "Capital", "首都"),
+    port: E("Main Port", "Port principal", "Puerto principal", "主要港口"),
+    currency: E("Currency", "Devise", "Moneda", "货币"),
+    driving: E("Driving Side", "Côté conduite", "Lado de conducción", "驾驶侧"),
+    ageLimit: E("Vehicle Age Limit", "Âge limite du véhicule", "Límite de edad del vehículo", "车龄限制"),
+    marketOverview: E("Market Overview", "Aperçu du marché", "Resumen del mercado", "市场概况"),
+    vehicleCategories: E("Popular Vehicle Categories", "Catégories de véhicules populaires", "Categorías de vehículos populares", "热门车型"),
+    dutyRate: E("Estimated Duty Rate", "Taux de droits estimé", "Tasa de arancel estimada", "预估关税"),
+    evPolicy: E("EV Import Policy", "Politique d'importation VE", "Política de importación de VE", "电动车进口政策"),
+    transitTime: E("Estimated Transit Time", "Temps de transit estimé", "Tiempo de tránsito estimado", "预估运输时间"),
+    shippingRoute: E("Shipping Route", "Route maritime", "Ruta de envío", "海运路线"),
+    shippingCost: E("Estimated Shipping Cost", "Coût d'expédition estimé", "Costo de envío estimado", "预估运费"),
+    importantNotes: E("Important Notes", "Notes importantes", "Notas importantes", "重要提示"),
+    readyToImport: E("Ready to import to", "Prêt à importer vers", "Listo para importar a", "准备进口至"),
+    freeConsult: E("Get a free consultation on vehicle sourcing and import procedures.", "Obtenez une consultation gratuite sur l'approvisionnement et les procédures d'importation.", "Obtenga una consulta gratuita sobre abastecimiento y procedimientos de importación.", "免费咨询车辆采购和进口流程。"),
+    notFound: E("No country data available", "Aucune donnée pays disponible", "No hay datos del país disponibles", "暂无该国数据"),
+    notFoundDesc: E("We don't have import information for this country yet.", "Nous n'avons pas encore d'informations d'importation pour ce pays.", "Aún no tenemos información de importación para este país.", "我们暂时没有该国的进口信息。"),
+    whyChina: E("Why Source from China", "Pourquoi s'approvisionner en Chine", "Por qué abastecerse de China", "为什么从中国采购"),
+    whyChinaDesc: E("China is the world's largest automotive market with competitive pricing, vast inventory, and mature export infrastructure.", "La Chine est le plus grand marché automobile mondial avec des prix compétitifs, un vaste inventaire et une infrastructure d'exportation mature.", "China es el mayor mercado automotriz del mundo con precios competitivos, amplio inventario e infraestructura de exportación madura.", "中国是全球最大汽车市场，价格有竞争力，库存充足，出口基础设施成熟。"),
+    importProcess: E("Import Process", "Processus d'importation", "Proceso de importación", "进口流程"),
+    customsDuties: E("Customs Duties & Taxes", "Droits de douane et taxes", "Aranceles e impuestos aduaneros", "关税和税费"),
+    getQuote: E("Get a Quote for", "Obtenez un devis pour", "Obtenga cotización para", "获取报价"),
+    contactQuote: E("Contact us for a personalized quote", "Contactez-nous pour un devis personnalisé", "Contáctenos para una cotización personalizada", "联系我们获取个性化报价"),
+    dutyRateNote: E("Duty Rate (CIF)", "Taux de droit (CIF", "Tasa arancelaria (CIF", "关税税率（CIF）"),
+    relatedGuides: E("Related Guides", "Guides connexes", "Guías relacionadas", "相关指南"),
+ 
+
+    shippingInfo: E('Shipping Information', 'Informations d\'expédition', 'Información de envío', '运输信息'),
+
+    route: E('Route', 'Route', 'Ruta', '路线'),
+
+    estimatedCost: E('Estimated Cost', 'Coût estimé', 'Costo estimado', '预估费用'),
+
+    popularModels: E('Popular Models', 'Modèles populaires', 'Modelos populares', '热门型号'),
+
   },
-
-  // === Miscellaneous ===
-
   misc: {
-    learnMore: E("Learn More", "En savoir plus", "Más información", "了解更多"),
-    contactUs: E("Contact Us", "Contactez-nous", "Contáctenos", "联系我们"),
-    submit: E("Submit", "Soumettre", "Enviar", "提交"),
-    loading: E("Loading...", "Chargement...", "Cargando...", "加载中..."),
-    viewDetails: E("View Details", "Voir les détails", "Ver detalles", "查看详情"),
-    back: E("Back", "Retour", "Volver", "返回"),
-    next: E("Next", "Suivant", "Siguiente", "下一步"),
-    previous: E("Previous", "Précédent", "Anterior", "上一步"),
-    close: E("Close", "Fermer", "Cerrar", "关闭"),
-    save: E("Save", "Enregistrer", "Guardar", "保存"),
-    cancel: E("Cancel", "Annuler", "Cancelar", "取消"),
-    delete: E("Delete", "Supprimer", "Eliminar", "删除"),
-    edit: E("Edit", "Modifier", "Editar", "编辑"),
-    search: E("Search", "Rechercher", "Buscar", "搜索"),
-    noResults: E("No results found", "Aucun résultat", "Sin resultados", "未找到结果"),
-    all: E("All", "Tout", "Todos", "全部"),
+    backHome: E("Back to Home", "Retour à l'accueil", "Volver al inicio", "返回首页"),
+    notFound: E("Not Found", "Non trouvé", "No encontrado", "未找到"),
+    notFoundDesc: E("The page you're looking for doesn't exist.", "La page que vous recherchez n'existe pas.", "La página que busca no existe.", "您要找的页面不存在。"),
+    goHome: E("Go Home", "Accueil", "Ir al inicio", "回首页"),
+    noResults: E("No results found", "Aucun résultat trouvé", "Sin resultados", "没有找到结果"),
+    privacy: E("Privacy Policy", "Politique de confidentialité", "Política de privacidad", "隐私政策"),
+    terms: E("Terms of Service", "Conditions d'utilisation", "Términos de servicio", "服务条款"),
+    readMore: E("Read More", "Lire plus", "Leer más", "阅读更多"),
+    readGuide: E("Read Guide", "Lire le guide", "Leer guía", "阅读指南"),
+    home: E("Home", "Accueil", "Inicio", "首页"),
+    blog: E("Blog", "Blog", "Blog", "博客"),
+    step1: E("Submit Requirements", "Soumettre les besoins", "Enviar requisitos", "提交需求"),
+    step1Desc: E("Tell us your vehicle type, budget and destination", "Indiquez votre type de véhicule, budget et destination", "Indíquenos su tipo de vehículo, presupuesto y destino", "告诉我们车型、预算和目的地"),
+    step2: E("Supplier Matching", "Recherche de fournisseurs", "Búsqueda de proveedores", "供应商匹配"),
+    step2Desc: E("We find verified suppliers matching your needs", "Nous trouvons des fournisseurs vérifiés correspondant à vos besoins", "Encontramos proveedores verificados que coinciden con sus necesidades", "匹配符合需求的认证供应商"),
+    step3: E("Inspection & Shipping", "Inspection et expédition", "Inspección y envío", "检测和运输"),
+    step3Desc: E("On-site inspection, documentation, customs, and delivery", "Inspection sur site, documentation, douane et livraison", "Inspección en sitio, documentación, aduana y entrega", "实地检测、单证、报关、交付"),
+    langEN: E("English", "Anglais", "Inglés", "英文"),
+    langFR: E("Français", "Français", "Francés", "法文"),
+    langES: E("Español", "Espagnol", "Español", "西文"),
+    langZH: E("中文", "Chinois", "Chino", "中文"),
+ 
+
+    submit: E('Submit', 'Soumettre', 'Enviar', '提交'),
+
+    loading: E('Loading...', 'Chargement...', 'Cargando...', '加载中...'),
+
   },
-
-  // === Admin Section ===
-
   admin: {
     access: E("Admin Access", "Accès administrateur", "Acceso de administrador", "管理员入口"),
     passwordPlaceholder: E("Enter password to view inquiries", "Entrez le mot de passe pour voir les demandes", "Ingrese contraseña para ver consultas", "输入密码查看询价"),
@@ -234,6 +303,7 @@ export const T = {
     quickActions: E("Quick Actions", "Actions rapides", "Acciones rápidas", "快捷操作"),
     whatsapp: E("WhatsApp", "WhatsApp", "WhatsApp", "WhatsApp"),
     copy: E("Copy", "Copier", "Copiar", "复制"),
+ 
 
     wrongPwd: E('Wrong password', 'Mot de passe incorrect', 'Contraseña incorrecta', '密码错误'),
 
@@ -249,28 +319,15 @@ export const T = {
 
     // Vehicle management
     vehicleManagement: E('Vehicle Management', 'Gestion des véhicules', 'Gestión de vehículos', '车辆管理'),
-    addVehicle: E('Add Vehicle', 'Ajouter un véhicule', 'Añadir vehículo', '添加车辆'),
-    editVehicle: E('Edit Vehicle', 'Modifier le véhicule', 'Editar vehículo', '编辑车辆'),
-    deleteVehicle: E('Delete', 'Supprimer', 'Eliminar', '删除'),
     confirmDelete: E('Delete this vehicle?', 'Supprimer ce véhicule ?', '¿Eliminar este vehículo?', '确认删除此车辆？'),
-    yes: E('Yes', 'Oui', 'Sí', '是'),
-    no: E('No', 'Non', 'No', '否'),
+    deleteVehicle: E('Delete', 'Supprimer', 'Eliminar', '删除'),
     brandField: E('Brand', 'Marque', 'Marca', '品牌'),
     modelField: E('Model', 'Modèle', 'Modelo', '型号'),
-    year: E('Year', 'Année', 'Año', '年份'),
     price: E('Price', 'Prix', 'Precio', '价格'),
     status: E('Status', 'Statut', 'Estado', '状态'),
-    imageUrl: E('Image URL', 'URL de l\'image', 'URL de la imagen', '图片链接'),
-    typeField: E('Type', 'Type', 'Tipo', '类型'),
-    descriptionField: E('Description', 'Description', 'Descripción', '描述'),
-    cancel: E('Cancel', 'Annuler', 'Cancelar', '取消'),
-    save: E('Save', 'Enregistrer', 'Guardar', '保存'),
-    // Stat labels
-    totalInquiries: E('Total Inquiries', 'Total des demandes', 'Total de consultas', '总询价数'),
     totalVehicles: E('Total Vehicles', 'Total des véhicules', 'Total de vehículos', '车辆总数'),
-    todayInquiries: E("Today's Inquiries", "Demandes du jour", "Consultas de hoy", "今日询价"),
-    newThisWeek: E('New This Week', 'Nouveaux cette semaine', 'Nuevos esta semana', '本周新增'),
-    newThisMonth: E('New This Month', 'Nouveaux ce mois', 'Nuevos este mes', '本月新增'),
+    totalInquiries: E('Total Inquiries', 'Total des demandes', 'Total de consultas', '总询价数'),
+
   },
 
 
@@ -341,108 +398,279 @@ export const T = {
 
   // Footer
   footer: {
-    contact: E("Contact", "Contact", "Contacto", "联系方式"),
-    product: E("Vehicle Inventory", "Inventaire de véhicules", "Inventario de vehículos", "车辆库存"),
-    company: E("Company", "Société", "Empresa", "公司"),
-    support: E("Support", "Support", "Soporte", "支持"),
+    vehicles: E("Vehicles", "Véhicules", "Vehículos", "车辆"),
     allVehicles: E("All Vehicles", "Tous les véhicules", "Todos los vehículos", "全部车辆"),
-    commercial: E("Commercial Vehicles", "Véhicules utilitaires", "Vehículos comerciales", "商用车"),
-    machinery: E("Construction Machinery", "Engins de chantier", "Maquinaria de construcción", "工程机械"),
-    about: E("About Us", "À propos", "Acerca de", "关于我们"),
-    blog: E("Blog", "Blog", "Blog", "博客"),
-    faq: E("FAQ", "FAQ", "FAQ", "常见问题"),
-    privacy: E("Privacy Policy", "Politique de confidentialité", "Política de privacidad", "隐私政策"),
-    terms: E("Terms of Service", "Conditions d'utilisation", "Términos del servicio", "服务条款"),
+    usedCars: E("Used Cars", "Voitures d'occasion", "Autos usados", "二手车"),
+    evNewEnergy: E("EV & New Energy", "VE et énergie nouvelle", "VE y nueva energía", "新能源车"),
+    commercialVehicles: E("Commercial Vehicles", "Véhicules utilitaires", "Vehículos comerciales", "商用车"),
+    machinery: E("Machinery", "Machines", "Maquinaria", "工程机械"),
+    africaMarkets: E("Africa Markets", "Marchés africains", "Mercados africanos", "非洲市场"),
+    nigeria: E("Nigeria — Lagos", "Nigeria — Lagos", "Nigeria — Lagos", "尼日利亚 — 拉各斯"),
+    kenya: E("Kenya — Mombasa", "Kenya — Mombasa", "Kenia — Mombasa", "肯尼亚 — 蒙巴萨"),
+    ghana: E("Ghana — Tema", "Ghana — Tema", "Ghana — Tema", "加纳 — 特马"),
+    tanzania: E("Tanzania — Dar es Salaam", "Tanzanie — Dar es Salaam", "Tanzania — Dar es Salaam", "坦桑尼亚 — 达累斯萨拉姆"),
+    ethiopia: E("Ethiopia — Djibouti", "Éthiopie — Djibouti", "Etiopía — Djibouti", "埃塞俄比亚 — 吉布提"),
+    services: E("Services", "Services", "Servicios", "服务"),
+    vehicleInspection: E("Vehicle Inspection", "Inspection de véhicule", "Inspección de vehículo", "车辆检测"),
+    exportProcess: E("Export Process", "Processus d'exportation", "Proceso de exportación", "出口流程"),
+    logisticsShipping: E("Logistics & Shipping", "Logistique et expédition", "Logística y envío", "物流运输"),
+    company: E("Company", "Entreprise", "Empresa", "公司"),
+    dealerRegistration: E("Dealer Registration", "Inscription revendeur", "Registro de distribuidor", "车商注册"),
     contactUs: E("Contact Us", "Contactez-nous", "Contáctenos", "联系我们"),
+    bottomTag: E("Reliable Vehicle Sourcing Since 2015", "Approvisionnement fiable depuis 2015", "Abastecimiento confiable desde 2015", "2015年起可靠车辆采购"),
+    copyright: E("© 2015-2026 ChinaCarExport. All rights reserved.", "© 2015-2026 ChinaCarExport. Tous droits réservés.", "© 2015-2026 ChinaCarExport. Todos los derechos reservados.", "© 2015-2026 ChinaCarExport. 版权所有。"),
   },
 
-  // === Resources ===
-
+  // Resource section
   resources: {
-    title: E("Resources", "Ressources", "Recursos", "资源"),
-    guide: E("Import Guide", "Guide d'importation", "Guía de importación", "进口指南"),
-    shipping: E("Shipping Info", "Info expédition", "Información de envío", "物流信息"),
-    inspection: E("Inspection Reports", "Rapports d'inspection", "Informes de inspección", "检测报告"),
-    payment: E("Payment Guide", "Guide de paiement", "Guía de pago", "付款指南"),
+    heading: E("Explore China Car Export Resources", "Explorez les ressources d'exportation", "Explore recursos de exportación", "探索中国汽车出口资源"),
+    marketGuides: E("Market Guides", "Guides de marché", "Guías de mercado", "市场指南"),
+    vehicleCategories: E("Vehicle Categories", "Catégories de véhicules", "Categorías de vehículos", "车辆类别"),
+    evBrand: E("EV & Brand", "VE et marque", "VE y marca", "新能源和品牌"),
+    commercialHeavy: E("Commercial & Heavy", "Commercial et lourd", "Comercial y pesado", "商用和重型"),
+    corePages: E("Core Pages", "Pages principales", "Páginas principales", "核心页面"),
+    procurementServices: E("Procurement Services", "Services d'approvisionnement", "Servicios de abastecimiento", "采购服务"),
+    aboutUs: E("About Us", "À propos", "Acerca de", "关于我们"),
+    allVehiclesLink: E("All Vehicles", "Tous les véhicules", "Todos los vehículos", "全部车辆"),
+    verifiedVehicles: E("Verified Vehicles", "Véhicules vérifiés", "Vehículos verificados", "已验证车辆"),
+    chinaWideSourcing: E("China-Wide Sourcing", "Approvisionnement en Chine", "Abastecimiento en China", "全国采购"),
+    financialSupport: E("Financial Support", "Soutien financier", "Apoyo financiero", "金融支持"),
+    companyProfile: E("Company Profile", "Profil de l'entreprise", "Perfil de la empresa", "公司简介"),
+    consultationHotline: E("Consultation Hotline", "Ligne de consultation", "Línea de consulta", "咨询热线"),
+    joinUs: E("Join Us", "Rejoignez-nous", "Únase a nosotros", "加入我们"),
   },
 
-  // === Cars (Vehicle listing page) ===
-
+  // Cars page
   cars: {
-    pageTitle: E("All Vehicles", "Tous les véhicules", "Todos los vehículos", "全部车辆"),
-    pageSubtitle: E("Browse our complete inventory of vehicles available for export", "Parcourez notre inventaire complet de véhicules disponibles à l'export", "Explore nuestro inventario completo de vehículos disponibles para exportación", "浏览我们所有可供出口的车辆库存"),
-    filters: E("Filters", "Filtres", "Filtros", "筛选条件"),
-    sortBy: E("Sort by", "Trier par", "Ordenar por", "排序方式"),
-    clear: E("Clear", "Effacer", "Limpiar", "清除"),
-    results: E("results", "résultats", "resultados", "个结果"),
-    noResults: E("No vehicles match your criteria. Try adjusting your filters.", "Aucun véhicule ne correspond à vos critères. Essayez d'ajuster les filtres.", "Ningún vehículo coincide con sus criterios. Ajuste los filtros.", "没有符合条件车辆，请调整筛选条件"),
-    from: E("from", "à partir de", "desde", "起"),
+    heading: E("Vehicle Listings", "Annonces de véhicules", "Anuncios de vehículos", "车辆列表"),
+    filters: E("Filters", "Filtres", "Filtros", "筛选"),
+    brand: E("Brand", "Marque", "Marca", "品牌"),
+    type: E("Type", "Type", "Tipo", "类型"),
+    transmission: E("Transmission", "Transmission", "Transmisión", "变速箱"),
+    fuel: E("Fuel", "Carburant", "Combustible", "燃料"),
+    minPrice: E("Min Price", "Prix min", "Precio mín", "最低价"),
+    maxPrice: E("Max Price", "Prix max", "Precio máx", "最高价"),
+    minYear: E("Min Year", "Année min", "Año mín", "最早年份"),
+    maxYear: E("Max Year", "Année max", "Año máx", "最晚年"),
+    clearFilters: E("Clear Filters", "Effacer les filtres", "Limpiar filtros", "清除筛选"),
+    search: E("Search vehicles...", "Rechercher...", "Buscar...", "搜索车辆..."),
+    noResults: E("No vehicles match your filters.", "Aucun véhicule ne correspond.", "Ningún vehículo coincide.", "没有匹配的车辆。"),
+    results: E("results", "résultats", "resultados", "条结果"),
+    price: E("Price", "Prix", "Precio", "价格"),
+    viewDetails: E("View Details", "Voir détails", "Ver detalles", "查看详情"),
+    allBrands: E("All Brands", "Toutes marques", "Todas marcas", "全部品牌"),
+    allTypes: E("All Types", "Tous types", "Todos tipos", "全部类型"),
+    allTransmission: E("All", "Tous", "Todos", "全部"),
+    allFuel: E("All", "Tous", "Todos", "全部"),
   },
 
-  // === Services Page ===
-
+  // Services page
   servicesPage: {
-    title: E("Our Services", "Nos services", "Nuestros servicios", "我们的服务"),
-    subtitle: E("Comprehensive vehicle sourcing and export solutions tailored to your market", "Solutions complètes d'approvisionnement et d'export adaptées à votre marché", "Soluciones completas de abastecimiento y exportación adaptadas a su mercado", "为您市场定制的一站式车辆采购和出口方案"),
-    cta: E("Start Your Sourcing →", "Commencez l'approvisionnement →", "Comience su abastecimiento →", "开始采购 →"),
+    heading: E("Our Services", "Nos services", "Nuestros servicios", "我们的服务"),
+    subheading: E("Full-service China used car export — from sourcing to delivery", "Service complet d'exportation — de l'approvisionnement à la livraison", "Servicio completo de exportación — desde abastecimiento hasta entrega", "一站式中国二手车出口服务 — 从采购到交付"),
+    sourcing: E("Vehicle Sourcing", "Approvisionnement", "Abastecimiento", "车辆采购"),
+    sourcingDesc: E("We find the exact car you need from China's massive used car market. Specify brand, model, year, budget — we locate the best options.", "Nous trouvons la voiture exacte dont vous avez besoin. Spécifiez marque, modèle, année, budget — nous localisons les meilleures options.", "Encontramos el auto exacto que necesita. Especifique marca, modelo, año, presupuesto — localizamos las mejores opciones.", "从中国庞大的二手车市场找到您需要的车辆。指定品牌、车型、年份、预算 — 我们为您找到最佳选择。"),
+    inspection: E("259-Point Inspection", "Inspection 259 points", "Inspección de 259 puntos", "259项检测"),
+    inspectionDesc: E("Every vehicle undergoes our comprehensive inspection covering engine, transmission, chassis, body, interior, electronics, and history verification.", "Chaque véhicule subit notre inspection complète couvrant moteur, transmission, châssis, carrosserie, intérieur, électronique et vérification de l'historique.", "Cada vehículo pasa por nuestra inspección completa que cubre motor, transmisión, chasis, carrocería, interior, electrónica y verificación de historial.", "每辆车都经过我们的全面检测，涵盖发动机、变速箱、底盘、车身、内饰、电子设备和历史验证。"),
+    documentation: E("Export Documentation", "Documentation d'exportation", "Documentación de exportación", "出口单证"),
+    documentationDesc: E("Complete export paperwork — commercial invoice, packing list, bill of lading, certificate of origin, and customs clearance documents.", "Documents d'exportation complets — facture commerciale, liste de colisage, connaissement, certificat d'origine et documents de dédouanement.", "Documentación completa de exportación — factura comercial, lista de empaque, conocimiento de embarque, certificado de origen y documentos de despacho.", "完整的出口文件 — 商业发票、装箱单、提单、原产地证书和报关文件。"),
+    shipping: E("International Shipping", "Expédition internationale", "Envío internacional", "国际运输"),
+    shippingDesc: E("Container and RoRo shipping options to major African ports. We coordinate the entire logistics chain from China to your destination.", "Options d'expédition par conteneur et RoRo vers les principaux ports africains. Nous coordonnons toute la chaîne logistique de la Chine à votre destination.", "Opciones de envío en contenedor y RoRo a los principales puertos africanos. Coordinamos toda la cadena logística desde China hasta su destino.", "集装箱和滚装船运输到非洲主要港口。我们协调从中国到目的地的整个物流链。"),
+    support: E("Multilingual Support", "Support multilingue", "Soporte multilingüe", "多语言支持"),
+    supportDesc: E("Chinese, English, French communication. No language barriers in your export process. We handle supplier negotiations in Chinese for you.", "Communication en chinois, anglais, français. Pas de barrière linguistique. Nous gérons les négociations avec les fournisseurs en chinois pour vous.", "Comunicación en chino, inglés, francés. Sin barreras idiomáticas. Manejamos las negociaciones con proveedores en chino por usted.", "中英法三语沟通。出口过程无语言障碍。我们为您用中文与供应商谈判。"),
+    features: E("Features", "Fonctionnalités", "Características", "特点"),
   },
 
-  // === About ===
-
+  // About page
   about: {
-    title: E("About Honglajiao Auto Export", "À propos de Honglajiao Auto Export", "Acerca de Honglajiao Auto Export", "关于红辣椒汽车出口"),
-    mission: E("Mission", "Mission", "Misión", "使命"),
-    missionDesc: E("To connect African dealers and businesses with the best Chinese vehicles — providing transparent sourcing, reliable inspection, and hassle-free export logistics.", "Connecter les concessionnaires africains aux meilleurs véhicules chinois avec transparence et fiabilité.", "Conectar a concesionarios africanos con los mejores vehículos chinos con transparencia y confiabilidad.", "连接非洲经销商与中国优质车辆资源，提供透明采购、可靠检测和无忧出口物流。"),
+    heading: E("About Us", "À propos de nous", "Acerca de nosotros", "关于我们"),
+    subheading: E("Your trusted China used car export partner for African LHD markets", "Votre partenaire de confiance pour l'exportation de voitures d'occasion chinoises vers les marchés LHD africains", "Su socio de confianza para la exportación de autos usados chinos a mercados LHD africanos", "您值得信赖的中国二手车出口非洲左舵市场合作伙伴"),
+    whyChooseUs: E("Why Choose Us", "Pourquoi nous choisir", "Por qué elegirnos", "为什么选择我们"),
+    chinaTeam: E("China-Based Team", "Équipe basée en Chine", "Equipo en China", "中国本地团队"),
+    chinaTeamDesc: E("Direct access to the Chinese market. No middlemen, no markups — direct pricing.", "Accès direct au marché chinois. Pas d'intermédiaires, pas de majorations — prix directs.", "Acceso directo al mercado chino. Sin intermediarios, sin sobreprecios — precios directos.", "直接进入中国市场。无中间商，无加价 — 直接定价。"),
+    multilingual: E("Multilingual", "Multilingue", "Multilingüe", "多语言"),
+    multilingualDesc: E("Chinese, English, French communication. No language barriers in your export process.", "Communication en chinois, anglais, français. Pas de barrière linguistique.", "Comunicación en chino, inglés, francés. Sin barreras idiomáticas.", "中英法三语沟通。出口过程无语言障碍。"),
+    fullService: E("Full Service", "Service complet", "Servicio completo", "一站式服务"),
+    fullServiceDesc: E("Sourcing, inspection, documentation, customs, shipping — one partner for everything.", "Approvisionnement, inspection, documentation, douane, expédition — un partenaire pour tout.", "Abastecimiento, inspección, documentación, aduana, envío — un socio para todo.", "采购、检测、单证、报关、运输 — 一个合作伙伴全搞定。"),
+    qualityFirst: E("Quality First", "La qualité d'abord", "Calidad primero", "质量第一"),
+    qualityFirstDesc: E("259-point inspection on every vehicle. Full transparency on vehicle condition.", "Inspection 259 points sur chaque véhicule. Transparence totale sur l'état du véhicule.", "Inspección de 259 puntos en cada vehículo. Transparencia total sobre el estado.", "每辆车259项检测。车况完全透明。"),
+    africanFocus: E("African Focus", "Focus africain", "Enfoque africano", "专注非洲"),
+    africanFocusDesc: E("Specialized in African LHD markets — Nigeria, Ghana, Ethiopia, Kenya, Tanzania, and more.", "Spécialisé dans les marchés LHD africains — Nigeria, Ghana, Éthiopie, Kenya, Tanzanie et plus.", "Especializado en mercados LHD africanos — Nigeria, Ghana, Etiopía, Kenia, Tanzania y más.", "专注非洲左舵市场 — 尼日利亚、加纳、埃塞俄比亚、肯尼亚、坦桑尼亚等。"),
+    competitivePricing: E("Competitive Pricing", "Prix compétitifs", "Precios competitivos", "有竞争力的价格"),
+    competitivePricingDesc: E("Direct market access means better prices for you. Save 20-40% vs local dealers.", "L'accès direct au marché signifie de meilleurs prix. Économisez 20-40% par rapport aux revendeurs locaux.", "El acceso directo al mercado significa mejores precios. Ahorre 20-40% vs distribuidores locales.", "直接市场准入意味着更优惠的价格。比当地经销商节省20-40%。"),
+    ourMarkets: E("Our Markets", "Nos marchés", "Nuestros mercados", "我们的市场"),
   },
 
-  // === Contact ===
-
+  // Contact page
   contact: {
-    title: E("Contact Us", "Contactez-nous", "Contáctenos", "联系我们"),
+    heading: E("Contact Us", "Contactez-nous", "Contáctenos", "联系我们"),
+    subheading: E("Get in touch for used car export from China. We respond within 24 hours.", "Contactez-nous pour l'exportation de voitures d'occasion de Chine. Nous répondons sous 24h.", "Contáctenos para exportación de autos usados de China. Respondemos en 24h.", "联系我们了解中国二手车出口。24小时内回复。"),
+    contactInfo: E("Contact Information", "Informations de contact", "Información de contacto", "联系方式"),
     phone: E("Phone", "Téléphone", "Teléfono", "电话"),
-    email: E("Email", "Email", "Email", "邮箱"),
-    office: E("Office", "Bureau", "Oficina", "办公室"),
+    email: E("Email", "E-mail", "Correo electrónico", "邮箱"),
     wechat: E("WeChat", "WeChat", "WeChat", "微信"),
     whatsapp: E("WhatsApp", "WhatsApp", "WhatsApp", "WhatsApp"),
-    address: E("Guangzhou, China", "Guangzhou, Chine", "Guangzhou, China", "中国广州"),
+    address: E("Address", "Adresse", "Dirección", "地址"),
+    addressValue: E("Chengdu, Sichuan, China", "Chengdu, Sichuan, Chine", "Chengdu, Sichuan, China", "中国四川省成都市"),
+    sendMessage: E("Send us a message", "Envoyez-nous un message", "Envíenos un mensaje", "给我们留言"),
+    name: E("Name", "Nom", "Nombre", "姓名"),
+    yourEmail: E("Your Email", "Votre e-mail", "Su correo", "您的邮箱"),
+    message: E("Message", "Message", "Mensaje", "留言"),
+    send: E("Send Message", "Envoyer", "Enviar", "发送"),
+    success: E("Message sent! We'll get back to you within 24 hours.", "Message envoyé ! Nous vous répondrons sous 24h.", "¡Mensaje enviado! Le responderemos en 24h.", "消息已发送！我们将在24小时内回复。"),
   },
 
-  // === Login page ===
+  // Blog page (旧版已合并到下方新版)
 
+  // Login page
   loginPage: {
     heading: E("Dealer Login", "Connexion revendeur", "Inicio de sesión", "车商登录"),
-    subheading: E("Enter your credentials to submit buying requests and track your orders.", "Entrez vos identifiants pour soumettre des demandes et suivre vos commandes.", "Ingrese sus credenciales para enviar solicitudes y rastrear sus pedidos.", "输入您的凭据以提交采购请求并跟踪订单。"),
-    email: E("Email", "Email", "Email", "邮箱"),
-    emailPlaceholder: E("Enter your email", "Entrez votre email", "Ingrese su email", "请输入邮箱"),
+    subheading: E("Access your dealer dashboard", "Accédez à votre tableau de bord", "Acceda a su panel de control", "访问您的车商后台"),
+    email: E("Email", "E-mail", "Correo electrónico", "邮箱"),
     password: E("Password", "Mot de passe", "Contraseña", "密码"),
-    passwordPlaceholder: E("Enter your password", "Entrez votre mot de passe", "Ingrese su contraseña", "请输入密码"),
     loginBtn: E("Login", "Connexion", "Iniciar sesión", "登录"),
     noAccount: E("Don't have an account?", "Pas de compte ?", "¿No tiene cuenta?", "还没有账号？"),
     registerHere: E("Register here", "Inscrivez-vous ici", "Regístrese aquí", "在此注册"),
     submitted: E("Login Request Submitted", "Demande de connexion soumise", "Solicitud enviada", "登录请求已提交"),
-    submittedDesc: E("Our team will review your request and send login credentials to your email within 24 hours.", "Notre équipe examinera votre demande et enverra les identifiants sous 24h.", "Nuestro equipo revisará su solicitud y enviará las credenciales en 24h.", "我们团队将在24小时内审核您的请求并将登录凭据发送到您的邮箱。"),
-    error: E("Invalid email or password", "Email ou mot de passe invalide", "Email o contraseña inválidos", "邮箱或密码错误"),
+    submittedDesc: E("We will review your access request and contact you shortly.", "Nous examinerons votre demande et vous contacterons bientôt.", "Revisaremos su solicitud y lo contactaremos pronto.", "我们将审核您的访问请求并尽快联系您。"),
   },
 
-  // === Register page ===
-
+  // Register page
   registerPage: {
-    heading: E("Dealer Registration", "Inscription revendeur", "Registro de concesionario", "车商注册"),
-    subheading: E("Create your account to submit buying requests and receive vehicle sourcing support.", "Créez votre compte pour soumettre des demandes d'achat.", "Cree su cuenta para enviar solicitudes de compra.", "创建账号以提交采购请求并获得车辆采购支持。"),
+    heading: E("Dealer Registration", "Inscription revendeur", "Registro de distribuidor", "车商注册"),
+    subheading: E("Join our network of verified vehicle exporters", "Rejoignez notre réseau d'exportateurs vérifiés", "Únase a nuestra red de exportadores verificados", "加入我们经过验证的车辆出口商网络"),
     name: E("Full Name", "Nom complet", "Nombre completo", "姓名"),
-    email: E("Email", "Email", "Email", "邮箱"),
+    email: E("Email", "E-mail", "Correo electrónico", "邮箱"),
     password: E("Password", "Mot de passe", "Contraseña", "密码"),
-    phone: E("Phone (optional)", "Téléphone (optionnel)", "Teléfono (opcional)", "电话（选填）"),
-    company: E("Company (optional)", "Société (optionnelle)", "Empresa (opcional)", "公司（选填）"),
+    phone: E("Phone", "Téléphone", "Teléfono", "电话"),
+    company: E("Company", "Entreprise", "Empresa", "公司"),
     country: E("Country", "Pays", "País", "国家"),
     registerBtn: E("Register", "S'inscrire", "Registrarse", "注册"),
     hasAccount: E("Already have an account?", "Déjà un compte ?", "¿Ya tiene cuenta?", "已有账号？"),
     loginHere: E("Login here", "Connectez-vous ici", "Inicie sesión aquí", "在此登录"),
-    success: E("Registration Successful!", "Inscription réussie !", "¡Registro exitoso!", "注册成功！"),
-    successDesc: E("You can now log in and submit buying requests.", "Vous pouvez maintenant vous connecter et soumettre des demandes.", "Ahora puede iniciar sesión y enviar solicitudes.", "您现在可以登录并提交采购需求。"),
-    avatar: E("Avatar (optional)", "Avatar (optionnel)", "Avatar (opcional)", "头像（选填）"),
-    uploadAvatar: E("Upload Avatar", "Télécharger l'avatar", "Subir avatar", "上传头像"),
-    changeAvatar: E("Change Avatar", "Changer l'avatar", "Cambiar avatar", "更换头像"),
+    success: E("Registration successful!", "Inscription réussie !", "¡Registro exitoso!", "注册成功！"),
+    successDesc: E("You can now log in to your dealer dashboard.", "Vous pouvez maintenant vous connecter.", "Ahora puede iniciar sesión.", "您现在可以登录车商后台。"),
+  },
+
+  // Newsletter
+  newsletter: {
+    heading: E("Subscribe for Export Market Updates", "Abonnez-vous aux mises à jour", "Suscríbase a actualizaciones", "订阅出口市场更新"),
+    desc: E("Get the latest guides, market prices, and export tips delivered to your inbox.", "Recevez les derniers guides, prix du marché et conseils d'exportation.", "Reciba las últimas guías, precios de mercado y consejos de exportación.", "获取最新指南、市场价格和出口技巧，发送到您的邮箱。"),
+    placeholder: E("Your email", "Votre e-mail", "Su correo", "您的邮箱"),
+    subscribeBtn: E("Subscribe", "S'abonner", "Suscribirse", "订阅"),
+    success: E("Subscribed!", "Abonné !", "¡Suscrito!", "订阅成功！"),
+    successDesc: E("You'll receive export market updates in your inbox.", "Vous recevrez des mises à jour dans votre boîte mail.", "Recibirá actualizaciones en su bandeja de entrada.", "您将在收件箱中收到出口市场更新。"),
+  },
+
+  // ChatWidget
+  chat: {
+    title: E("ChinaCarExport", "ChinaCarExport", "ChinaCarExport", "红辣椒汽车出口"),
+    online: E("Online · Reply in minutes", "En ligne · Réponse en minutes", "En línea · Respondemos en minutos", "在线 · 分钟级回复"),
+    welcome: E("👋 Hi there! Welcome to ChinaCarExport. I'm a real person ready to help you find the right vehicles from China. What are you looking for today?", "👋 Bonjour ! Bienvenue chez ChinaCarExport. Je suis une vraie personne prête à vous aider à trouver les bons véhicules de Chine. Que recherchez-vous aujourd'hui ?", "👋 ¡Hola! Bienvenido a ChinaCarExport. Soy una persona real lista para ayudarle a encontrar los vehículos adecuados desde China. ¿Qué busca hoy?", "👋 您好！欢迎来到红辣椒汽车出口。我是客服小辣椒，随时帮您推荐合适的中国车源。今天想了解什么？"),
+    chat: E("Chat", "Chat", "Chat", "聊天"),
+    whatsapp: E("WhatsApp", "WhatsApp", "WhatsApp", "WhatsApp"),
+    email: E("Email", "E-mail", "Correo", "邮箱"),
+    typeMessage: E("Type your message...", "Tapez votre message...", "Escriba su mensaje...", "输入您的消息..."),
+    quickReply1: E("Vehicle pricing inquiry", "Demande de prix", "Consulta de precios", "车辆价格咨询"),
+    quickReply2: E("Shipping to Africa", "Expédition vers l'Afrique", "Envío a África", "运往非洲"),
+    quickReply3: E("Export documentation", "Documents d'exportation", "Documentación de exportación", "出口文件"),
+    quickReply4: E("Inspection process", "Processus d'inspection", "Proceso de inspección", "检测流程"),
+    fallbackReply: E("Thanks for your message! I'll check with our team and get back to you shortly. You can also reach us on WhatsApp for faster replies.", "Merci pour votre message ! Je vérifie avec notre équipe et vous reviens rapidement. Vous pouvez aussi nous joindre sur WhatsApp pour des réponses plus rapides.", "¡Gracias por su mensaje! Lo consultaré con nuestro equipo y le responderé en breve. También puede contactarnos por WhatsApp para respuestas más rápidas.", "感谢您的留言！我去跟团队确认一下，很快回复您。也可以加我们WhatsApp更快哦。"),
+    errorReply: E("Let me connect you with our team directly. For fastest reply, WhatsApp is best — we're always there.", "Je vous connecte directement avec notre équipe. Pour une réponse rapide, WhatsApp est le mieux — nous sommes toujours là.", "Lo conectaré directamente con nuestro equipo. Para una respuesta rápida, WhatsApp es lo mejor — siempre estamos allí.", "我直接帮您转接团队。最快还是加WhatsApp聊，我们一直在线的。"),
+    whatsappTitle: E("Chat on WhatsApp", "Chat sur WhatsApp", "Chat en WhatsApp", "WhatsApp 咨询"),
+    whatsappDesc: E("Get the fastest response — average reply time under 5 minutes", "Obtenez la réponse la plus rapide — temps de réponse moyen sous 5 minutes", "Obtenga la respuesta más rápida — tiempo de respuesta promedio bajo 5 minutos", "最快回复 — 平均回复时间不到5分钟"),
+    whatsappBtn: E("Open WhatsApp", "Ouvrir WhatsApp", "Abrir WhatsApp", "打开 WhatsApp"),
+    emailTitle: E("Send us an Email", "Envoyez-nous un e-mail", "Envíenos un correo", "发送邮件"),
+    emailDesc: E("We reply to all inquiries within 24 hours", "Nous répondons à toutes les demandes sous 24 heures", "Respondemos a todas las consultas en 24 horas", "所有咨询24小时内回复"),
+    footerHint: E("💬 We reply fast — usually within minutes", "💬 Nous répondons vite — généralement en quelques minutes", "💬 Respondemos rápido — generalmente en minutos", "💬 回复很快 — 一般几分钟内"),
+  },
+
+  // 首页筛选器
+  homeFilter: {
+    brand: E("Brand", "Marque", "Marca", "品牌"),
+    searchBrand: E("Search brand...", "Rechercher marque...", "Buscar marca...", "搜索品牌..."),
+    searchVehicle: E("Search vehicle model / brand...", "Rechercher modèle/marque...", "Buscar modelo/marca...", "搜索车型/品牌..."),
+    searchBtn: E("Search", "Rechercher", "Buscar", "搜索"),
+    found: E("found", "trouvé(s)", "encontrado(s)", "找到"),
+    brands: E("brands", "marques", "marcas", "个品牌"),
+    all: E("All", "Tout", "Todo", "不限"),
+    price: E("Price", "Prix", "Precio", "价格"),
+    level: E("Level", "Niveau", "Nivel", "级别"),
+    age: E("Age", "Âge", "Edad", "车龄"),
+    expand: E("Expand ▼", "Déplier ▼", "Expandir ▼", "展开 ▼"),
+    collapse: E("Collapse ▲", "Replier ▲", "Colapsar ▲", "收起 ▲"),
+    results: E("results", "résultats", "resultados", "辆车源"),
+    foundTotal: E("Found", "Trouvé", "Encontrado", "共找到"),
+    sort: E("Sort", "Trier", "Ordenar", "排序"),
+    viewAll: E("View All Vehicles", "Voir tous", "Ver todos", "查看全部车源"),
+    noResult: E("No matching vehicles", "Aucun véhicule", "Sin resultados", "暂无匹配车源"),
+    noResultDesc: E("Try adjusting your filters or submit a buying request", "Essayez d'ajuster vos filtres", "Intente ajustar sus filtros", "试试调整筛选条件，或提交采购需求"),
+    submitRequest: E("Submit Buying Request", "Soumettre une demande", "Enviar solicitud", "提交采购需求"),
+    viewDetail: E("View Details →", "Voir détails →", "Ver detalles →", "查看详情 →"),
+    reset: E("Reset Filters", "Réinitialiser", "Restablecer", "重置筛选"),
+    filter: E("Filters", "Filtres", "Filtros", "筛选"),
+    breadcrumbHome: E("Home", "Accueil", "Inicio", "首页"),
+    breadcrumbCars: E("All Vehicles", "Tous véhicules", "Todos vehículos", "全部车源"),
+  },
+
+  // 车辆列表页侧边栏
+  carsFilter: {
+    breadcrumbHome: E("Home", "Accueil", "Inicio", "首页"),
+    breadcrumbCars: E("All Vehicles", "Tous véhicules", "Todos vehículos", "全部车源"),
+    brand: E("Brand", "Marque", "Marca", "品牌"),
+    searchBrand: E("Search brand...", "Rechercher...", "Buscar...", "搜索品牌..."),
+    allBrands: E("All Brands", "Toutes marques", "Todas marcas", "不限品牌"),
+    price: E("Price (10k RMB)", "Prix (10k RMB)", "Precio (10k RMB)", "价格（万元）"),
+    age: E("Vehicle Age", "Âge du véhicule", "Edad del vehículo", "车龄"),
+    mileage: E("Mileage", "Kilométrage", "Kilometraje", "里程"),
+    transmission: E("Transmission", "Transmission", "Transmisión", "变速箱"),
+    fuel: E("Fuel Type", "Type de carburant", "Tipo de combustible", "燃料类型"),
+    bodyType: E("Body Type", "Type de carrosserie", "Tipo de carrocería", "车身类型"),
+    reset: E("Reset Filters", "Réinitialiser", "Restablecer", "重置筛选"),
+    filter: E("Filters", "Filtres", "Filtros", "筛选"),
+    foundTotal: E("Found", "Trouvé", "Encontrado", "共找到"),
+    results: E("vehicles", "véhicules", "vehículos", "辆车源"),
+    noResult: E("No matching vehicles", "Aucun véhicule", "Sin resultados", "暂无匹配车源"),
+    noResultDesc: E("Try adjusting your filters", "Essayez d'ajuster vos filtres", "Intente ajustar sus filtros", "试试调整筛选条件"),
+    viewDetail: E("View Details →", "Voir détails →", "Ver detalles →", "查看详情 →"),
+  },
+
+  // 提交需求页
+  inquiryPage: {
+    breadcrumbHome: E("Home", "Accueil", "Inicio", "首页"),
+    breadcrumbInquiry: E("Submit Request", "Soumettre demande", "Enviar solicitud", "提交需求"),
+    heading: E("Submit Buying Request", "Soumettre une demande d'achat", "Enviar solicitud de compra", "提交采购需求"),
+    subheading: E("Fill in the form below, we will contact you within 24 hours", "Remplissez le formulaire, nous vous contacterons sous 24h", "Complete el formulario, lo contactaremos en 24h", "填写以下信息，我们将在24小时内与您联系"),
+    name: E("Name", "Nom", "Nombre", "姓名"),
+    namePlaceholder: E("Your name", "Votre nom", "Su nombre", "您的姓名"),
+    nameRequired: E("Please enter your name", "Veuillez entrer votre nom", "Por favor ingrese su nombre", "请填写姓名"),
+    country: E("Country/Region", "Pays/Région", "País/Región", "国家/地区"),
+    email: E("Email", "E-mail", "Correo electrónico", "电子邮箱"),
+    phone: E("Phone Number", "Téléphone", "Teléfono", "手机号"),
+    whatsapp: E("WhatsApp", "WhatsApp", "WhatsApp", "WhatsApp"),
+    telegram: E("Telegram", "Telegram", "Telegram", "Telegram"),
+    vehicleType: E("Vehicle Type", "Type de véhicule", "Tipo de vehículo", "车辆类型"),
+    brand: E("Preferred Brand", "Marque préférée", "Marca preferida", "意向品牌"),
+    model: E("Preferred Model", "Modèle préféré", "Modelo preferido", "意向车型"),
+    budget: E("Budget Range", "Budget", "Presupuesto", "预算区间"),
+    quantity: E("Purchase Quantity", "Quantité", "Cantidad", "采购数量"),
+    destinationPort: E("Destination Port/City", "Port/Ville de destination", "Puerto/Ciudad de destino", "目的港/城市"),
+    description: E("Requirement Description", "Description des besoins", "Descripción de requisitos", "需求说明"),
+    descriptionPlaceholder: E("Please describe your specific requirements, e.g. year range, mileage, color preference, configuration...", "Décrivez vos besoins spécifiques...", "Describa sus requisitos específicos...", "请描述您的具体需求，例如：年份范围、里程要求、颜色偏好、配置要求等"),
+    submit: E("Submit Request", "Soumettre", "Enviar", "提交需求"),
+    submitting: E("Submitting...", "Soumission...", "Enviando...", "提交中..."),
+    success: E("Submitted Successfully!", "Soumis avec succès !", "¡Enviado con éxito!", "提交成功！"),
+    successDesc: E("We will contact you within 24 hours. Please keep your phone available.", "Nous vous contacterons sous 24h.", "Lo contactaremos en 24h.", "我们将在24小时内与您联系，请保持手机畅通。"),
+    backHome: E("Back to Home", "Retour à l'accueil", "Volver al inicio", "返回首页"),
+    error: E("Submission failed, please try again later", "Échec, veuillez réessayer", "Error, intente de nuevo", "提交失败，请稍后重试"),
+  },
+
+  // 博客页
+  blogPage: {
+    heading: E("China Car Export Blog", "Blog Export Auto Chine", "Blog Exportación Auto China", "中国汽车出口博客"),
+    subheading: E("Expert guides, market insights, and tips for importing used cars from China.", "Guides experts, analyses de marché et conseils pour l'importation.", "Guías expertas, análisis de mercado y consejos de importación.", "专家指南、市场洞察和从中国进口二手车的技巧。"),
+    readMore: E("Read more →", "Lire plus →", "Leer más →", "阅读更多 →"),
+    contactUs: E("Contact Us", "Contactez-nous", "Contáctenos", "联系我们"),
   },
 
   // === Account settings page ===
@@ -481,87 +709,7 @@ export const T = {
     passwordError: E("Change failed", "Échec du changement", "Error de cambio", "修改失败"),
     currentPwdIncorrect: E("Current password is incorrect", "Le mot de passe actuel est incorrect", "La contraseña actual es incorrecta", "当前密码错误"),
     loading: E("Loading...", "Chargement...", "Cargando...", "加载中..."),
-    notLoggedIn: E("You are not logged in. Please log in first.", "Vous n'êtes pas connecté. Veuillez vous connecter.", "No ha iniciado sesión. Inicie sesión primero.", "您尚未登录，请先登录。"),
   },
 
-  // === Newsletter ===
-
-  newsletter: {
-    title: E("Stay Updated", "Restez informé", "Manténgase informado", "保持关注"),
-    subtitle: E("Get the latest vehicle listings, market insights, and export tips delivered to your inbox.", "Recevez les dernières annonces, analyses du marché et conseils d'exportation.", "Reciba los últimos listados, análisis de mercado y consejos de exportación.", "获取最新的车源信息、市场洞察和出口技巧。"),
-    placeholder: E("Your email address", "Votre adresse e-mail", "Su correo electrónico", "您的邮箱地址"),
-    subscribe: E("Subscribe", "S'abonner", "Suscribirse", "订阅"),
-  },
-
-  // === Chat ===
-
-  chat: {
-    title: E("Chat with us", "Discutez avec nous", "Chatee con nosotros", "在线咨询"),
-    placeholder: E("Type your message...", "Tapez votre message...", "Escriba su mensaje...", "输入您的消息..."),
-    send: E("Send", "Envoyer", "Enviar", "发送"),
-    quickReply1: E("Hi! I'm interested in your vehicles", "Bonjour ! Je suis intéressé par vos véhicules", "¡Hola! Estoy interesado en sus vehículos", "您好，我对你们的车辆感兴趣"),
-    quickReply2: E("I want to buy a vehicle", "Je veux acheter un véhicule", "Quiero comprar un vehículo", "我想购买车辆"),
-    quickReply3: E("Please send info to my WhatsApp", "Envoyez les infos sur mon WhatsApp", "Envíe información a mi WhatsApp", "请发到我的WhatsApp"),
-    quickReply4: E("Do you ship to my country?", "Livrez-vous dans mon pays ?", "¿Envían a mi país?", "你们能发货到我的国家吗？"),
-    close: E("Close", "Fermer", "Cerrar", "关闭"),
-    offline: E("Offline — leave a message?", "Hors ligne — laisser un message ?", "Desconectado — ¿dejar mensaje?", "离线 — 留言？"),
-  },
-
-  // === Home Filter ===
-
-  homeFilter: {
-    heading: E("Find Your Vehicle", "Trouvez votre véhicule", "Encuentre su vehículo", "查找车辆"),
-    allBrands: E("All Brands", "Toutes les marques", "Todas las marcas", "所有品牌"),
-    allTypes: E("All Types", "Tous les types", "Todos los tipos", "所有类型"),
-    budget: E("Budget", "Budget", "Presupuesto", "预算"),
-    pickBudget: E("Pick a budget", "Choisissez un budget", "Elija un presupuesto", "选择预算"),
-    searchBtn: E("Search Now", "Rechercher", "Buscar ahora", "立即查找"),
-  },
-
-  // === Cars Filter ===
-
-  carsFilter: {
-    heading: E("Filter Vehicles", "Filtrer les véhicules", "Filtrar vehículos", "筛选车辆"),
-    brand: E("Brand", "Marque", "Marca", "品牌"),
-    type: E("Type", "Type", "Tipo", "类型"),
-    budget: E("Budget Range", "Budget", "Presupuesto", "预算"),
-    reset: E("Reset Filters", "Réinitialiser", "Restablecer", "重置筛选"),
-    selected: E("filter selected", "filtre sélectionné", "filtro seleccionado", "个筛选项"),
-  },
-
-  // === Inquiry Page ===
-
-  inquiryPage: {
-    title: E("Submit Buying Request", "Soumettre une demande d'achat", "Enviar solicitud de compra", "提交采购需求"),
-    subtitle: E("Fill out the form below and our team will find the best vehicle options for you", "Remplissez le formulaire ci-dessous et notre équipe trouvera les meilleures options", "Complete el formulario y nuestro equipo encontrará las mejores opciones", "填写以下表单，我们的团队将为您匹配合适的车源"),
-    heading: E("Vehicle Request Form", "Formulaire de demande", "Formulario de solicitud", "车辆需求表单"),
-    name: E("Full Name", "Nom complet", "Nombre completo", "姓名"),
-    email: E("Email Address", "Adresse e-mail", "Correo electrónico", "邮箱地址"),
-    phone: E("Phone Number", "Numéro de téléphone", "Número de teléfono", "电话号码"),
-    company: E("Company Name", "Nom de l'entreprise", "Nombre de la empresa", "公司名称"),
-    country: E("Country of Destination", "Pays de destination", "País de destino", "目的国家"),
-    vehicleType: E("Vehicle Type", "Type de véhicule", "Tipo de vehículo", "车辆类型"),
-    brand: E("Preferred Brand", "Marque préférée", "Marca preferida", "意向品牌"),
-    model: E("Preferred Model", "Modèle préféré", "Modelo preferido", "意向车型"),
-    budget: E("Budget Range (USD)", "Budget (USD)", "Presupuesto (USD)", "预算范围（美元）"),
-    quantity: E("Purchase Quantity", "Quantité", "Cantidad", "采购数量"),
-    destinationPort: E("Destination Port/City", "Port/Ville de destination", "Puerto/Ciudad de destino", "目的港/城市"),
-    description: E("Requirement Description", "Description des besoins", "Descripción de requisitos", "需求说明"),
-    descriptionPlaceholder: E("Please describe your specific requirements, e.g. year range, mileage, color preference, configuration...", "Décrivez vos besoins spécifiques...", "Describa sus requisitos específicos...", "请描述您的具体需求，例如：年份范围、里程要求、颜色偏好、配置要求等"),
-    submit: E("Submit Request", "Soumettre", "Enviar", "提交需求"),
-    submitting: E("Submitting...", "Soumission...", "Enviando...", "提交中..."),
-    success: E("Submitted Successfully!", "Soumis avec succès !", "¡Enviado con éxito!", "提交成功！"),
-    successDesc: E("We will contact you within 24 hours. Please keep your phone available.", "Nous vous contacterons sous 24h.", "Lo contactaremos en 24h.", "我们将在24小时内与您联系，请保持手机畅通。"),
-    backHome: E("Back to Home", "Retour à l'accueil", "Volver al inicio", "返回首页"),
-    error: E("Submission failed, please try again later", "Échec, veuillez réessayer", "Error, intente de nuevo", "提交失败，请稍后重试"),
-  },
-
-  // 博客页
-  blogPage: {
-    heading: E("China Car Export Blog", "Blog Export Auto Chine", "Blog Exportación Auto China", "中国汽车出口博客"),
-    subheading: E("Expert guides, market insights, and tips for importing used cars from China.", "Guides experts, analyses de marché et conseils pour l'importation.", "Guías expertas, análisis de mercado y consejos de importación.", "专家指南、市场洞察和从中国进口二手车的技巧。"),
-    readMore: E("Read more →", "Lire plus →", "Leer más →", "阅读更多 →"),
-    contactUs: E("Contact Us", "Contactez-nous", "Contáctenos", "联系我们"),
-  },
 
 };
