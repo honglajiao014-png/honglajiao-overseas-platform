@@ -290,7 +290,7 @@ export default function CarsPage() {
                         </div>
                         <div className="flex items-end justify-between mt-3">
                           <span className="text-xl font-extrabold text-red-500">
-                                                      {t(T.homeFilter.currencySymbol)}{v.price.toLocaleString()} <span className="text-xs font-normal text-gray-400">{t(T.homeFilter.currencyCode)}{t(T.homeFilter.currencySuffix)}</span>
+                                                      {t(T.homeFilter.currencySymbol)}{v.price.toLocaleString()} <span className="text-xs font-normal text-gray-400">{t(T.homeFilter.currencyCode)}</span>
                           </span>
                           <span className="text-xs text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity">
                             {t(T.carsFilter.viewDetail)}

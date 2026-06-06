@@ -646,7 +646,6 @@ export const T = {
     // Currency per language
     currencySymbol: E("$", "€", "€", "¥"),
     currencyCode: E("USD", "EUR", "EUR", "CNY"),
-    currencySuffix: E("", "", "", "元"),
   },
 
   // 车辆列表页侧边栏

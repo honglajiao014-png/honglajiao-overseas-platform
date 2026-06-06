@@ -403,7 +403,7 @@ export default function Home() {
                         <span className="text-xl font-extrabold text-red-500">
                           {t(T.homeFilter.currencySymbol)}{v.price.toLocaleString()}
                         </span>
-                        <span className="text-sm text-gray-400 ml-1">{t(T.homeFilter.currencyCode)}{t(T.homeFilter.currencySuffix)}</span>
+                        <span className="text-sm text-gray-400 ml-1">{t(T.homeFilter.currencyCode)}</span>
                       </div>
                       <span className="text-sm text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity">
                         {t(T.homeFilter.viewDetail)}
