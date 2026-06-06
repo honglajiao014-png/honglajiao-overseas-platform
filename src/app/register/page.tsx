@@ -25,7 +25,7 @@ export default function RegisterPage() {
     });
     const data = await res.json();
     if (data.error) { setError(data.error); setStatus("error"); }
-    else { setStatus("success"); localStorage.setItem("hlj_token", data.token); }
+    else { window.location.href = "/login"; }
   };
 
   const handleAvatarFile = (e: React.ChangeEvent<HTMLInputElement>) => {
