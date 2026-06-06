@@ -30,7 +30,18 @@ export const metadata: Metadata = {
   category: "automotive",
   formatDetection: { telephone: false, address: false, email: false },
   alternates: { canonical: "https://honglajiao1688.com" },
-  icons: { icon: "/favicon.ico" },
+  icons: {
+    icon: [
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon.ico", sizes: "32x32" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
+    other: [
+      { url: "/icon-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512x512.png", sizes: "512x512", type: "image/png" },
+    ],
+  },
   openGraph: {
     title: "ChinaCarExport | Used Car & Vehicle Export Sourcing from China",
     description:

@@ -1,23 +1,22 @@
-import type { Metadata } from "next";
+"use client";
+
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ContactForm } from "./ContactForm";
-
-export const metadata: Metadata = {
-  title: "联系我们 | Honglajiao Auto Export",
-  description: "Get in touch for used car export from China. We respond within 24 hours.",
-};
+import { useT, T } from "@/i18n/useT";
 
 export default function ContactPage() {
+  const t = useT();
+
   return (
     <>
       <Header />
       <main className="flex-1">
         <section className="bg-gradient-to-b from-brand to-brand-dark text-white py-10">
           <div className="max-w-[1200px] mx-auto px-4 text-center">
-            <h1 className="text-2xl md:text-3xl font-bold mb-3">Contact Us</h1>
+            <h1 className="text-2xl md:text-3xl font-bold mb-3">{t(T.contact.heading)}</h1>
             <p className="text-white/80 text-sm md:text-base max-w-2xl mx-auto">
-              Get in touch for used car export from China. We respond within 24 hours.
+              {t(T.contact.subheading)}
             </p>
           </div>
         </section>
@@ -26,19 +25,19 @@ export default function ContactPage() {
           <div className="max-w-[1200px] mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
               <div>
-                <h2 className="text-xl font-bold text-dark mb-6">Contact Information</h2>
+                <h2 className="text-xl font-bold text-dark mb-6">{t(T.contact.contactInfo)}</h2>
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-sm font-bold text-dark mb-1">Phone / WhatsApp</h3>
+                    <h3 className="text-sm font-bold text-dark mb-1">{t(T.contact.phone)} / WhatsApp</h3>
                     <p className="text-gray-500 text-sm">提交询价后获取专属顾问联系方式</p>
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-dark mb-1">Email</h3>
+                    <h3 className="text-sm font-bold text-dark mb-1">{t(T.contact.email)}</h3>
                     <a href="mailto:export@honglajiao1688.com" className="text-brand hover:text-brand-dark">export@honglajiao1688.com</a>
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-dark mb-1">Office Location</h3>
-                    <p className="text-gray-500 text-sm">中国 · 四川省</p>
+                    <h3 className="text-sm font-bold text-dark mb-1">{t(T.contact.address)}</h3>
+                    <p className="text-gray-500 text-sm">{t(T.contact.addressValue)}</p>
                   </div>
                 </div>
 
@@ -51,7 +50,7 @@ export default function ContactPage() {
               </div>
 
               <div>
-                <h2 className="text-xl font-bold text-dark mb-6">Send Us a Message</h2>
+                <h2 className="text-xl font-bold text-dark mb-6">{t(T.contact.sendMessage)}</h2>
                 <ContactForm />
               </div>
             </div>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { useLang } from "@/i18n/LangContext";
+import { useT, T } from "@/i18n/useT";
 import { LANGS, LANG_NAMES, type Lang } from "@/i18n/types";
 
 const FLAGS: Record<Lang, string> = {
@@ -13,20 +14,21 @@ const FLAGS: Record<Lang, string> = {
   es: "🇪🇸",
 };
 
-const NAV_LINKS = [
-  { href: "/", label: "Home" },
-  { href: "/cars", label: "All Vehicles" },
-  { href: "/inquiry", label: "Submit Request" },
-  { href: "/blog", label: "Blog" },
-];
-
 export function Header() {
   const pathname = usePathname();
   const { lang: currentLang, setLang } = useLang();
+  const t = useT();
   const [langOpen, setLangOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const NAV_LINKS = [
+    { href: "/", label: t(T.header.home) },
+    { href: "/cars", label: t(T.header.allVehicles) },
+    { href: "/inquiry", label: t(T.header.submitRequest) },
+    { href: "/blog", label: t(T.header.blog) },
+  ];
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -107,13 +109,13 @@ export function Header() {
                 href="/login"
                 className="text-sm font-medium text-gray-600 hover:text-primary px-3 py-2 rounded-lg hover:bg-gray-50 transition-all"
               >
-                Login
+                {t(T.header.login)}
               </Link>
               <Link
                 href="/register"
                 className="text-sm font-semibold bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark hover:shadow-md transition-all active:scale-95"
               >
-                Register
+                {t(T.header.register)}
               </Link>
             </div>
 
@@ -135,7 +137,7 @@ export function Header() {
 
               {langOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 z-20 py-1 overflow-hidden animate-scale-in origin-top-right">
-                  <div className="px-3 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Language</div>
+                  <div className="px-3 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider">{t(T.header.language)}</div>
                   {LANGS.map((l) => (
                     <button
                       key={l}
@@ -197,10 +199,10 @@ export function Header() {
               })}
               <div className="flex gap-2 mt-3 px-4">
                 <Link href="/login" onClick={() => setMobileOpen(false)} className="flex-1 text-center text-sm font-semibold text-gray-600 border border-gray-200 py-2.5 rounded-lg hover:bg-gray-50 transition-colors">
-                  Login
+                  {t(T.header.login)}
                 </Link>
                 <Link href="/register" onClick={() => setMobileOpen(false)} className="flex-1 text-center text-sm font-semibold bg-primary text-white py-2.5 rounded-lg hover:bg-primary-dark transition-colors">
-                  Register
+                  {t(T.header.register)}
                 </Link>
               </div>
             </nav>

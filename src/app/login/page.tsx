@@ -3,8 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Header } from "@/components/Header";
+import { useT, T } from "@/i18n/useT";
 
 export default function LoginPage() {
+  const t = useT();
   const [submitted, setSubmitted] = useState(false);
 
   if (submitted) {
@@ -18,8 +20,8 @@ export default function LoginPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h2 className="text-xl font-bold text-white mb-2">Login Request Submitted</h2>
-            <p className="text-gray-400 text-sm">We will review your access request and contact you shortly.</p>
+            <h2 className="text-xl font-bold text-white mb-2">{t(T.loginPage.submitted)}</h2>
+            <p className="text-gray-400 text-sm">{t(T.loginPage.submittedDesc)}</p>
           </div>
         </section>
       </main>
@@ -32,24 +34,24 @@ export default function LoginPage() {
       <section className="flex-1 flex items-center justify-center px-4">
         <div className="bg-dark-soft border border-gray-800 rounded-xl p-8 max-w-sm w-full">
           <div className="text-center mb-6">
-            <h1 className="text-xl font-bold text-white">Dealer Access</h1>
-            <p className="text-gray-400 text-sm mt-1">Sign in to manage your listings</p>
+            <h1 className="text-xl font-bold text-white">{t(T.loginPage.heading)}</h1>
+            <p className="text-gray-400 text-sm mt-1">{t(T.loginPage.subheading)}</p>
           </div>
           <form onSubmit={(e) => { e.preventDefault(); setSubmitted(true); }} className="space-y-4">
             <div>
-              <label className="block text-sm font-bold text-gray-300 mb-1.5">Email</label>
+              <label className="block text-sm font-bold text-gray-300 mb-1.5">{t(T.loginPage.email)}</label>
               <input type="email" placeholder="your@email.com" className="w-full border border-gray-700 bg-dark rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-gold" required />
             </div>
             <div>
-              <label className="block text-sm font-bold text-gray-300 mb-1.5">Password</label>
+              <label className="block text-sm font-bold text-gray-300 mb-1.5">{t(T.loginPage.password)}</label>
               <input type="password" placeholder="••••••••" className="w-full border border-gray-700 bg-dark rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-gold" required />
             </div>
             <button type="submit" className="w-full bg-brand text-white py-3 rounded-lg font-bold text-sm hover:bg-brand-dark transition-all">
-              Request Access
+              {t(T.loginPage.loginBtn)}
             </button>
           </form>
           <p className="text-center text-xs text-gray-500 mt-4">
-            Don&apos;t have an account? <Link href="/contact" className="text-gold hover:text-gold/80">Contact us</Link>
+            {t(T.loginPage.noAccount)} <Link href="/contact" className="text-gold hover:text-gold/80">{t(T.footer.contactUs)}</Link>
           </p>
         </div>
       </section>

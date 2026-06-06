@@ -1,38 +1,37 @@
-import type { Metadata } from "next";
+"use client";
+
 import Link from "next/link";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-
-export const metadata: Metadata = {
-  title: "关于我们 | Honglajiao Auto Export",
-  description: "Learn about Honglajiao Auto Export — your trusted China used car export partner for African LHD markets.",
-};
-
-const whyChooseUs = [
-  { title: "China-Based Team", desc: "Direct access to the Chinese market. No middlemen, no markups — direct pricing." },
-  { title: "Multilingual", desc: "Chinese, English, French communication. No language barriers in your export process." },
-  { title: "Full Service", desc: "Sourcing, inspection, documentation, customs, shipping — one partner for everything." },
-  { title: "Quality First", desc: "259-point inspection on every vehicle. Full transparency on vehicle condition." },
-  { title: "African Focus", desc: "Specialized in African LHD markets — Nigeria, Ghana, Ethiopia, Kenya, Tanzania, and more." },
-  { title: "Competitive Pricing", desc: "Direct market access means better prices for you. Save 20-40% vs local dealers." },
-];
-
-const markets = [
-  "Nigeria", "Ghana", "Ethiopia", "Kenya", "Tanzania", "Egypt",
-  "Algeria", "Morocco", "Ivory Coast", "Senegal", "Cameroon", "Angola",
-  "DR Congo", "Sudan", "UAE", "Iraq", "Saudi Arabia",
-];
+import { useT, T } from "@/i18n/useT";
 
 export default function AboutPage() {
+  const t = useT();
+
+  const whyChooseUs = [
+    { title: t(T.about.chinaTeam), desc: t(T.about.chinaTeamDesc) },
+    { title: t(T.about.multilingual), desc: t(T.about.multilingualDesc) },
+    { title: t(T.about.fullService), desc: t(T.about.fullServiceDesc) },
+    { title: t(T.about.qualityFirst), desc: t(T.about.qualityFirstDesc) },
+    { title: t(T.about.africanFocus), desc: t(T.about.africanFocusDesc) },
+    { title: t(T.about.competitivePricing), desc: t(T.about.competitivePricingDesc) },
+  ];
+
+  const markets = [
+    "Nigeria", "Ghana", "Ethiopia", "Kenya", "Tanzania", "Egypt",
+    "Algeria", "Morocco", "Ivory Coast", "Senegal", "Cameroon", "Angola",
+    "DR Congo", "Sudan", "UAE", "Iraq", "Saudi Arabia",
+  ];
+
   return (
     <>
       <Header />
       <main className="flex-1">
         <section className="bg-gradient-to-b from-brand to-brand-dark text-white py-10">
           <div className="max-w-[1200px] mx-auto px-4 text-center">
-            <h1 className="text-2xl md:text-3xl font-bold mb-3">About Honglajiao Auto Export</h1>
+            <h1 className="text-2xl md:text-3xl font-bold mb-3">{t(T.about.heading)}</h1>
             <p className="text-white/80 text-sm md:text-base max-w-2xl mx-auto">
-              Your Trusted China Used Car Export Partner
+              {t(T.about.subheading)}
             </p>
           </div>
         </section>
@@ -51,7 +50,7 @@ export default function AboutPage() {
               </p>
             </div>
 
-            <h2 className="text-xl font-bold text-dark mb-6 text-center mt-12">Why Choose Us</h2>
+            <h2 className="text-xl font-bold text-dark mb-6 text-center mt-12">{t(T.about.whyChooseUs)}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-3xl mx-auto">
               {whyChooseUs.map((item) => (
                 <div key={item.title} className="bg-brand-light/30 rounded-xl p-5">
@@ -61,7 +60,7 @@ export default function AboutPage() {
               ))}
             </div>
 
-            <h2 className="text-xl font-bold text-dark mb-6 text-center mt-12">Our Markets</h2>
+            <h2 className="text-xl font-bold text-dark mb-6 text-center mt-12">{t(T.about.ourMarkets)}</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm max-w-2xl mx-auto">
               {markets.map((m) => (
                 <div key={m} className="bg-gray-50 rounded-lg px-4 py-2 text-center text-dark font-medium">{m}</div>
@@ -73,7 +72,7 @@ export default function AboutPage() {
                 Whether you&apos;re a dealer looking for bulk supply or an individual buyer, we&apos;re here to help. Contact us to discuss your requirements.
               </p>
               <Link href="/contact" className="bg-brand text-white px-8 py-3 rounded-lg text-sm font-bold hover:bg-brand-dark transition-colors">
-                Contact Us
+                {t(T.footer.contactUs)}
               </Link>
             </div>
           </div>

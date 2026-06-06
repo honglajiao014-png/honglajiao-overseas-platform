@@ -4,8 +4,10 @@ import { useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import Link from "next/link";
+import { useT, T } from "@/i18n/useT";
 
 export default function RegisterPage() {
+  const t = useT();
   const [form, setForm] = useState({ email: "", password: "", name: "", phone: "", company: "", country: "" });
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [error, setError] = useState("");
@@ -35,27 +37,27 @@ export default function RegisterPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h2 className="text-xl font-bold text-dark">Registration Successful!</h2>
-              <p className="text-gray-500 text-sm mt-2">Your dealer account has been created.</p>
+              <h2 className="text-xl font-bold text-dark">{t(T.registerPage.success)}</h2>
+              <p className="text-gray-500 text-sm mt-2">{t(T.registerPage.successDesc)}</p>
               <Link href="/" className="mt-6 inline-block bg-brand text-white px-8 py-3 rounded-xl font-bold text-sm hover:bg-brand-dark transition-all">Go to Homepage</Link>
             </div>
           ) : (
             <div className="bg-white rounded-2xl border border-border p-8">
-              <h2 className="text-2xl font-bold text-dark mb-2">Dealer Registration</h2>
-              <p className="text-gray-500 text-sm mb-6">Join Honglajiao and access wholesale vehicle pricing</p>
+              <h2 className="text-2xl font-bold text-dark mb-2">{t(T.registerPage.heading)}</h2>
+              <p className="text-gray-500 text-sm mb-6">{t(T.registerPage.subheading)}</p>
               {status === "error" && <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">{error}</div>}
               <form onSubmit={register} className="space-y-4">
-                <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Full Name *" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm" required />
-                <input value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} type="email" placeholder="Email *" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm" required />
-                <input value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))} type="password" placeholder="Password *" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm" required />
-                <input value={form.phone || ""} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} placeholder="Phone" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm" />
-                <input value={form.company || ""} onChange={e => setForm(f => ({ ...f, company: e.target.value }))} placeholder="Company Name" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm" />
-                <input value={form.country || ""} onChange={e => setForm(f => ({ ...f, country: e.target.value }))} placeholder="Country" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm" />
+                <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder={t(T.registerPage.name) + " *"} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm" required />
+                <input value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} type="email" placeholder={t(T.registerPage.email) + " *"} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm" required />
+                <input value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))} type="password" placeholder={t(T.registerPage.password) + " *"} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm" required />
+                <input value={form.phone || ""} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} placeholder={t(T.registerPage.phone)} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm" />
+                <input value={form.company || ""} onChange={e => setForm(f => ({ ...f, company: e.target.value }))} placeholder={t(T.registerPage.company)} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm" />
+                <input value={form.country || ""} onChange={e => setForm(f => ({ ...f, country: e.target.value }))} placeholder={t(T.registerPage.country)} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm" />
                 <button type="submit" disabled={status === "loading"} className="w-full bg-brand text-white py-3 rounded-xl font-bold text-sm hover:bg-brand-dark transition-all disabled:opacity-50">
-                  {status === "loading" ? "Creating Account..." : "Register as Dealer"}
+                  {status === "loading" ? "..." : t(T.registerPage.registerBtn)}
                 </button>
               </form>
-              <p className="text-xs text-gray-500 text-center mt-4">Already have an account? <Link href="/login" className="text-brand font-semibold">Login</Link></p>
+              <p className="text-xs text-gray-500 text-center mt-4">{t(T.registerPage.hasAccount)} <Link href="/login" className="text-brand font-semibold">{t(T.registerPage.loginHere)}</Link></p>
             </div>
           )}
         </div>

@@ -5,6 +5,7 @@ import { Footer } from "@/components/Footer";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
+import { useT, T } from "@/i18n/useT";
 
 const ALL_VEHICLES = [
   { slug: "audiq3-2022-20260603", title: "Audi Q3 2022 35 TFSI", price: 18500, year: 2022, mileage: "35,000 km", brand: "Audi", type: "Used Car", transmission: "Automatic", fuel: "Petrol" },
@@ -12,6 +13,7 @@ const ALL_VEHICLES = [
 ];
 
 function CarsContent() {
+  const t = useT();
   const sp = useSearchParams();
   const searchQuery = sp.get("search") || "";
   const typeFilter = sp.get("type") || "";
@@ -43,38 +45,38 @@ function CarsContent() {
         <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
         </svg>
-        Filters
+        {t(T.cars.filters)}
       </h3>
 
       <div>
-        <label className="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">Brand</label>
+        <label className="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">{t(T.cars.brand)}</label>
         <select value={filters.brand} onChange={e => setFilters(f => ({ ...f, brand: e.target.value }))} className={inputClass}>
-          <option value="">All Brands</option>
+          <option value="">{t(T.cars.allBrands)}</option>
           {brands.map(b => <option key={b} value={b}>{b}</option>)}
         </select>
       </div>
 
       <div>
-        <label className="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">Type</label>
+        <label className="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">{t(T.cars.type)}</label>
         <select value={filters.type} onChange={e => setFilters(f => ({ ...f, type: e.target.value }))} className={inputClass}>
-          <option value="">All Types</option>
+          <option value="">{t(T.cars.allTypes)}</option>
           {types.map(t => <option key={t} value={t}>{t}</option>)}
         </select>
       </div>
 
       <div>
-        <label className="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">Transmission</label>
+        <label className="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">{t(T.cars.transmission)}</label>
         <select value={filters.transmission} onChange={e => setFilters(f => ({ ...f, transmission: e.target.value }))} className={inputClass}>
-          <option value="">All</option>
+          <option value="">{t(T.cars.allTransmission)}</option>
           <option value="Automatic">Automatic</option>
           <option value="Manual">Manual</option>
         </select>
       </div>
 
       <div>
-        <label className="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">Fuel</label>
+        <label className="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">{t(T.cars.fuel)}</label>
         <select value={filters.fuel} onChange={e => setFilters(f => ({ ...f, fuel: e.target.value }))} className={inputClass}>
-          <option value="">All</option>
+          <option value="">{t(T.cars.allFuel)}</option>
           <option value="Petrol">Petrol</option>
           <option value="Diesel">Diesel</option>
           <option value="Electric">Electric</option>
@@ -82,18 +84,18 @@ function CarsContent() {
       </div>
 
       <div>
-        <label className="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">Price Range ($)</label>
+        <label className="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">{t(T.cars.price)} ($)</label>
         <div className="flex gap-2">
-          <input type="number" placeholder="Min" value={filters.minPrice} onChange={e => setFilters(f => ({ ...f, minPrice: e.target.value }))} className={inputClass} />
-          <input type="number" placeholder="Max" value={filters.maxPrice} onChange={e => setFilters(f => ({ ...f, maxPrice: e.target.value }))} className={inputClass} />
+          <input type="number" placeholder={t(T.cars.minPrice)} value={filters.minPrice} onChange={e => setFilters(f => ({ ...f, minPrice: e.target.value }))} className={inputClass} />
+          <input type="number" placeholder={t(T.cars.maxPrice)} value={filters.maxPrice} onChange={e => setFilters(f => ({ ...f, maxPrice: e.target.value }))} className={inputClass} />
         </div>
       </div>
 
       <div>
-        <label className="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">Year</label>
+        <label className="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">{t(T.vehicles.year)}</label>
         <div className="flex gap-2">
-          <input type="number" placeholder="Min" value={filters.minYear} onChange={e => setFilters(f => ({ ...f, minYear: e.target.value }))} className={inputClass} />
-          <input type="number" placeholder="Max" value={filters.maxYear} onChange={e => setFilters(f => ({ ...f, maxYear: e.target.value }))} className={inputClass} />
+          <input type="number" placeholder={t(T.cars.minYear)} value={filters.minYear} onChange={e => setFilters(f => ({ ...f, minYear: e.target.value }))} className={inputClass} />
+          <input type="number" placeholder={t(T.cars.maxYear)} value={filters.maxYear} onChange={e => setFilters(f => ({ ...f, maxYear: e.target.value }))} className={inputClass} />
         </div>
       </div>
 
@@ -101,7 +103,7 @@ function CarsContent() {
         onClick={() => setFilters({ brand: "", type: "", transmission: "", fuel: "", minPrice: "", maxPrice: "", minYear: "", maxYear: "" })}
         className="w-full text-xs font-semibold text-gray-500 hover:text-primary transition-colors py-2"
       >
-        Clear All Filters
+        {t(T.cars.clearFilters)}
       </button>
     </div>
   );
@@ -111,25 +113,22 @@ function CarsContent() {
       <Header />
       <main className="bg-gray-50 min-h-screen">
         <div className="container-wide py-8">
-          {/* Page Header */}
           <div className="mb-8">
             <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900">
-              {searchQuery ? <>Search results for &ldquo;{searchQuery}&rdquo;</> : "All Vehicles"}
+              {searchQuery ? <>Search results for &ldquo;{searchQuery}&rdquo;</> : t(T.cars.heading)}
             </h1>
             <p className="text-gray-500 text-sm mt-2">
-              {filtered.length} vehicle{filtered.length !== 1 ? "s" : ""} found — Real photos, real inspection, real prices
+              {filtered.length} {t(T.cars.results)}
             </p>
           </div>
 
           <div className="flex gap-8">
-            {/* Desktop Sidebar */}
             <aside className="hidden lg:block w-72 shrink-0">
               <div className="bg-white rounded-2xl border border-gray-100 p-6 sticky top-24 shadow-sm">
                 <FilterPanel />
               </div>
             </aside>
 
-            {/* Mobile Filters Toggle */}
             <div className="lg:hidden fixed bottom-6 left-4 z-40">
               <button
                 onClick={() => setMobileFiltersOpen(true)}
@@ -138,21 +137,20 @@ function CarsContent() {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                 </svg>
-                Filters
+                {t(T.cars.filters)}
                 {Object.values(filters).some(v => v) && (
                   <span className="w-2 h-2 bg-accent rounded-full" />
                 )}
               </button>
             </div>
 
-            {/* Mobile Filters Drawer */}
             {mobileFiltersOpen && (
               <>
                 <div className="lg:hidden fixed inset-0 z-50 bg-black/40" onClick={() => setMobileFiltersOpen(false)} />
                 <div className="lg:hidden fixed inset-y-0 left-0 z-50 w-80 max-w-[85vw] bg-white shadow-2xl overflow-y-auto animate-slide-in-right">
                   <div className="p-6">
                     <div className="flex items-center justify-between mb-6">
-                      <h3 className="font-extrabold text-gray-900">Filters</h3>
+                      <h3 className="font-extrabold text-gray-900">{t(T.cars.filters)}</h3>
                       <button onClick={() => setMobileFiltersOpen(false)} className="p-1 text-gray-400 hover:text-gray-600">
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
@@ -165,7 +163,6 @@ function CarsContent() {
               </>
             )}
 
-            {/* Vehicle Grid */}
             <div className="flex-1">
               {filtered.length === 0 ? (
                 <div className="text-center py-24 bg-white rounded-2xl border border-gray-100">
@@ -174,8 +171,7 @@ function CarsContent() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-bold text-gray-400">No vehicles found</h3>
-                  <p className="text-sm text-gray-400 mt-1">Try adjusting your filters or search terms</p>
+                  <h3 className="text-lg font-bold text-gray-400">{t(T.cars.noResults)}</h3>
                 </div>
               ) : (
                 <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -183,13 +179,11 @@ function CarsContent() {
                     <Link key={v.slug} href={`/cars/${v.slug}`}
                       className="card-hover group bg-white rounded-2xl border border-gray-100 overflow-hidden flex flex-col shadow-sm"
                     >
-                      {/* Image Placeholder */}
                       <div className="aspect-[16/10] img-placeholder relative overflow-hidden">
                         <div className="text-center">
                           <div className="text-4xl mb-2 opacity-20">🚘</div>
                           <div className="text-sm opacity-40 font-semibold">{v.brand}</div>
                         </div>
-                        {/* Type Badge */}
                         <span className="absolute top-3 left-3 badge badge-primary text-[10px] shadow-sm">
                           {v.type}
                         </span>
@@ -216,7 +210,7 @@ function CarsContent() {
                             <div className="text-[10px] text-gray-400">FOB China</div>
                           </div>
                           <span className="text-xs font-semibold text-primary opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                            Details
+                            {t(T.cars.viewDetails)}
                             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
                             </svg>
@@ -242,7 +236,7 @@ export default function CarsPage() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="w-10 h-10 mx-auto mb-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm text-gray-400">Loading vehicles...</p>
+          <p className="text-sm text-gray-400">Loading...</p>
         </div>
       </div>
     }>

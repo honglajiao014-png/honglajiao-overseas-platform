@@ -1,6 +1,9 @@
+"use client";
+
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import Link from "next/link";
+import { useT, T } from "@/i18n/useT";
 
 const articles = [
   {
@@ -41,12 +44,14 @@ const articles = [
 ];
 
 export default function BlogPage() {
+  const t = useT();
+
   return (
     <>
       <Header />
       <main className="max-w-[1600px] mx-auto px-4 py-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-guazi-dark mb-3">China Car Export Blog</h1>
-        <p className="text-gray-500 text-sm mb-8">Guides, Tips &amp; Market Insights for Vehicle Export from China</p>
+        <h1 className="text-2xl md:text-3xl font-bold text-guazi-dark mb-3">{t(T.blogPage.heading)}</h1>
+        <p className="text-gray-500 text-sm mb-8">{t(T.blogPage.subheading)}</p>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {articles.map((a) => (
@@ -63,13 +68,12 @@ export default function BlogPage() {
           ))}
         </div>
 
-        {/* Subscribe */}
         <div className="mt-16 bg-guazi-green-light rounded-2xl p-8 text-center">
-          <h2 className="text-lg font-bold text-guazi-dark mb-2">Subscribe for Export Market Updates</h2>
-          <p className="text-sm text-gray-500 mb-4">获取最新中国汽车出口市场资讯和采购指南</p>
+          <h2 className="text-lg font-bold text-guazi-dark mb-2">{t(T.newsletter.heading)}</h2>
+          <p className="text-sm text-gray-500 mb-4">{t(T.newsletter.desc)}</p>
           <div className="flex max-w-md mx-auto gap-2">
-            <input type="email" placeholder="your@email.com" className="flex-1 border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-guazi-green" />
-            <button className="bg-guazi-green text-white px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-guazi-green-dark transition-all">订阅</button>
+            <input type="email" placeholder={t(T.newsletter.placeholder)} className="flex-1 border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-guazi-green" />
+            <button className="bg-guazi-green text-white px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-guazi-green-dark transition-all">{t(T.newsletter.subscribeBtn)}</button>
           </div>
         </div>
       </main>

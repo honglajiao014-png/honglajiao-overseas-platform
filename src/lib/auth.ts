@@ -1,7 +1,11 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
-const JWT_SECRET = process.env.JWT_SECRET || "honglajiao-admin-secret-2026";
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error("JWT_SECRET 环境变量未设置，请在生产环境配置安全的密钥");
+}
+const JWT_SECRET_STR: string = JWT_SECRET;
 
 export function hashPassword(password: string): string {
   return bcrypt.hashSync(password, 12);
@@ -12,12 +16,14 @@ export function verifyPassword(password: string, hash: string): boolean {
 }
 
 export function signToken(payload: { userId: string; role: string }): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
+  return jwt.sign(payload, JWT_SECRET_STR, { expiresIn: "7d" });
 }
 
 export function verifyToken(token: string): { userId: string; role: string } | null {
   try {
-    return jwt.verify(token, JWT_SECRET) as { userId: string; role: string };
+    const decoded = jwt.verify(token, JWT_SECRET_STR) as unknown as { userId: string; role: string };
+    if (decoded.userId && decoded.role) return decoded;
+    return null;
   } catch {
     return null;
   }
