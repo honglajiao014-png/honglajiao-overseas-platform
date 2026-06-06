@@ -122,7 +122,7 @@ export default function Home() {
         {/* 🔍 搜索区域 — 全宽醒目 */}
         <div className="bg-gradient-to-r from-primary/90 to-primary shadow-lg">
           <div className="max-w-[1400px] mx-auto px-4 py-8">
-            <div className="flex items-center gap-3 max-w-3xl mx-auto">
+            <div className="flex items-center gap-3 max-w-5xl mx-auto">
               <div className="relative flex-1">
                 <svg className="absolute left-5 top-1/2 -translate-y-1/2 w-6 h-6 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -131,14 +131,14 @@ export default function Home() {
                   type="text"
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && e.currentTarget.blur()}
+                  onKeyDown={e => e.key === 'Enter' && setSearchQuery((e.target as HTMLInputElement).value)}
                   placeholder={t(T.homeFilter.searchVehicle)}
-                  className="w-full pl-14 pr-6 py-4 rounded-2xl text-base bg-white/95 backdrop-blur-sm border-2 border-white/30 focus:outline-none focus:border-white focus:bg-white focus:ring-4 focus:ring-white/30 placeholder-gray-400 shadow-inner"
+                  className="w-full pl-14 pr-6 py-5 rounded-2xl text-xl bg-white backdrop-blur-sm border-2 border-white focus:outline-none focus:border-white focus:bg-white focus:ring-4 focus:ring-white/30 placeholder-gray-400 shadow-lg"
                 />
               </div>
               <button
-                onClick={() => {}}
-                className="px-8 py-4 bg-white text-primary font-extrabold text-base rounded-2xl hover:bg-gray-100 hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 shadow-lg border-2 border-white/50"
+                onClick={() => setSearchQuery(searchQuery)}
+                className="px-10 py-5 bg-white text-primary font-extrabold text-xl rounded-2xl hover:bg-gray-100 hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 shadow-lg border-2 border-white/50"
               >
                 {t(T.homeFilter.searchBtn)}
               </button>
@@ -151,7 +151,7 @@ export default function Home() {
             {/* 品牌筛选 — 官方Logo网格 + 搜索框 */}
             <div className="mb-6">
               <div className="flex items-center gap-4 mb-4">
-                <span className="text-sm font-bold text-gray-700 shrink-0">{t(T.homeFilter.brand)}：</span>
+                <span className="text-base font-bold text-gray-700 shrink-0">{t(T.homeFilter.brand)}：</span>
                 {/* 品牌搜索框 */}
                 <div className="relative w-56">
                   <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -162,30 +162,22 @@ export default function Home() {
                     value={brandSearch}
                     onChange={e => { setBrandSearch(e.target.value); }}
                     placeholder={t(T.homeFilter.searchBrand)}
-                    className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-base focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
                 {brandSearch && (
-                  <span className="text-xs text-gray-400">
+                  <span className="text-sm text-gray-400">
                     {t(T.homeFilter.found)} {filteredBrands.length} {t(T.homeFilter.brands)}
                   </span>
                 )}
               </div>
               {/* 品牌Logo网格 */}
               <div className="flex flex-wrap gap-1.5">
-                <button
-                  onClick={() => { setBrandFilter(""); setBrandSearch(""); }}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
-                    !brandFilter ? "bg-primary text-white shadow-md" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  }`}
-                >
-                  {t(T.homeFilter.all)}
-                </button>
                 {(brandSearch ? filteredBrands : BRANDS).map(b => (
                   <button
                     key={b.name}
                     onClick={() => setBrandFilter(b.name)}
-                    className={`flex flex-col items-center gap-1 px-2.5 py-2 rounded-lg text-xs font-medium transition-all ${
+                    className={`flex flex-col items-center gap-1 px-2.5 py-2 rounded-lg text-sm font-medium transition-all ${
                       brandFilter === b.name
                         ? "bg-white text-primary ring-2 ring-primary shadow-md scale-105"
                         : "bg-gray-50 text-gray-600 hover:bg-gray-100 hover:shadow-sm"
@@ -202,13 +194,13 @@ export default function Home() {
 
             {/* 价格筛选 */}
             <div className="flex items-center gap-4 mb-4">
-              <span className="text-sm font-bold text-gray-700 shrink-0">{t(T.homeFilter.price)}：</span>
+              <span className="text-base font-bold text-gray-700 shrink-0">{t(T.homeFilter.price)}：</span>
               <div className="flex flex-wrap gap-2 items-center">
                 {PRICE_RANGES.map((r, i) => (
                   <button
                     key={i}
                     onClick={() => setPriceRange(i)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                       priceRange === i ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                     }`}
                   >
@@ -221,30 +213,30 @@ export default function Home() {
                     placeholder="最低"
                     value={customMinPrice}
                     onChange={e => { setCustomMinPrice(e.target.value); setPriceRange(-1); }}
-                    className="w-16 px-2 py-1.5 border border-gray-200 rounded-lg text-xs text-center"
+                    className="w-16 px-2 py-1.5 border border-gray-200 rounded-lg text-sm text-center"
                   />
-                  <span className="text-xs text-gray-400">—</span>
+                  <span className="text-sm text-gray-400">—</span>
                   <input
                     type="number"
                     placeholder="最高"
                     value={customMaxPrice}
                     onChange={e => { setCustomMaxPrice(e.target.value); setPriceRange(-1); }}
-                    className="w-16 px-2 py-1.5 border border-gray-200 rounded-lg text-xs text-center"
+                    className="w-16 px-2 py-1.5 border border-gray-200 rounded-lg text-sm text-center"
                   />
-                  <span className="text-xs text-gray-400">万</span>
+                  <span className="text-sm text-gray-400">万</span>
                 </div>
               </div>
             </div>
 
             {/* 级别筛选 */}
             <div className="flex items-center gap-4 mb-4">
-              <span className="text-sm font-bold text-gray-700 shrink-0">{t(T.homeFilter.level)}：</span>
+              <span className="text-base font-bold text-gray-700 shrink-0">{t(T.homeFilter.level)}：</span>
               <div className="flex flex-wrap gap-2">
                 {CAR_LEVELS.map(l => (
                   <button
                     key={l}
                     onClick={() => setLevelFilter(l)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                       levelFilter === l ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                     }`}
                   >
@@ -256,13 +248,13 @@ export default function Home() {
 
             {/* 车龄筛选 */}
             <div className="flex items-center gap-4 mb-4">
-              <span className="text-sm font-bold text-gray-700 shrink-0">{t(T.homeFilter.age)}：</span>
+              <span className="text-base font-bold text-gray-700 shrink-0">{t(T.homeFilter.age)}：</span>
               <div className="flex flex-wrap gap-2">
                 {AGE_RANGES.map((r, i) => (
                   <button
                     key={i}
                     onClick={() => setAgeRange(i)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                       ageRange === i ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                     }`}
                   >
@@ -274,13 +266,13 @@ export default function Home() {
 
             {/* 排序 */}
             <div className="flex items-center gap-4">
-              <span className="text-sm font-bold text-gray-700 shrink-0">{t(T.homeFilter.sort)}：</span>
+              <span className="text-base font-bold text-gray-700 shrink-0">{t(T.homeFilter.sort)}：</span>
               <div className="flex flex-wrap gap-2">
                 {SORT_OPTIONS.map(o => (
                   <button
                     key={o.value}
                     onClick={() => setSortBy(o.value)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                       sortBy === o.value ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                     }`}
                   >
@@ -296,7 +288,7 @@ export default function Home() {
         <div className="max-w-[1400px] mx-auto px-4 py-6">
           {/* 结果统计 */}
           <div className="mb-6">
-            <p className="text-sm text-gray-500">
+            <p className="text-base text-gray-500">
               <span>{t(T.homeFilter.foundTotal)}</span> <span className="font-bold text-gray-900">{filtered.length}</span> {t(T.homeFilter.results)}
             </p>
           </div>
@@ -304,10 +296,10 @@ export default function Home() {
           {/* 车辆卡片列表 */}
           {filtered.length === 0 ? (
             <div className="text-center py-20 bg-white rounded-2xl border border-gray-100">
-              <div className="text-5xl mb-4">🚗</div>
-              <h3 className="text-lg font-bold text-gray-400 mb-2">{t(T.homeFilter.noResult)}</h3>
-              <p className="text-sm text-gray-400">{t(T.homeFilter.noResultDesc)}</p>
-              <a href="/inquiry" className="inline-block mt-4 bg-primary text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-primary-dark transition-all">
+              <div className="text-6xl mb-4">🚗</div>
+              <h3 className="text-xl font-bold text-gray-400 mb-2">{t(T.homeFilter.noResult)}</h3>
+              <p className="text-base text-gray-400">{t(T.homeFilter.noResultDesc)}</p>
+              <a href="/inquiry" className="inline-block mt-4 bg-primary text-white px-6 py-2.5 rounded-xl text-base font-bold hover:bg-primary-dark transition-all">
                 {t(T.homeFilter.submitRequest)}
               </a>
             </div>
@@ -321,13 +313,13 @@ export default function Home() {
                 >
                   {/* 图片 */}
                   <div className="aspect-[4/3] bg-gray-100 relative overflow-hidden">
-                    <div className="w-full h-full flex items-center justify-center text-6xl">
+                    <div className="w-full h-full flex items-center justify-center text-7xl">
                       🚘
                     </div>
                     {/* 标签 */}
                     <div className="absolute top-3 left-3 flex gap-1.5">
                       {v.tags.map(tag => (
-                        <span key={tag} className="px-2 py-0.5 bg-primary/90 text-white text-[10px] font-medium rounded-md">
+                        <span key={tag} className="px-2 py-0.5 bg-primary/90 text-white text-xs font-medium rounded-md">
                           {tag}
                         </span>
                       ))}
@@ -336,11 +328,11 @@ export default function Home() {
 
                   {/* 信息 */}
                   <div className="p-4 flex flex-col flex-1">
-                    <h3 className="text-sm font-bold text-gray-900 line-clamp-2 group-hover:text-primary transition-colors mb-3">
+                    <h3 className="text-base font-bold text-gray-900 line-clamp-2 group-hover:text-primary transition-colors mb-3">
                       {v.title}
                     </h3>
 
-                    <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-500 mb-4">
+                    <div className="flex flex-wrap gap-x-3 gap-y-1 text-sm text-gray-500 mb-4">
                       <span>{v.year}年</span>
                       <span className="text-gray-300">|</span>
                       <span>{v.mileage}</span>
@@ -352,12 +344,12 @@ export default function Home() {
 
                     <div className="mt-auto flex items-end justify-between">
                       <div>
-                        <span className="text-lg font-extrabold text-red-500">
+                        <span className="text-xl font-extrabold text-red-500">
                           ¥{v.price.toLocaleString()}
                         </span>
-                        <span className="text-xs text-gray-400 ml-1">CNY</span>
+                        <span className="text-sm text-gray-400 ml-1">CNY</span>
                       </div>
-                      <span className="text-xs text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="text-sm text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity">
                         {t(T.homeFilter.viewDetail)}
                       </span>
                     </div>
@@ -371,7 +363,7 @@ export default function Home() {
           <div className="text-center mt-10">
             <a
               href="/cars"
-              className="inline-flex items-center gap-2 bg-white border-2 border-primary text-primary px-8 py-3 rounded-xl text-sm font-bold hover:bg-primary hover:text-white transition-all"
+              className="inline-flex items-center gap-2 bg-white border-2 border-primary text-primary px-8 py-3 rounded-xl text-base font-bold hover:bg-primary hover:text-white transition-all"
             >
               {t(T.homeFilter.viewAll)}
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
