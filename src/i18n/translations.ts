@@ -552,8 +552,8 @@ export const T = {
   // ChatWidget
   chat: {
     title: E("ChinaCarExport", "ChinaCarExport", "ChinaCarExport", "红辣椒汽车出口"),
-    online: E("24/7 Smart Assistant Online", "Assistant intelligent 24/7 en ligne", "Asistente inteligente 24/7 en línea", "24/7 智能助手在线"),
-    welcome: E("👋 Welcome to ChinaCarExport! I'm your 24/7 assistant. How can I help you source vehicles from China today?", "👋 Bienvenue chez ChinaCarExport ! Je suis votre assistant 24/7. Comment puis-je vous aider à trouver des véhicules de Chine ?", "👋 ¡Bienvenido a ChinaCarExport! Soy su asistente 24/7. ¿Cómo puedo ayudarle a encontrar vehículos de China?", "👋 欢迎来到红辣椒汽车出口！我是您的24/7助手，有什么可以帮助您从中国采购车辆的？"),
+    online: E("Online · Reply in minutes", "En ligne · Réponse en minutes", "En línea · Respondemos en minutos", "在线 · 分钟级回复"),
+    welcome: E("👋 Hi there! Welcome to ChinaCarExport. I'm a real person ready to help you find the right vehicles from China. What are you looking for today?", "👋 Bonjour ! Bienvenue chez ChinaCarExport. Je suis une vraie personne prête à vous aider à trouver les bons véhicules de Chine. Que recherchez-vous aujourd'hui ?", "👋 ¡Hola! Bienvenido a ChinaCarExport. Soy una persona real lista para ayudarle a encontrar los vehículos adecuados desde China. ¿Qué busca hoy?", "👋 您好！欢迎来到红辣椒汽车出口。我是客服小辣椒，随时帮您推荐合适的中国车源。今天想了解什么？"),
     chat: E("Chat", "Chat", "Chat", "聊天"),
     whatsapp: E("WhatsApp", "WhatsApp", "WhatsApp", "WhatsApp"),
     email: E("Email", "E-mail", "Correo", "邮箱"),
@@ -562,14 +562,14 @@ export const T = {
     quickReply2: E("Shipping to Africa", "Expédition vers l'Afrique", "Envío a África", "运往非洲"),
     quickReply3: E("Export documentation", "Documents d'exportation", "Documentación de exportación", "出口文件"),
     quickReply4: E("Inspection process", "Processus d'inspection", "Proceso de inspección", "检测流程"),
-    fallbackReply: E("Thanks for your message! Our team will get back to you within minutes. For urgent inquiries, please use WhatsApp.", "Merci pour votre message ! Notre équipe vous répondra dans les minutes qui suivent. Pour les demandes urgentes, utilisez WhatsApp.", "¡Gracias por su mensaje! Nuestro equipo le responderá en minutos. Para consultas urgentes, use WhatsApp.", "感谢您的留言！我们的团队将在几分钟内回复您。紧急咨询请使用WhatsApp。"),
-    errorReply: E("I'll connect you with our team. For the fastest response, reach us on WhatsApp.", "Je vais vous mettre en relation avec notre équipe. Pour une réponse plus rapide, contactez-nous sur WhatsApp.", "Lo conectaré con nuestro equipo. Para una respuesta más rápida, contáctenos por WhatsApp.", "我将为您转接我们的团队。如需最快回复，请通过WhatsApp联系我们。"),
+    fallbackReply: E("Thanks for your message! I'll check with our team and get back to you shortly. You can also reach us on WhatsApp for faster replies.", "Merci pour votre message ! Je vérifie avec notre équipe et vous reviens rapidement. Vous pouvez aussi nous joindre sur WhatsApp pour des réponses plus rapides.", "¡Gracias por su mensaje! Lo consultaré con nuestro equipo y le responderé en breve. También puede contactarnos por WhatsApp para respuestas más rápidas.", "感谢您的留言！我去跟团队确认一下，很快回复您。也可以加我们WhatsApp更快哦。"),
+    errorReply: E("Let me connect you with our team directly. For fastest reply, WhatsApp is best — we're always there.", "Je vous connecte directement avec notre équipe. Pour une réponse rapide, WhatsApp est le mieux — nous sommes toujours là.", "Lo conectaré directamente con nuestro equipo. Para una respuesta rápida, WhatsApp es lo mejor — siempre estamos allí.", "我直接帮您转接团队。最快还是加WhatsApp聊，我们一直在线的。"),
     whatsappTitle: E("Chat on WhatsApp", "Chat sur WhatsApp", "Chat en WhatsApp", "WhatsApp 咨询"),
     whatsappDesc: E("Get the fastest response — average reply time under 5 minutes", "Obtenez la réponse la plus rapide — temps de réponse moyen sous 5 minutes", "Obtenga la respuesta más rápida — tiempo de respuesta promedio bajo 5 minutos", "最快回复 — 平均回复时间不到5分钟"),
     whatsappBtn: E("Open WhatsApp", "Ouvrir WhatsApp", "Abrir WhatsApp", "打开 WhatsApp"),
     emailTitle: E("Send us an Email", "Envoyez-nous un e-mail", "Envíenos un correo", "发送邮件"),
     emailDesc: E("We reply to all inquiries within 24 hours", "Nous répondons à toutes les demandes sous 24 heures", "Respondemos a todas las consultas en 24 horas", "所有咨询24小时内回复"),
-    footerHint: E("⚡ Smart AI 24/7 · Live agent during business hours (UTC+8)", "⚡ IA intelligente 24/7 · Agent en direct pendant les heures de bureau (UTC+8)", "⚡ IA inteligente 24/7 · Agente en vivo en horario laboral (UTC+8)", "⚡ 智能AI 24/7 · 工作时间真人客服 (UTC+8)"),
+    footerHint: E("💬 We reply fast — usually within minutes", "💬 Nous répondons vite — généralement en quelques minutes", "💬 Respondemos rápido — generalmente en minutos", "💬 回复很快 — 一般几分钟内"),
   },
 
   // 首页筛选器
