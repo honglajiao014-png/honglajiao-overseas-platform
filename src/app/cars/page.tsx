@@ -112,14 +112,6 @@ export default function CarsPage() {
             {/* 侧边栏筛选器 */}
             <aside className="hidden lg:block w-64 shrink-0">
               <div className="bg-white rounded-2xl border border-gray-100 p-5 sticky top-24">
-                <div className="flex items-center justify-between mb-5">
-                  <h3 className="font-extrabold text-gray-900 text-sm">
-                    {t(T.carsFilter.filter)} {activeFilterCount > 0 && `(${activeFilterCount})`}
-                  </h3>
-                  {activeFilterCount > 0 && (
-                    <button onClick={resetFilters} className="text-xs text-primary hover:underline">{t(T.carsFilter.reset)}</button>
-                  )}
-                </div>
 
                 {/* 品牌 */}
                 <div className="mb-5">
