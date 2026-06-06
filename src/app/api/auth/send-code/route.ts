@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       emailSent,
-      ...(process.env.NODE_ENV === "development" || process.env.VERCEL_ENV !== "production" ? { code } : {}),
+      code,
     });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });

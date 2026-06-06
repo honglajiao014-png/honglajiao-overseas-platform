@@ -35,8 +35,13 @@ export default function RegisterPage() {
     // Start 60s countdown
     setCountdown(60);
     const timer = setInterval(() => setCountdown(c => { if (c <= 0) { clearInterval(timer); return 0; } return c - 1; }), 1000);
-    // Auto-fill code in dev
-    if (data.code) setCode(data.code);
+    // Auto-fill code
+    if (data.code) {
+      if (!data.emailSent) {
+        setError(`验证码：${data.code}（邮件暂未配置，请使用此码）`);
+      }
+      setCode(data.code);
+    }
   };
 
   const verifyCode = async () => {
