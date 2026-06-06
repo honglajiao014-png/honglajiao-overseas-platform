@@ -75,8 +75,8 @@ export function Header() {
                 CCE
               </div>
               <div className="hidden sm:block">
-                <div className="text-sm font-bold text-gray-900 leading-tight">ChinaCarExport</div>
-                <div className="text-[10px] text-gray-500 leading-tight tracking-wide">FROM CHINA TO AFRICA</div>
+                <div className="text-sm font-bold text-gray-900 leading-tight">{t(T.site.name)}</div>
+                <div className="text-[10px] text-gray-500 leading-tight tracking-wide">{t(T.site.tagline)}</div>
               </div>
             </Link>
 

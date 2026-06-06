@@ -1,26 +1,33 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useT, T } from "@/i18n/useT";
 
 interface Message { role: "user" | "bot" | "system"; content: string }
 
-const QUICK_REPLIES = [
-  "Vehicle pricing inquiry",
-  "Shipping to Africa",
-  "Export documentation",
-  "Inspection process",
-];
-
 export function ChatWidget() {
+  const t = useT();
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<"chat" | "whatsapp" | "email">("chat");
   const [messages, setMessages] = useState<Message[]>([
-    { role: "system", content: "👋 Welcome to ChinaCarExport! I'm your 24/7 assistant. How can I help you source vehicles from China today?" }
+    { role: "system", content: "" }
   ]);
   const [input, setInput] = useState("");
   const [waiting, setWaiting] = useState(false);
   const [sessionId] = useState(`sid-${Date.now()}`);
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  // 初始化欢迎消息（语言切换时更新）
+  useEffect(() => {
+    setMessages([{ role: "system", content: t(T.chat.welcome) }]);
+  }, [t]);
+
+  const QUICK_REPLIES = [
+    t(T.chat.quickReply1),
+    t(T.chat.quickReply2),
+    t(T.chat.quickReply3),
+    t(T.chat.quickReply4),
+  ];
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
 
@@ -47,10 +54,10 @@ export function ChatWidget() {
       if (data.reply) {
         setMessages(m => [...m, { role: "bot", content: data.reply }]);
       } else {
-        setMessages(m => [...m, { role: "bot", content: "Thanks for your message! Our team will get back to you within minutes. For urgent inquiries, please use WhatsApp." }]);
+        setMessages(m => [...m, { role: "bot", content: t(T.chat.fallbackReply) }]);
       }
     } catch {
-      setMessages(m => [...m, { role: "bot", content: "I'll connect you with our team. For the fastest response, reach us on WhatsApp." }]);
+      setMessages(m => [...m, { role: "bot", content: t(T.chat.errorReply) }]);
     }
     setWaiting(false);
   };
@@ -59,7 +66,6 @@ export function ChatWidget() {
     <>
       {open && <div className="fixed inset-0 z-50 bg-black/50 md:hidden backdrop-blur-sm" onClick={() => setOpen(false)} />}
 
-      {/* Chat Panel */}
       <div className={`fixed bottom-24 right-6 z-50 w-[calc(100vw-2rem)] max-w-[400px] bg-white rounded-2xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden transition-all duration-300 ${
         open ? "opacity-100 translate-y-0 scale-100 pointer-events-auto" : "opacity-0 translate-y-4 scale-95 pointer-events-none"
       }`}>
@@ -72,10 +78,10 @@ export function ChatWidget() {
                 💬
               </div>
               <div>
-                <h3 className="text-white font-bold text-sm">ChinaCarExport</h3>
+                <h3 className="text-white font-bold text-sm">{t(T.chat.title)}</h3>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <span className="w-2 h-2 bg-green-300 rounded-full animate-pulse" />
-                  <span className="text-green-100 text-[11px]">24/7 Smart Assistant Online</span>
+                  <span className="text-green-100 text-[11px]">{t(T.chat.online)}</span>
                 </div>
               </div>
             </div>
@@ -90,9 +96,9 @@ export function ChatWidget() {
         {/* Tabs */}
         <div className="flex bg-gray-50 border-b border-gray-100">
           {[
-            { key: "chat" as const, icon: "💬", label: "Chat" },
-            { key: "whatsapp" as const, icon: "📱", label: "WhatsApp" },
-            { key: "email" as const, icon: "📧", label: "Email" },
+            { key: "chat" as const, icon: "💬", label: t(T.chat.chat) },
+            { key: "whatsapp" as const, icon: "📱", label: t(T.chat.whatsapp) },
+            { key: "email" as const, icon: "📧", label: t(T.chat.email) },
           ].map((tb) => (
             <button key={tb.key} onClick={() => setTab(tb.key)}
               className={`flex-1 py-3 text-xs font-bold transition-all ${
@@ -158,7 +164,7 @@ export function ChatWidget() {
               <input
                 value={input}
                 onChange={e => setInput(e.target.value)}
-                placeholder="Type your message..."
+                placeholder={t(T.chat.typeMessage)}
                 className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
               />
               <button
@@ -182,8 +188,8 @@ export function ChatWidget() {
                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/>
               </svg>
             </div>
-            <h4 className="text-gray-900 font-bold mb-1">Chat on WhatsApp</h4>
-            <p className="text-gray-500 text-sm mb-6">Get the fastest response — average reply time under 5 minutes</p>
+            <h4 className="text-gray-900 font-bold mb-1">{t(T.chat.whatsappTitle)}</h4>
+            <p className="text-gray-500 text-sm mb-6">{t(T.chat.whatsappDesc)}</p>
             <a
               href="https://wa.me/8613877284681"
               target="_blank"
@@ -193,7 +199,7 @@ export function ChatWidget() {
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/>
               </svg>
-              Open WhatsApp
+              {t(T.chat.whatsappBtn)}
             </a>
           </div>
         )}
@@ -206,8 +212,8 @@ export function ChatWidget() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
             </div>
-            <h4 className="text-gray-900 font-bold mb-1">Send us an Email</h4>
-            <p className="text-gray-500 text-sm mb-6">We reply to all inquiries within 24 hours</p>
+            <h4 className="text-gray-900 font-bold mb-1">{t(T.chat.emailTitle)}</h4>
+            <p className="text-gray-500 text-sm mb-6">{t(T.chat.emailDesc)}</p>
             <a
               href="mailto:info@honglajiao1688.com"
               className="btn btn-primary px-8 py-3.5 rounded-xl text-sm font-bold shadow-lg hover:shadow-xl active:scale-95"
@@ -219,7 +225,7 @@ export function ChatWidget() {
 
         {/* Footer hint */}
         <div className="px-5 py-3 bg-gray-50 border-t border-gray-100 text-center text-[10px] text-gray-400">
-          ⚡ Smart AI 24/7 · Live agent during business hours (UTC+8)
+          {t(T.chat.footerHint)}
         </div>
       </div>
 
@@ -242,7 +248,6 @@ export function ChatWidget() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
           </svg>
         )}
-        {/* Notification Dot */}
         {!open && (
           <span className="absolute -top-1 -right-1 w-4 h-4 bg-danger rounded-full border-2 border-white flex items-center justify-center">
             <span className="text-[8px] text-white font-bold">1</span>
