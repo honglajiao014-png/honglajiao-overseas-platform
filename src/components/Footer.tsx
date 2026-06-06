@@ -41,8 +41,8 @@ export function Footer() {
             <h3 className="text-sm font-bold text-white mb-4">咨询热线</h3>
             <ul className="space-y-2.5">
               <li>
-                <a href="tel:+8613877284681" className="text-sm text-gray-400 hover:text-primary transition-colors">
-                  +86 138 7728 4681
+                <a href="tel:+8615208423621" className="text-sm text-gray-400 hover:text-primary transition-colors">
+                  +86 152 0842 3621
                 </a>
               </li>
               <li>

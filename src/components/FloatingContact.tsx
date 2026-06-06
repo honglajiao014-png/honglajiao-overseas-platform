@@ -19,7 +19,7 @@ export function FloatingContact() {
           <div className="flex flex-col gap-3 animate-fade-in-up">
             {/* 电话 */}
             <a
-              href="tel:+8613877284681"
+              href="tel:+8615208423621"
               className="flex items-center gap-3 bg-white rounded-2xl shadow-xl px-5 py-3 hover:shadow-2xl transition-all"
             >
               <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
@@ -29,13 +29,13 @@ export function FloatingContact() {
               </div>
               <div>
                 <div className="text-xs text-gray-400">咨询热线</div>
-                <div className="text-sm font-bold text-gray-900">+86 138 7728 4681</div>
+                <div className="text-sm font-bold text-gray-900">+86 152 0842 3621</div>
               </div>
             </a>
 
             {/* WhatsApp */}
             <a
-              href="https://wa.me/8613877284681"
+              href="https://wa.me/8615208423621"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-3 bg-white rounded-2xl shadow-xl px-5 py-3 hover:shadow-2xl transition-all"

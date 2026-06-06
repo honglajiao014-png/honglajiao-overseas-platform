@@ -191,7 +191,7 @@ export function ChatWidget() {
             <h4 className="text-gray-900 font-bold mb-1">{t(T.chat.whatsappTitle)}</h4>
             <p className="text-gray-500 text-sm mb-6">{t(T.chat.whatsappDesc)}</p>
             <a
-              href="https://wa.me/8613877284681"
+              href="https://wa.me/8615208423621"
               target="_blank"
               rel="noopener noreferrer"
               className="btn inline-flex items-center gap-2 px-8 py-3.5 bg-green-500 text-white rounded-xl font-bold text-sm hover:bg-green-600 transition-all shadow-lg hover:shadow-xl active:scale-95"

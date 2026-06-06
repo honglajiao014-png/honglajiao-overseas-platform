@@ -53,7 +53,15 @@ export default function Home() {
   const [customMinPrice, setCustomMinPrice] = useState("");
   const [customMaxPrice, setCustomMaxPrice] = useState("");
   const [showAllBrands, setShowAllBrands] = useState(false);
+  const [brandSearch, setBrandSearch] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+
+  // 品牌搜索过滤
+  const filteredBrands = useMemo(() => {
+    if (!brandSearch.trim()) return BRANDS;
+    const q = brandSearch.toLowerCase();
+    return BRANDS.filter(b => b.name.toLowerCase().includes(q) || b.letter.toLowerCase().includes(q));
+  }, [brandSearch]);
 
   // 筛选逻辑
   const filtered = useMemo(() => {
@@ -115,37 +123,59 @@ export default function Home() {
         {/* 筛选条件区域 */}
         <div className="bg-white border-b border-gray-200">
           <div className="max-w-[1400px] mx-auto px-4 py-6">
-            {/* 品牌筛选 — Logo网格 */}
+            {/* 品牌筛选 — Logo网格 + 搜索框 */}
             <div className="mb-6">
               <div className="flex items-center gap-4 mb-3">
                 <span className="text-sm font-bold text-gray-700 shrink-0">品牌：</span>
-                <div className="flex flex-wrap gap-2">
+                {/* 品牌搜索框 */}
+                <div className="relative w-48">
+                  <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                  <input
+                    type="text"
+                    value={brandSearch}
+                    onChange={e => { setBrandSearch(e.target.value); setShowAllBrands(true); }}
+                    placeholder="搜索品牌..."
+                    className="w-full pl-9 pr-3 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => { setBrandFilter(""); setBrandSearch(""); }}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                    !brandFilter ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
+                >
+                  不限
+                </button>
+                {(brandSearch ? filteredBrands : displayBrands).map(b => (
                   <button
-                    onClick={() => setBrandFilter("")}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                      !brandFilter ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    key={b.name}
+                    onClick={() => setBrandFilter(b.name)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                      brandFilter === b.name ? "bg-primary text-white ring-2 ring-primary/30" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                     }`}
                   >
-                    不限
-                  </button>
-                  {displayBrands.map(b => (
-                    <button
-                      key={b.name}
-                      onClick={() => setBrandFilter(b.name)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                        brandFilter === b.name ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                      }`}
+                    {/* 品牌logo — 首字母圆形 */}
+                    <span
+                      className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold text-white shrink-0"
+                      style={{ backgroundColor: b.color || "#666" }}
                     >
-                      {b.name}
-                    </button>
-                  ))}
+                      {b.name.charAt(0)}
+                    </span>
+                    {b.name}
+                  </button>
+                ))}
+                {!brandSearch && (
                   <button
                     onClick={() => setShowAllBrands(!showAllBrands)}
                     className="px-3 py-1.5 rounded-lg text-xs font-medium text-primary hover:bg-primary-light transition-all"
                   >
                     {showAllBrands ? "收起 ▲" : "展开 ▼"}
                   </button>
-                </div>
+                )}
               </div>
             </div>
 
