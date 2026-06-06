@@ -4,7 +4,7 @@ import { hashPassword, signToken } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, password, name, phone, company, country } = await req.json();
+    const { email, password, name, phone, company, country, avatar } = await req.json();
     if (!email || !password || !name) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
     }
@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     if (exists) return NextResponse.json({ error: "Email already registered" }, { status: 409 });
 
     const user = await prisma.user.create({
-      data: { email, password: hashPassword(password), name, phone, company, country, role: "dealer" },
+      data: { email, password: hashPassword(password), name, phone, company, country, avatar: avatar || null, role: "dealer" },
     });
     const token = signToken({ userId: user.id, role: user.role });
     return NextResponse.json({ token, user: { id: user.id, email: user.email, name: user.name, role: user.role } });

@@ -16,6 +16,7 @@ model User {
   phone     String?
   company   String?
   country   String?
+  avatar    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   vehicles  Vehicle[]

@@ -7,6 +7,6 @@ export async function GET(req: NextRequest) {
   if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const payload = verifyToken(auth);
   if (!payload) return NextResponse.json({ error: "Invalid token" }, { status: 401 });
-  const user = await prisma.user.findUnique({ where: { id: payload.userId }, select: { id: true, email: true, name: true, role: true, phone: true, company: true, country: true } });
+  const user = await prisma.user.findUnique({ where: { id: payload.userId }, select: { id: true, email: true, name: true, role: true, phone: true, company: true, country: true, avatar: true } });
   return NextResponse.json({ user });
 }

@@ -15,6 +15,15 @@ const FLAGS: Record<Lang, string> = {
 
 export function Header() {
   const pathname = usePathname();
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  // Check login state on mount
+  useEffect(() => {
+    setLoggedIn(!!localStorage.getItem("hlj_token"));
+    const handler = () => setLoggedIn(!!localStorage.getItem("hlj_token"));
+    window.addEventListener("storage", handler);
+    return () => window.removeEventListener("storage", handler);
+  }, []);
   const router = useRouter();
   const { lang: currentLang, setLang } = useLang();
   const t = useT();
@@ -157,21 +166,35 @@ export function Header() {
               )}
             </div>
 
-            {/* 登录/注册 */}
+            {/* 登录/注册/账号 */}
             <div className="hidden sm:flex items-center gap-1 ml-2">
-              <a
-                href="/login"
-                className="text-sm text-gray-400 hover:text-white px-3 py-2 rounded-lg hover:bg-white/5 transition-all"
-              >
-                {t(T.header.login)}
-              </a>
-              <span className="text-gray-600">/</span>
-              <a
-                href="/register"
-                className="text-sm text-gray-400 hover:text-white px-3 py-2 rounded-lg hover:bg-white/5 transition-all"
-              >
-                {t(T.header.register)}
-              </a>
+              {loggedIn ? (
+                <a
+                  href="/account"
+                  className="flex items-center gap-2 text-sm font-bold text-accent hover:text-accent-dark px-3 py-2 rounded-lg hover:bg-accent/10 transition-all"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  Account
+                </a>
+              ) : (
+                <>
+                  <a
+                    href="/login"
+                    className="text-sm text-gray-400 hover:text-white px-3 py-2 rounded-lg hover:bg-white/5 transition-all"
+                  >
+                    {t(T.header.login)}
+                  </a>
+                  <span className="text-gray-600">/</span>
+                  <a
+                    href="/register"
+                    className="text-sm text-gray-400 hover:text-white px-3 py-2 rounded-lg hover:bg-white/5 transition-all"
+                  >
+                    {t(T.header.register)}
+                  </a>
+                </>
+              )}
             </div>
 
             {/* 管理后台 */}
