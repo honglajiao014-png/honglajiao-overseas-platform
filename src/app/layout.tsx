@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ChatWidget } from "@/components/ChatWidget";
+import { LangProvider } from "@/i18n/LangContext";
 
 export const metadata: Metadata = {
   title: "ChinaCarExport | Used Car & Vehicle Export Sourcing from China",
@@ -47,7 +48,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen flex flex-col">
-        {children}
+        <LangProvider>
+          {children}
+        </LangProvider>
         <ChatWidget />
       </body>
     </html>
