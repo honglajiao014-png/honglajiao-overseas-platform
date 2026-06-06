@@ -3,8 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Header } from "@/components/Header";
+import { useT, T } from "@/i18n/useT";
 
 export default function LoginPage() {
+  const t = useT();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -12,7 +14,7 @@ export default function LoginPage() {
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) { setError("请填写邮箱和密码"); return; }
+    if (!email || !password) { setError(t(T.loginPage.emailLabel) + " " + t(T.loginPage.passwordLabel) + " " + t(T.loginPage.loginBtn)); return; }
     setLoading(true); setError("");
     try {
       const res = await fetch("/api/auth/login", {
@@ -25,7 +27,7 @@ export default function LoginPage() {
       localStorage.setItem("hlj_token", data.token);
       window.location.href = "/account";
     } catch {
-      setError("登录失败，请重试");
+      setError(t(T.loginPage.loginBtn) + " failed");
     } finally {
       setLoading(false);
     }
@@ -37,8 +39,8 @@ export default function LoginPage() {
       <section className="flex-1 flex items-center justify-center px-4">
         <div className="bg-white border border-gray-200 rounded-xl p-8 max-w-sm w-full shadow-sm">
           <div className="text-center mb-6">
-            <h1 className="text-xl font-bold text-gray-900 mb-2">登录</h1>
-            <p className="text-gray-500 text-sm">使用 Google 账号快速登录</p>
+            <h1 className="text-xl font-bold text-gray-900 mb-2">{t(T.loginPage.heading)}</h1>
+            <p className="text-gray-500 text-sm">{t(T.loginPage.subheading)}</p>
           </div>
 
           {error && (
@@ -56,18 +58,18 @@ export default function LoginPage() {
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
             </svg>
-            <span>继续使用Google账号</span>
+            <span>{t(T.loginPage.googleBtn)}</span>
           </a>
 
           {/* 邮箱密码登录（小而轻的 fallback） */}
           <details className="group">
             <summary className="text-xs text-gray-400 cursor-pointer hover:text-gray-600 text-center list-none">
-              <span className="group-open:hidden">▼ 使用邮箱密码登录</span>
-              <span className="hidden group-open:inline">▲ 收起邮箱登录</span>
+              <span className="group-open:hidden">▼ {t(T.loginPage.fallbackTitle)}</span>
+              <span className="hidden group-open:inline">▲ {t(T.loginPage.fallbackTitle)}</span>
             </summary>
             <form onSubmit={handleEmailLogin} className="mt-4 space-y-3">
               <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">邮箱</label>
+                <label className="block text-xs font-semibold text-gray-600 mb-1">{t(T.loginPage.emailLabel)}</label>
                 <input
                   type="email"
                   value={email}
@@ -77,7 +79,7 @@ export default function LoginPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">密码</label>
+                <label className="block text-xs font-semibold text-gray-600 mb-1">{t(T.loginPage.passwordLabel)}</label>
                 <input
                   type="password"
                   value={password}
@@ -91,13 +93,13 @@ export default function LoginPage() {
                 disabled={loading}
                 className="w-full bg-accent text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-accent-dark transition-all disabled:opacity-50"
               >
-                {loading ? "登录中..." : "登录"}
+                {loading ? "..." : t(T.loginPage.loginBtn)}
               </button>
             </form>
           </details>
 
           <p className="text-center text-xs text-gray-500 mt-4">
-            还没有账号？<Link href="/register" className="text-accent font-semibold hover:underline">立即注册</Link>
+            {t(T.loginPage.noAccount)} <Link href="/register" className="text-accent font-semibold hover:underline">{t(T.loginPage.registerHere)}</Link>
           </p>
         </div>
       </section>

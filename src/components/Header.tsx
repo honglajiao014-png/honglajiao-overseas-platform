@@ -226,7 +226,7 @@ export function Header() {
                 type="text"
                 value={searchValue}
                 onChange={e => setSearchValue(e.target.value)}
-                placeholder="搜索品牌、车型..."
+                placeholder={t(T.header.search)}
                 className="flex-1 bg-[#2a2a2a] border border-gray-700 rounded-lg px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
                 autoFocus
               />

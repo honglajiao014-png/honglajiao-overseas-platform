@@ -394,6 +394,7 @@ export const T = {
     language: E("Language", "Langue", "Idioma", "语言"),
     account: E("Account", "Compte", "Cuenta", "账号"),
     admin: E("Manage", "Gérer", "Gestionar", "管理者"),
+    search: E("Search", "Rechercher", "Buscar", "搜索"),
   },
 
   // Footer
@@ -524,35 +525,24 @@ export const T = {
 
   // Login page
   loginPage: {
-    heading: E("Dealer Login", "Connexion revendeur", "Inicio de sesión", "车商登录"),
-    subheading: E("Access your dealer dashboard", "Accédez à votre tableau de bord", "Acceda a su panel de control", "访问您的车商后台"),
-    email: E("Email", "E-mail", "Correo electrónico", "邮箱"),
-    password: E("Password", "Mot de passe", "Contraseña", "密码"),
+    heading: E("Login", "Connexion", "Iniciar sesión", "登录"),
+    subheading: E("Quick login with Google", "Connexion rapide avec Google", "Inicio rápido con Google", "使用 Google 账号快速登录"),
+    googleBtn: E("Continue with Google", "Continuer avec Google", "Continuar con Google", "继续使用Google账号"),
+    emailLabel: E("Email", "E-mail", "Correo electrónico", "邮箱"),
+    passwordLabel: E("Password", "Mot de passe", "Contraseña", "密码"),
     loginBtn: E("Login", "Connexion", "Iniciar sesión", "登录"),
     noAccount: E("Don't have an account?", "Pas de compte ?", "¿No tiene cuenta?", "还没有账号？"),
-    registerHere: E("Register here", "Inscrivez-vous ici", "Regístrese aquí", "在此注册"),
-    submitted: E("Login Request Submitted", "Demande de connexion soumise", "Solicitud enviada", "登录请求已提交"),
-    submittedDesc: E("We will review your access request and contact you shortly.", "Nous examinerons votre demande et vous contacterons bientôt.", "Revisaremos su solicitud y lo contactaremos pronto.", "我们将审核您的访问请求并尽快联系您。"),
+    registerHere: E("Register now", "Inscrivez-vous maintenant", "Regístrese ahora", "立即注册"),
+    fallbackTitle: E("Login with email and password", "Connexion par email et mot de passe", "Iniciar sesión con correo y contraseña", "使用邮箱密码登录"),
   },
 
   // Register page
   registerPage: {
-    heading: E("Dealer Registration", "Inscription revendeur", "Registro de distribuidor", "车商注册"),
-    subheading: E("Join our network of verified vehicle exporters", "Rejoignez notre réseau d'exportateurs vérifiés", "Únase a nuestra red de exportadores verificados", "加入我们经过验证的车辆出口商网络"),
-    name: E("Full Name", "Nom complet", "Nombre completo", "姓名"),
-    email: E("Email", "E-mail", "Correo electrónico", "邮箱"),
-    password: E("Password", "Mot de passe", "Contraseña", "密码"),
-    phone: E("Phone", "Téléphone", "Teléfono", "电话"),
-    company: E("Company", "Entreprise", "Empresa", "公司"),
-    country: E("Country", "Pays", "País", "国家"),
-    registerBtn: E("Register", "S'inscrire", "Registrarse", "注册"),
+    heading: E("Create Account", "Créer un compte", "Crear cuenta", "创建账号"),
+    subheading: E("Register with Google in one click", "Inscrivez-vous en un clic avec Google", "Regístrese con un clic con Google", "使用 Google 账号一键注册"),
+    googleBtn: E("Continue with Google", "Continuer avec Google", "Continuar con Google", "继续使用Google账号"),
     hasAccount: E("Already have an account?", "Déjà un compte ?", "¿Ya tiene cuenta?", "已有账号？"),
     loginHere: E("Login here", "Connectez-vous ici", "Inicie sesión aquí", "在此登录"),
-    success: E("Registration successful!", "Inscription réussie !", "¡Registro exitoso!", "注册成功！"),
-    successDesc: E("You can now log in to your dealer dashboard.", "Vous pouvez maintenant vous connecter.", "Ahora puede iniciar sesión.", "您现在可以登录车商后台。"),
-    avatar: E("Avatar (optional)", "Avatar (optionnel)", "Avatar (opcional)", "头像（选填）"),
-    uploadAvatar: E("Upload Avatar", "Upload Avatar", "Subir avatar", "上传头像"),
-    changeAvatar: E("Change Avatar", "Changer avatar", "Cambiar avatar", "更换头像"),
   },
 
   // Newsletter
