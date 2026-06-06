@@ -1,131 +1,176 @@
 "use client";
 
-import { useState, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState } from "react";
+import Link from "next/link";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { useT, T } from "@/i18n/useT";
+import { VEHICLE_TYPES } from "@/data/brands";
 
-function InquiryForm() {
-  const sp = useSearchParams();
-  const vehicle = sp.get("vehicle");
-  const brand = sp.get("brand");
-  const model = sp.get("model");
-  const year = sp.get("year");
+export default function InquiryPage() {
+  const t = useT();
+  const [form, setForm] = useState({
+    name: "", country: "", email: "", phone: "", whatsapp: "", telegram: "",
+    vehicleType: "", brand: "", model: "", budget: "", quantity: "",
+    destinationPort: "", description: "",
+  });
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState("");
 
-  const [sent, setSent] = useState(false);
-  const [sending, setSending] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setSending(true);
-    const fd = new FormData(e.currentTarget);
-    await fetch("/api/inquiry", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(Object.fromEntries(fd)) });
-    setSent(true);
-    setSending(false);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    setForm(f => ({ ...f, [e.target.name]: e.target.value }));
   };
 
-  if (sent) {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.name.trim()) { setErrorMsg("请填写姓名"); setStatus("error"); return; }
+    setStatus("loading");
+    try {
+      const res = await fetch("/api/inquiry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json();
+      if (data.error) { setErrorMsg(data.error); setStatus("error"); }
+      else { setStatus("success"); }
+    } catch {
+      setErrorMsg("提交失败，请稍后重试");
+      setStatus("error");
+    }
+  };
+
+  const inputClass = "w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all bg-white";
+  const labelClass = "block text-sm font-bold text-gray-700 mb-1.5";
+
+  if (status === "success") {
     return (
-      <div className="max-w-2xl mx-auto text-center py-16">
-        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-guazi-green-light flex items-center justify-center">
-          <svg className="w-8 h-8 text-guazi-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-          </svg>
-        </div>
-        <h2 className="text-xl font-bold text-guazi-dark mb-2">提交成功！</h2>
-        <p className="text-gray-500 text-sm">我们将在24小时内与您联系。</p>
-      </div>
+      <>
+        <Header />
+        <main className="flex-1 bg-gray-50 flex items-center justify-center py-20">
+          <div className="bg-white rounded-2xl border border-gray-100 p-10 text-center max-w-md mx-4 shadow-sm">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-green-100 flex items-center justify-center">
+              <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">提交成功！</h2>
+            <p className="text-gray-500 text-sm mb-6">我们将在24小时内与您联系，请保持手机畅通。</p>
+            <Link href="/" className="inline-block bg-primary text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-primary-dark transition-all">
+              返回首页
+            </Link>
+          </div>
+        </main>
+        <Footer />
+      </>
     );
   }
 
-  const inputClass = "w-full border border-gray-300 rounded-lg px-4 py-3 text-sm text-guazi-dark placeholder-gray-400 focus:outline-none focus:border-guazi-green focus:ring-1 focus:ring-guazi-green/30 transition-all";
-
-  return (
-    <form onSubmit={handleSubmit} className="max-w-2xl mx-auto space-y-5">
-      <div>
-        <label className="block text-sm font-semibold text-guazi-dark mb-1.5">姓名 *</label>
-        <input name="name" placeholder="请输入您的姓名" className={inputClass} required />
-      </div>
-      <div>
-        <label className="block text-sm font-semibold text-guazi-dark mb-1.5">国家/地区 *</label>
-        <input name="country" placeholder="请输入您所在的国家或地区" className={inputClass} required />
-      </div>
-      <div className="grid md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-semibold text-guazi-dark mb-1.5">电子邮箱 *</label>
-          <input name="email" type="email" placeholder="请输入您的电子邮箱" className={inputClass} required />
-        </div>
-        <div>
-          <label className="block text-sm font-semibold text-guazi-dark mb-1.5">手机号码 *</label>
-          <input name="phone" placeholder="请输入您的手机号码" className={inputClass} required />
-        </div>
-      </div>
-      <div className="grid md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-semibold text-guazi-dark mb-1.5">WhatsApp</label>
-          <input name="whatsapp" placeholder="请输入您的WhatsApp号码" className={inputClass} />
-        </div>
-        <div>
-          <label className="block text-sm font-semibold text-guazi-dark mb-1.5">Telegram</label>
-          <input name="telegram" placeholder="请输入您的Telegram用户名" className={inputClass} />
-        </div>
-      </div>
-      <div>
-        <label className="block text-sm font-semibold text-guazi-dark mb-1.5">车辆类型</label>
-        <select name="vehicleType" className={inputClass}>
-          <option value="">请选择</option>
-          <option>二手车</option>
-          <option>新能源车</option>
-          <option>商用车</option>
-          <option>工程机械</option>
-        </select>
-      </div>
-      <div className="grid md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-semibold text-guazi-dark mb-1.5">品牌</label>
-          <input name="brand" placeholder="例如：丰田、比亚迪" defaultValue={brand || ""} className={inputClass} />
-        </div>
-        <div>
-          <label className="block text-sm font-semibold text-guazi-dark mb-1.5">型号</label>
-          <input name="model" placeholder="例如：凯美瑞、汉" defaultValue={model || ""} className={inputClass} />
-        </div>
-      </div>
-      <div className="grid md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-semibold text-guazi-dark mb-1.5">预算范围</label>
-          <input name="budget" placeholder="例如：$5,000 - $15,000" className={inputClass} />
-        </div>
-        <div>
-          <label className="block text-sm font-semibold text-guazi-dark mb-1.5">采购数量</label>
-          <input name="quantity" type="number" placeholder="请输入采购数量" className={inputClass} />
-        </div>
-      </div>
-      <div>
-        <label className="block text-sm font-semibold text-guazi-dark mb-1.5">目的港口/城市</label>
-        <input name="destination" placeholder="请输入目的港口或城市" className={inputClass} />
-      </div>
-      <div>
-        <label className="block text-sm font-semibold text-guazi-dark mb-1.5">详细需求</label>
-        <textarea name="message" rows={4} placeholder="请描述您的具体需求（车型、年份、预算等）" className={`${inputClass} resize-none`} required />
-      </div>
-      {vehicle && <input type="hidden" name="vehicle" value={vehicle} />}
-      <button type="submit" disabled={sending} className="w-full bg-guazi-green text-white py-3.5 rounded-lg font-bold text-sm hover:bg-guazi-green-dark transition-all disabled:opacity-50">
-        {sending ? "提交中..." : "提交采购需求"}
-      </button>
-    </form>
-  );
-}
-
-export default function InquiryPage() {
   return (
     <>
       <Header />
-      <main className="max-w-[1600px] mx-auto px-4 py-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-guazi-dark mb-2 text-center">提交采购需求</h1>
-        <p className="text-gray-500 text-sm mb-10 text-center">填写以下表单，我们将为您寻找最优质的车源</p>
-        <Suspense fallback={<div className="text-center"><div className="animate-spin w-6 h-6 border-2 border-guazi-green border-t-transparent rounded-full mx-auto" /></div>}>
-          <InquiryForm />
-        </Suspense>
+      <main className="flex-1 bg-gray-50">
+        <div className="max-w-2xl mx-auto px-4 py-10">
+          {/* 面包屑 */}
+          <div className="text-xs text-gray-400 mb-6">
+            <Link href="/" className="hover:text-primary">首页</Link>
+            <span className="mx-2">›</span>
+            <span className="text-gray-600">提交需求</span>
+          </div>
+
+          <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
+            <div className="mb-8">
+              <h1 className="text-2xl font-extrabold text-gray-900">提交采购需求</h1>
+              <p className="text-gray-500 text-sm mt-2">填写以下信息，我们将在24小时内与您联系</p>
+            </div>
+
+            {status === "error" && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-600">{errorMsg}</div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label className={labelClass}>姓名 <span className="text-red-500">*</span></label>
+                  <input name="name" value={form.name} onChange={handleChange} className={inputClass} placeholder="您的姓名" required />
+                </div>
+                <div>
+                  <label className={labelClass}>国家/地区</label>
+                  <input name="country" value={form.country} onChange={handleChange} className={inputClass} placeholder="例如：Nigeria" />
+                </div>
+                <div>
+                  <label className={labelClass}>电子邮箱</label>
+                  <input name="email" type="email" value={form.email} onChange={handleChange} className={inputClass} placeholder="your@email.com" />
+                </div>
+                <div>
+                  <label className={labelClass}>手机号</label>
+                  <input name="phone" type="tel" value={form.phone} onChange={handleChange} className={inputClass} placeholder="+86 138 0000 0000" />
+                </div>
+                <div>
+                  <label className={labelClass}>WhatsApp</label>
+                  <input name="whatsapp" value={form.whatsapp} onChange={handleChange} className={inputClass} placeholder="WhatsApp号码" />
+                </div>
+                <div>
+                  <label className={labelClass}>Telegram</label>
+                  <input name="telegram" value={form.telegram} onChange={handleChange} className={inputClass} placeholder="@username" />
+                </div>
+              </div>
+
+              <div>
+                <label className={labelClass}>车辆类型</label>
+                <select name="vehicleType" value={form.vehicleType} onChange={handleChange} className={inputClass}>
+                  {VEHICLE_TYPES.map(o => (
+                    <option key={o} value={o === "请选择车辆类型" ? "" : o}>{o}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label className={labelClass}>意向品牌</label>
+                  <input name="brand" value={form.brand} onChange={handleChange} className={inputClass} placeholder="例如：Toyota, BMW" />
+                </div>
+                <div>
+                  <label className={labelClass}>意向车型</label>
+                  <input name="model" value={form.model} onChange={handleChange} className={inputClass} placeholder="例如：Corolla, X5" />
+                </div>
+                <div>
+                  <label className={labelClass}>预算区间</label>
+                  <input name="budget" value={form.budget} onChange={handleChange} className={inputClass} placeholder="例如：$5,000 - $10,000" />
+                </div>
+                <div>
+                  <label className={labelClass}>采购数量</label>
+                  <input name="quantity" type="number" value={form.quantity} onChange={handleChange} className={inputClass} placeholder="例如：5" />
+                </div>
+              </div>
+
+              <div>
+                <label className={labelClass}>目的港/城市</label>
+                <input name="destinationPort" value={form.destinationPort} onChange={handleChange} className={inputClass} placeholder="例如：Lagos, Nigeria" />
+              </div>
+
+              <div>
+                <label className={labelClass}>需求说明</label>
+                <textarea
+                  name="description"
+                  value={form.description}
+                  onChange={handleChange}
+                  rows={4}
+                  className={inputClass}
+                  placeholder="请描述您的具体需求，例如：年份范围、里程要求、颜色偏好、配置要求等"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={status === "loading"}
+                className="w-full bg-primary text-white py-3.5 rounded-xl font-bold text-sm hover:bg-primary-dark transition-all disabled:opacity-50 active:scale-[0.99]"
+              >
+                {status === "loading" ? "提交中..." : "提交需求"}
+              </button>
+            </form>
+          </div>
+        </div>
       </main>
       <Footer />
     </>

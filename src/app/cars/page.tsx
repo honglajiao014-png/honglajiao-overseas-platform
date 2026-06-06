@@ -1,219 +1,271 @@
 "use client";
 
+import { useState, useMemo } from "react";
+import Link from "next/link";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { Suspense, useState } from "react";
 import { useT, T } from "@/i18n/useT";
+import { BRANDS, PRICE_RANGES, AGE_RANGES, MILEAGE_RANGES, TRANSMISSION_OPTIONS, FUEL_OPTIONS, BODY_TYPES, SORT_OPTIONS, type Brand } from "@/data/brands";
 
 const ALL_VEHICLES = [
-  { slug: "audiq3-2022-20260603", title: "Audi Q3 2022 35 TFSI", price: 18500, year: 2022, mileage: "35,000 km", brand: "Audi", type: "Used Car", transmission: "Automatic", fuel: "Petrol" },
-  { slug: "wulinghongguangs3-2018-20260603", title: "Wuling Hongguang S3 2018 1.5L", price: 4200, year: 2018, mileage: "52,000 km", brand: "Wuling", type: "Used Car", transmission: "Manual", fuel: "Petrol" },
+  {
+    slug: "audiq3-2022-20260603",
+    title: "奥迪Q3 2022款 35 TFSI 进取动感型",
+    brand: "奥迪", year: 2022, mileageKm: 3.8, location: "广西柳州",
+    transmission: "自动", fuel: "汽油", bodyType: "SUV",
+    price: 134700, image: "/vehicles/audiq3-2022-20260603/front.jpg",
+    createdAt: "2026-06-03",
+  },
+  {
+    slug: "wulinghongguangs3-2018-20260603",
+    title: "五菱宏光S3 2018款 1.5L 手动标准型 国V",
+    brand: "五菱", year: 2018, mileageKm: 7.5, location: "柳州",
+    transmission: "手动", fuel: "汽油", bodyType: "SUV",
+    price: 38200, image: "/vehicles/wulinghongguangs3-2018-20260603/front.jpg",
+    createdAt: "2026-06-03",
+  },
 ];
 
-function CarsContent() {
+export default function CarsPage() {
   const t = useT();
-  const sp = useSearchParams();
-  const searchQuery = sp.get("search") || "";
-  const typeFilter = sp.get("type") || "";
-  const [filters, setFilters] = useState({ brand: "", type: typeFilter, transmission: "", fuel: "", minPrice: "", maxPrice: "", minYear: "", maxYear: "" });
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
-  let filtered = ALL_VEHICLES;
-  if (searchQuery) {
-    const q = searchQuery.toLowerCase();
-    filtered = filtered.filter(v => v.title.toLowerCase().includes(q) || v.brand.toLowerCase().includes(q) || v.type.toLowerCase().includes(q));
-  }
-  if (filters.brand) filtered = filtered.filter(v => v.brand.toLowerCase() === filters.brand.toLowerCase());
-  if (filters.type) filtered = filtered.filter(v => v.type === filters.type);
-  if (filters.transmission) filtered = filtered.filter(v => v.transmission === filters.transmission);
-  if (filters.fuel) filtered = filtered.filter(v => v.fuel === filters.fuel);
-  if (filters.minPrice) filtered = filtered.filter(v => v.price >= Number(filters.minPrice));
-  if (filters.maxPrice) filtered = filtered.filter(v => v.price <= Number(filters.maxPrice));
-  if (filters.minYear) filtered = filtered.filter(v => v.year >= Number(filters.minYear));
-  if (filters.maxYear) filtered = filtered.filter(v => v.year <= Number(filters.maxYear));
+  // 筛选状态
+  const [brandFilter, setBrandFilter] = useState<string>("");
+  const [priceRange, setPriceRange] = useState<number>(-1);
+  const [ageRange, setAgeRange] = useState<number>(-1);
+  const [mileageRange, setMileageRange] = useState<number>(-1);
+  const [transmissionFilter, setTransmissionFilter] = useState<string>("不限");
+  const [fuelFilter, setFuelFilter] = useState<string>("不限");
+  const [bodyTypeFilter, setBodyTypeFilter] = useState<string>("不限");
+  const [sortBy, setSortBy] = useState<string>("default");
+  const [brandSearch, setBrandSearch] = useState("");
 
-  const brands = [...new Set(ALL_VEHICLES.map(v => v.brand))].sort();
-  const types = [...new Set(ALL_VEHICLES.map(v => v.type))];
+  // 品牌搜索过滤
+  const filteredBrands = useMemo(() => {
+    if (!brandSearch.trim()) return BRANDS;
+    const q = brandSearch.toLowerCase();
+    return BRANDS.filter(b => b.name.toLowerCase().includes(q) || b.letter.toLowerCase().includes(q));
+  }, [brandSearch]);
 
-  const inputClass = "w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all bg-white";
+  // 车辆筛选
+  const filtered = useMemo(() => {
+    let result = [...ALL_VEHICLES];
 
-  const FilterPanel = () => (
-    <div className="space-y-5">
-      <h3 className="font-extrabold text-gray-900 text-sm flex items-center gap-2">
-        <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-        </svg>
-        {t(T.cars.filters)}
-      </h3>
+    if (brandFilter) result = result.filter(v => v.brand === brandFilter);
 
-      <div>
-        <label className="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">{t(T.cars.brand)}</label>
-        <select value={filters.brand} onChange={e => setFilters(f => ({ ...f, brand: e.target.value }))} className={inputClass}>
-          <option value="">{t(T.cars.allBrands)}</option>
-          {brands.map(b => <option key={b} value={b}>{b}</option>)}
-        </select>
-      </div>
+    if (priceRange >= 0 && PRICE_RANGES[priceRange]) {
+      const r = PRICE_RANGES[priceRange];
+      if (r.min !== undefined) result = result.filter(v => v.price >= r.min!);
+      if (r.max !== undefined) result = result.filter(v => v.price <= r.max!);
+    }
 
-      <div>
-        <label className="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">{t(T.cars.type)}</label>
-        <select value={filters.type} onChange={e => setFilters(f => ({ ...f, type: e.target.value }))} className={inputClass}>
-          <option value="">{t(T.cars.allTypes)}</option>
-          {types.map(t => <option key={t} value={t}>{t}</option>)}
-        </select>
-      </div>
+    if (ageRange >= 0 && AGE_RANGES[ageRange]) {
+      const r = AGE_RANGES[ageRange];
+      const cy = new Date().getFullYear();
+      if (r.min !== undefined) result = result.filter(v => (cy - v.year) >= r.min!);
+      if (r.max !== undefined) result = result.filter(v => (cy - v.year) <= r.max!);
+    }
 
-      <div>
-        <label className="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">{t(T.cars.transmission)}</label>
-        <select value={filters.transmission} onChange={e => setFilters(f => ({ ...f, transmission: e.target.value }))} className={inputClass}>
-          <option value="">{t(T.cars.allTransmission)}</option>
-          <option value="Automatic">Automatic</option>
-          <option value="Manual">Manual</option>
-        </select>
-      </div>
+    if (mileageRange >= 0 && MILEAGE_RANGES[mileageRange]) {
+      const r = MILEAGE_RANGES[mileageRange];
+      if (r.min !== undefined) result = result.filter(v => v.mileageKm >= r.min!);
+      if (r.max !== undefined) result = result.filter(v => v.mileageKm <= r.max!);
+    }
 
-      <div>
-        <label className="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">{t(T.cars.fuel)}</label>
-        <select value={filters.fuel} onChange={e => setFilters(f => ({ ...f, fuel: e.target.value }))} className={inputClass}>
-          <option value="">{t(T.cars.allFuel)}</option>
-          <option value="Petrol">Petrol</option>
-          <option value="Diesel">Diesel</option>
-          <option value="Electric">Electric</option>
-        </select>
-      </div>
+    if (transmissionFilter !== "不限") result = result.filter(v => v.transmission === transmissionFilter);
+    if (fuelFilter !== "不限") result = result.filter(v => v.fuel === fuelFilter);
+    if (bodyTypeFilter !== "不限") result = result.filter(v => v.bodyType === bodyTypeFilter);
 
-      <div>
-        <label className="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">{t(T.cars.price)} ($)</label>
-        <div className="flex gap-2">
-          <input type="number" placeholder={t(T.cars.minPrice)} value={filters.minPrice} onChange={e => setFilters(f => ({ ...f, minPrice: e.target.value }))} className={inputClass} />
-          <input type="number" placeholder={t(T.cars.maxPrice)} value={filters.maxPrice} onChange={e => setFilters(f => ({ ...f, maxPrice: e.target.value }))} className={inputClass} />
-        </div>
-      </div>
+    switch (sortBy) {
+      case "newest": result.sort((a, b) => b.createdAt.localeCompare(a.createdAt)); break;
+      case "price_asc": result.sort((a, b) => a.price - b.price); break;
+      case "price_desc": result.sort((a, b) => b.price - a.price); break;
+      case "year_desc": result.sort((a, b) => b.year - a.year); break;
+      case "mileage_asc": result.sort((a, b) => a.mileageKm - b.mileageKm); break;
+    }
 
-      <div>
-        <label className="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">{t(T.vehicles.year)}</label>
-        <div className="flex gap-2">
-          <input type="number" placeholder={t(T.cars.minYear)} value={filters.minYear} onChange={e => setFilters(f => ({ ...f, minYear: e.target.value }))} className={inputClass} />
-          <input type="number" placeholder={t(T.cars.maxYear)} value={filters.maxYear} onChange={e => setFilters(f => ({ ...f, maxYear: e.target.value }))} className={inputClass} />
-        </div>
-      </div>
+    return result;
+  }, [brandFilter, priceRange, ageRange, mileageRange, transmissionFilter, fuelFilter, bodyTypeFilter, sortBy]);
 
-      <button
-        onClick={() => setFilters({ brand: "", type: "", transmission: "", fuel: "", minPrice: "", maxPrice: "", minYear: "", maxYear: "" })}
-        className="w-full text-xs font-semibold text-gray-500 hover:text-primary transition-colors py-2"
-      >
-        {t(T.cars.clearFilters)}
-      </button>
-    </div>
+  const resetFilters = () => {
+    setBrandFilter(""); setPriceRange(-1); setAgeRange(-1); setMileageRange(-1);
+    setTransmissionFilter("不限"); setFuelFilter("不限"); setBodyTypeFilter("不限");
+    setSortBy("default"); setBrandSearch("");
+  };
+
+  const activeFilterCount = [brandFilter, priceRange >= 0, ageRange >= 0, mileageRange >= 0, transmissionFilter !== "不限", fuelFilter !== "不限", bodyTypeFilter !== "不限"].filter(Boolean).length;
+
+  const FilterBtn = ({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) => (
+    <button onClick={onClick} className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${active ? "bg-primary text-white font-bold" : "text-gray-600 hover:bg-gray-100"}`}>
+      {children}
+    </button>
   );
 
   return (
     <>
       <Header />
       <main className="bg-gray-50 min-h-screen">
-        <div className="container-wide py-8">
-          <div className="mb-8">
-            <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900">
-              {searchQuery ? <>Search results for &ldquo;{searchQuery}&rdquo;</> : t(T.cars.heading)}
-            </h1>
-            <p className="text-gray-500 text-sm mt-2">
-              {filtered.length} {t(T.cars.results)}
-            </p>
+        <div className="max-w-[1400px] mx-auto px-4 py-6">
+          {/* 面包屑 */}
+          <div className="text-xs text-gray-400 mb-4">
+            <Link href="/" className="hover:text-primary">首页</Link>
+            <span className="mx-2">›</span>
+            <span className="text-gray-600">全部车源</span>
           </div>
 
-          <div className="flex gap-8">
-            <aside className="hidden lg:block w-72 shrink-0">
-              <div className="bg-white rounded-2xl border border-gray-100 p-6 sticky top-24 shadow-sm">
-                <FilterPanel />
+          <div className="flex gap-6">
+            {/* 侧边栏筛选器 */}
+            <aside className="hidden lg:block w-64 shrink-0">
+              <div className="bg-white rounded-2xl border border-gray-100 p-5 sticky top-24">
+                <div className="flex items-center justify-between mb-5">
+                  <h3 className="font-extrabold text-gray-900 text-sm">
+                    筛选 {activeFilterCount > 0 && `(${activeFilterCount})`}
+                  </h3>
+                  {activeFilterCount > 0 && (
+                    <button onClick={resetFilters} className="text-xs text-primary hover:underline">重置筛选</button>
+                  )}
+                </div>
+
+                {/* 品牌 */}
+                <div className="mb-5">
+                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">品牌</h4>
+                  <input
+                    type="text" value={brandSearch} onChange={e => setBrandSearch(e.target.value)}
+                    placeholder="搜索品牌..." className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs mb-2 focus:outline-none focus:border-primary"
+                  />
+                  <div className="max-h-48 overflow-y-auto space-y-0.5">
+                    <FilterBtn active={!brandFilter} onClick={() => setBrandFilter("")}>不限品牌</FilterBtn>
+                    {(brandSearch ? filteredBrands : BRANDS).map(b => (
+                      <FilterBtn key={b.name} active={brandFilter === b.name} onClick={() => setBrandFilter(b.name)}>
+                        <span className="flex items-center gap-2">
+                          <span className="w-5 h-5 rounded-full inline-flex items-center justify-center text-[9px] font-bold text-white" style={{ backgroundColor: b.color }}>{b.name.charAt(0)}</span>
+                          {b.name}
+                        </span>
+                      </FilterBtn>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 价格 */}
+                <div className="mb-5">
+                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">价格（万元）</h4>
+                  <div className="space-y-0.5">
+                    {PRICE_RANGES.map((r, i) => (
+                      <FilterBtn key={i} active={priceRange === i} onClick={() => setPriceRange(i)}>{r.label}</FilterBtn>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 车龄 */}
+                <div className="mb-5">
+                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">车龄</h4>
+                  <div className="space-y-0.5">
+                    {AGE_RANGES.map((r, i) => (
+                      <FilterBtn key={i} active={ageRange === i} onClick={() => setAgeRange(i)}>{r.label}</FilterBtn>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 里程 */}
+                <div className="mb-5">
+                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">里程</h4>
+                  <div className="space-y-0.5">
+                    {MILEAGE_RANGES.map((r, i) => (
+                      <FilterBtn key={i} active={mileageRange === i} onClick={() => setMileageRange(i)}>{r.label}</FilterBtn>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 变速箱 */}
+                <div className="mb-5">
+                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">变速箱</h4>
+                  <div className="space-y-0.5">
+                    {TRANSMISSION_OPTIONS.map(o => (
+                      <FilterBtn key={o} active={transmissionFilter === o} onClick={() => setTransmissionFilter(o)}>{o}</FilterBtn>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 燃料类型 */}
+                <div className="mb-5">
+                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">燃料类型</h4>
+                  <div className="space-y-0.5">
+                    {FUEL_OPTIONS.map(o => (
+                      <FilterBtn key={o} active={fuelFilter === o} onClick={() => setFuelFilter(o)}>{o}</FilterBtn>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 车身类型 */}
+                <div>
+                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">车身类型</h4>
+                  <div className="space-y-0.5">
+                    {BODY_TYPES.map(o => (
+                      <FilterBtn key={o} active={bodyTypeFilter === o} onClick={() => setBodyTypeFilter(o)}>{o}</FilterBtn>
+                    ))}
+                  </div>
+                </div>
               </div>
             </aside>
 
-            <div className="lg:hidden fixed bottom-6 left-4 z-40">
-              <button
-                onClick={() => setMobileFiltersOpen(true)}
-                className="btn btn-primary px-5 py-3 rounded-xl shadow-lg text-sm font-bold flex items-center gap-2"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                </svg>
-                {t(T.cars.filters)}
-                {Object.values(filters).some(v => v) && (
-                  <span className="w-2 h-2 bg-accent rounded-full" />
-                )}
-              </button>
-            </div>
+            {/* 右侧结果区 */}
+            <div className="flex-1 min-w-0">
+              {/* 结果统计 + 排序 */}
+              <div className="flex items-center justify-between mb-5">
+                <p className="text-sm text-gray-500">
+                  共找到 <span className="font-bold text-gray-900">{filtered.length}</span> 辆车源
+                </p>
+                <select
+                  value={sortBy}
+                  onChange={e => setSortBy(e.target.value)}
+                  className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-primary"
+                >
+                  {SORT_OPTIONS.map(o => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+              </div>
 
-            {mobileFiltersOpen && (
-              <>
-                <div className="lg:hidden fixed inset-0 z-50 bg-black/40" onClick={() => setMobileFiltersOpen(false)} />
-                <div className="lg:hidden fixed inset-y-0 left-0 z-50 w-80 max-w-[85vw] bg-white shadow-2xl overflow-y-auto animate-slide-in-right">
-                  <div className="p-6">
-                    <div className="flex items-center justify-between mb-6">
-                      <h3 className="font-extrabold text-gray-900">{t(T.cars.filters)}</h3>
-                      <button onClick={() => setMobileFiltersOpen(false)} className="p-1 text-gray-400 hover:text-gray-600">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    </div>
-                    <FilterPanel />
-                  </div>
-                </div>
-              </>
-            )}
-
-            <div className="flex-1">
+              {/* 车辆列表 */}
               {filtered.length === 0 ? (
-                <div className="text-center py-24 bg-white rounded-2xl border border-gray-100">
-                  <div className="w-20 h-20 mx-auto mb-6 bg-gray-100 rounded-2xl flex items-center justify-center">
-                    <svg className="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-bold text-gray-400">{t(T.cars.noResults)}</h3>
+                <div className="text-center py-20 bg-white rounded-2xl border border-gray-100">
+                  <div className="text-5xl mb-4">🚗</div>
+                  <h3 className="text-lg font-bold text-gray-400 mb-2">暂无匹配车源</h3>
+                  <p className="text-sm text-gray-400 mb-4">试试调整筛选条件</p>
+                  <button onClick={resetFilters} className="text-primary text-sm font-bold hover:underline">重置筛选</button>
                 </div>
               ) : (
-                <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {filtered.map((v) => (
-                    <Link key={v.slug} href={`/cars/${v.slug}`}
-                      className="card-hover group bg-white rounded-2xl border border-gray-100 overflow-hidden flex flex-col shadow-sm"
+                <div className="space-y-4">
+                  {filtered.map(v => (
+                    <Link
+                      key={v.slug}
+                      href={`/cars/${v.slug}`}
+                      className="flex bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg hover:border-gray-200 transition-all group"
                     >
-                      <div className="aspect-[16/10] img-placeholder relative overflow-hidden">
-                        <div className="text-center">
-                          <div className="text-4xl mb-2 opacity-20">🚘</div>
-                          <div className="text-sm opacity-40 font-semibold">{v.brand}</div>
-                        </div>
-                        <span className="absolute top-3 left-3 badge badge-primary text-[10px] shadow-sm">
-                          {v.type}
-                        </span>
+                      {/* 缩略图 */}
+                      <div className="w-48 h-36 bg-gray-100 shrink-0 flex items-center justify-center text-5xl">
+                        🚘
                       </div>
-
-                      <div className="p-5 flex flex-col flex-1">
-                        <h3 className="text-sm font-bold text-gray-900 line-clamp-2 group-hover:text-primary transition-colors flex-1">
-                          {v.title}
-                        </h3>
-
-                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-3 text-[11px] text-gray-500">
-                          <span>{v.year}</span>
-                          <span className="text-gray-300">·</span>
-                          <span>{v.mileage}</span>
-                          <span className="text-gray-300">·</span>
-                          <span>{v.transmission}</span>
-                          <span className="text-gray-300">·</span>
-                          <span>{v.fuel}</span>
-                        </div>
-
-                        <div className="flex items-end justify-between mt-4 pt-4 border-t border-gray-50">
-                          <div>
-                            <div className="text-xl font-extrabold text-danger">${v.price.toLocaleString()}</div>
-                            <div className="text-[10px] text-gray-400">FOB China</div>
+                      {/* 信息 */}
+                      <div className="flex-1 p-5 flex flex-col justify-between">
+                        <div>
+                          <h3 className="text-base font-bold text-gray-900 group-hover:text-primary transition-colors line-clamp-1">
+                            {v.title}
+                          </h3>
+                          <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs text-gray-500">
+                            <span>{v.year}年</span>
+                            <span>{v.mileageKm}万公里</span>
+                            <span>{v.location}</span>
+                            <span>{v.transmission}</span>
+                            <span>{v.fuel}</span>
                           </div>
-                          <span className="text-xs font-semibold text-primary opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                            {t(T.cars.viewDetails)}
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                            </svg>
+                        </div>
+                        <div className="flex items-end justify-between mt-3">
+                          <span className="text-xl font-extrabold text-red-500">
+                            ¥{v.price.toLocaleString()} <span className="text-xs font-normal text-gray-400">CNY</span>
+                          </span>
+                          <span className="text-xs text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                            查看详情 →
                           </span>
                         </div>
                       </div>
@@ -227,20 +279,5 @@ function CarsContent() {
       </main>
       <Footer />
     </>
-  );
-}
-
-export default function CarsPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="w-10 h-10 mx-auto mb-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm text-gray-400">Loading...</p>
-        </div>
-      </div>
-    }>
-      <CarsContent />
-    </Suspense>
   );
 }

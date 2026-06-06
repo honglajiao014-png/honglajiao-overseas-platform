@@ -107,3 +107,37 @@ export const SORT_OPTIONS = [
   { value: "year_desc", label: "车龄从新到旧" },
   { value: "mileage_asc", label: "里程从少到多" },
 ];
+
+export const MILEAGE_RANGES = [
+  { label: "不限", min: undefined, max: undefined },
+  { label: "1万公里以内", min: 0, max: 1 },
+  { label: "1-3万公里", min: 1, max: 3 },
+  { label: "3-6万公里", min: 3, max: 6 },
+  { label: "6-10万公里", min: 6, max: 10 },
+  { label: "10万公里以上", min: 10, max: undefined },
+];
+
+export const TRANSMISSION_OPTIONS = [
+  "不限", "手动", "自动", "手自一体", "双离合", "CVT无级变速",
+];
+
+export const FUEL_OPTIONS = [
+  "不限", "汽油", "柴油", "电动", "混动", "插电混动", "CNG", "LPG",
+];
+
+export const BODY_TYPES = [
+  "不限", "轿车", "SUV", "MPV", "跑车", "皮卡", "三厢车", "两厢车", "旅行车", "客车", "货车",
+];
+
+export const VEHICLE_TYPES = [
+  "请选择车辆类型",
+  "二手乘用车",
+  "SUV / 越野车",
+  "卡车 / 厢式货车",
+  "巴士 / 客车",
+  "新能源汽车",
+  "摩托车",
+  "工程机械",
+  "汽车配件",
+  "其他",
+];
