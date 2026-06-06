@@ -229,7 +229,7 @@ export default function Home() {
             </div>
 
             {/* 车龄筛选 */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 mb-4">
               <span className="text-sm font-bold text-gray-700 shrink-0">{t(T.homeFilter.age)}：</span>
               <div className="flex flex-wrap gap-2">
                 {AGE_RANGES.map((r, i) => (
@@ -245,30 +245,34 @@ export default function Home() {
                 ))}
               </div>
             </div>
+
+            {/* 排序 */}
+            <div className="flex items-center gap-4">
+              <span className="text-sm font-bold text-gray-700 shrink-0">{t(T.homeFilter.sort)}：</span>
+              <div className="flex flex-wrap gap-2">
+                {SORT_OPTIONS.map(o => (
+                  <button
+                    key={o.value}
+                    onClick={() => setSortBy(o.value)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                      sortBy === o.value ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    }`}
+                  >
+                    {o.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
         {/* 车源列表区域 */}
         <div className="max-w-[1400px] mx-auto px-4 py-6">
-          {/* 结果统计 + 排序 */}
-          <div className="flex items-center justify-between mb-6">
+          {/* 结果统计 */}
+          <div className="mb-6">
             <p className="text-sm text-gray-500">
               <span>{t(T.homeFilter.foundTotal)}</span> <span className="font-bold text-gray-900">{filtered.length}</span> {t(T.homeFilter.results)}
             </p>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-400">{t(T.homeFilter.sort)}：</span>
-              {SORT_OPTIONS.map(o => (
-                <button
-                  key={o.value}
-                  onClick={() => setSortBy(o.value)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                    sortBy === o.value ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  }`}
-                >
-                  {o.label}
-                </button>
-              ))}
-            </div>
           </div>
 
           {/* 车辆卡片列表 */}
