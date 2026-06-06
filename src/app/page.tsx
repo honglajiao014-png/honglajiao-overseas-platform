@@ -1,14 +1,13 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import Image from "next/image";
 
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { useT, T } from "@/i18n/useT";
 import { HOT_BRANDS, BRANDS, PRICE_RANGES, CAR_LEVELS, AGE_RANGES, SORT_OPTIONS, type Brand } from "@/data/brands";
 
-// 品牌Logo组件 — 加载官方logo图片，失败时fallback到品牌色首字母
+// 品牌Logo组件 — 加载本地PNG图片，失败时fallback到品牌色首字母
 function BrandLogo({ brand, size = 20 }: { brand: Brand; size?: number }) {
   const [imgError, setImgError] = useState(false);
 
@@ -24,14 +23,13 @@ function BrandLogo({ brand, size = 20 }: { brand: Brand; size?: number }) {
   }
 
   return (
-    <Image
+    <img
       src={brand.logo}
       alt={brand.name}
       width={size}
       height={size}
       className="rounded-sm object-contain shrink-0"
       onError={() => setImgError(true)}
-      unoptimized
     />
   );
 }

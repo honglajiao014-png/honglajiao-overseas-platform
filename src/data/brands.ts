@@ -7,12 +7,12 @@ export interface Brand {
   color: string;
 }
 
-// 品牌按字母顺序排列，logo使用Clearbit Logo API + 品牌官网域名
-// fallback为首字母圆形（品牌色背景）
-const B = (name: string, letter: string, domain: string, color: string): Brand => ({
+// 品牌按字母顺序排列，logo使用本地PNG图片
+// 有本地PNG的品牌用 /brands/品牌名.png，没有的fallback到品牌色首字母
+const B = (name: string, letter: string, _domain: string, color: string): Brand => ({
   name,
   letter,
-  logo: `https://logo.clearbit.com/${domain}?size=80`,
+  logo: `/brands/${name}.png`,
   color,
 });
 

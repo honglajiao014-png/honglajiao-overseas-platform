@@ -138,7 +138,7 @@ export default function CarsPage() {
                     {(brandSearch ? filteredBrands : BRANDS).map(b => (
                       <FilterBtn key={b.name} active={brandFilter === b.name} onClick={() => setBrandFilter(b.name)}>
                         <span className="flex items-center gap-2">
-                          <span className="w-5 h-5 rounded-full inline-flex items-center justify-center text-[9px] font-bold text-white" style={{ backgroundColor: b.color }}>{b.name.charAt(0)}</span>
+                          <img src={`/brands/${b.name}.png`} alt={b.name} className="w-5 h-5 object-contain shrink-0" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                           {b.name}
                         </span>
                       </FilterBtn>
