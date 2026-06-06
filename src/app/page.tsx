@@ -314,7 +314,7 @@ export default function Home() {
               <div className="text-5xl mb-4">🚗</div>
               <h3 className="text-lg font-bold text-gray-400 mb-2">暂无匹配车源</h3>
               <p className="text-sm text-gray-400">试试调整筛选条件，或提交采购需求让我们帮您找车</p>
-              <Link href="/inquiry" className="inline-block mt-4 bg-primary text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-primary-dark transition-all">
+              <Link href="/inquiry" prefetch={false} className="inline-block mt-4 bg-primary text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-primary-dark transition-all">
                 提交采购需求
               </Link>
             </div>

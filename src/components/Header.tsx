@@ -68,7 +68,7 @@ export function Header() {
       <div className="max-w-[1400px] mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 flex-shrink-0 group">
+          <Link href="/" prefetch={false} className="flex items-center gap-3 flex-shrink-0 group">
             <img
               src="/logo.png"
               alt="ChinaCarExport"
@@ -88,6 +88,7 @@ export function Header() {
                 <Link
                   key={link.href}
                   href={link.href}
+                  prefetch={false}
                   className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                     active
                       ? "text-primary bg-white/10"
@@ -162,6 +163,7 @@ export function Header() {
             <div className="hidden sm:flex items-center gap-1 ml-2">
               <Link
                 href="/login"
+                prefetch={false}
                 className="text-sm text-gray-400 hover:text-white px-3 py-2 rounded-lg hover:bg-white/5 transition-all"
               >
                 {t(T.header.login)}
@@ -169,6 +171,7 @@ export function Header() {
               <span className="text-gray-600">/</span>
               <Link
                 href="/register"
+                prefetch={false}
                 className="text-sm text-gray-400 hover:text-white px-3 py-2 rounded-lg hover:bg-white/5 transition-all"
               >
                 {t(T.header.register)}
@@ -236,10 +239,10 @@ export function Header() {
                 );
               })}
               <div className="flex gap-2 mt-3 px-4">
-                <Link href="/login" onClick={() => setMobileOpen(false)} className="flex-1 text-center text-sm font-medium text-gray-300 border border-gray-700 py-2.5 rounded-lg hover:bg-white/5 transition-colors">
+                <Link href="/login" prefetch={false} onClick={() => setMobileOpen(false)} className="flex-1 text-center text-sm font-medium text-gray-300 border border-gray-700 py-2.5 rounded-lg hover:bg-white/5 transition-colors">
                   {t(T.header.login)}
                 </Link>
-                <Link href="/register" onClick={() => setMobileOpen(false)} className="flex-1 text-center text-sm font-medium bg-primary text-white py-2.5 rounded-lg hover:bg-primary-dark transition-colors">
+                <Link href="/register" prefetch={false} onClick={() => setMobileOpen(false)} className="flex-1 text-center text-sm font-medium bg-primary text-white py-2.5 rounded-lg hover:bg-primary-dark transition-colors">
                   {t(T.header.register)}
                 </Link>
               </div>

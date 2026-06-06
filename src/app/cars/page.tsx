@@ -108,7 +108,7 @@ export default function CarsPage() {
         <div className="max-w-[1400px] mx-auto px-4 py-6">
           {/* 面包屑 */}
           <div className="text-xs text-gray-400 mb-4">
-            <Link href="/" className="hover:text-primary">首页</Link>
+            <Link href="/" prefetch={false} className="hover:text-primary">首页</Link>
             <span className="mx-2">›</span>
             <span className="text-gray-600">全部车源</span>
           </div>

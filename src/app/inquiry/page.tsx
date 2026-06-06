@@ -56,7 +56,7 @@ export default function InquiryPage() {
             </div>
             <h2 className="text-xl font-bold text-gray-900 mb-2">提交成功！</h2>
             <p className="text-gray-500 text-sm mb-6">我们将在24小时内与您联系，请保持手机畅通。</p>
-            <Link href="/" className="inline-block bg-primary text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-primary-dark transition-all">
+            <Link href="/" prefetch={false} className="inline-block bg-primary text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-primary-dark transition-all">
               返回首页
             </Link>
           </div>
@@ -73,7 +73,7 @@ export default function InquiryPage() {
         <div className="max-w-2xl mx-auto px-4 py-10">
           {/* 面包屑 */}
           <div className="text-xs text-gray-400 mb-6">
-            <Link href="/" className="hover:text-primary">首页</Link>
+            <Link href="/" prefetch={false} className="hover:text-primary">首页</Link>
             <span className="mx-2">›</span>
             <span className="text-gray-600">提交需求</span>
           </div>

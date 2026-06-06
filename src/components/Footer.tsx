@@ -32,9 +32,9 @@ export function Footer() {
           <div>
             <h3 className="text-sm font-bold text-white mb-4">全部车源</h3>
             <ul className="space-y-2.5">
-              <li><Link href="/cars" className="text-sm text-gray-400 hover:text-primary transition-colors">全部车源</Link></li>
-              <li><Link href="/inquiry" className="text-sm text-gray-400 hover:text-primary transition-colors">提交需求</Link></li>
-              <li><Link href="/blog" className="text-sm text-gray-400 hover:text-primary transition-colors">博客</Link></li>
+              <li><Link href="/cars" prefetch={false} className="text-sm text-gray-400 hover:text-primary transition-colors">全部车源</Link></li>
+              <li><Link href="/inquiry" prefetch={false} className="text-sm text-gray-400 hover:text-primary transition-colors">提交需求</Link></li>
+              <li><Link href="/blog" prefetch={false} className="text-sm text-gray-400 hover:text-primary transition-colors">博客</Link></li>
             </ul>
           </div>
 
@@ -59,9 +59,9 @@ export function Footer() {
           <div>
             <h3 className="text-sm font-bold text-white mb-4">关于我们</h3>
             <ul className="space-y-2.5">
-              <li><Link href="/about" className="text-sm text-gray-400 hover:text-primary transition-colors">公司简介</Link></li>
-              <li><Link href="/contact" className="text-sm text-gray-400 hover:text-primary transition-colors">联系我们</Link></li>
-              <li><Link href="/services" className="text-sm text-gray-400 hover:text-primary transition-colors">服务保障</Link></li>
+              <li><Link href="/about" prefetch={false} className="text-sm text-gray-400 hover:text-primary transition-colors">公司简介</Link></li>
+              <li><Link href="/contact" prefetch={false} className="text-sm text-gray-400 hover:text-primary transition-colors">联系我们</Link></li>
+              <li><Link href="/services" prefetch={false} className="text-sm text-gray-400 hover:text-primary transition-colors">服务保障</Link></li>
             </ul>
           </div>
         </div>
@@ -72,9 +72,9 @@ export function Footer() {
             ChinaCarExport | Copyright 2015-2026 ChinaCarExport All Rights Reserved
           </p>
           <div className="flex items-center gap-4">
-            <Link href="/blog" className="text-xs text-gray-500 hover:text-gray-300 transition-colors">博客</Link>
-            <Link href="/about" className="text-xs text-gray-500 hover:text-gray-300 transition-colors">关于我们</Link>
-            <Link href="/contact" className="text-xs text-gray-500 hover:text-gray-300 transition-colors">联系我们</Link>
+            <Link href="/blog" prefetch={false} className="text-xs text-gray-500 hover:text-gray-300 transition-colors">博客</Link>
+            <Link href="/about" prefetch={false} className="text-xs text-gray-500 hover:text-gray-300 transition-colors">关于我们</Link>
+            <Link href="/contact" prefetch={false} className="text-xs text-gray-500 hover:text-gray-300 transition-colors">联系我们</Link>
           </div>
         </div>
       </div>
