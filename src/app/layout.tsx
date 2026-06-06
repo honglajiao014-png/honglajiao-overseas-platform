@@ -61,8 +61,8 @@ export default function RootLayout({
       <body className="min-h-screen flex flex-col">
         <LangProvider>
           {children}
+          <ChatWidget />
         </LangProvider>
-        <ChatWidget />
       </body>
     </html>
   );
