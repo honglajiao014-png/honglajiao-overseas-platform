@@ -161,15 +161,15 @@ export default function Home() {
                   <button
                     key={b.name}
                     onClick={() => setBrandFilter(b.name)}
-                    className={`flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-all ${
+                    className={`flex flex-col items-center gap-1 px-2.5 py-2 rounded-lg text-xs font-medium transition-all ${
                       brandFilter === b.name
                         ? "bg-white text-primary ring-2 ring-primary shadow-md scale-105"
                         : "bg-gray-50 text-gray-600 hover:bg-gray-100 hover:shadow-sm"
                     }`}
                   >
                     {/* 官方Logo图片 + fallback */}
-                    <BrandLogo brand={b} size={36} />
-                    <span className={brandFilter === b.name ? "font-bold" : ""}>{b.name}</span>
+                    <BrandLogo brand={b} size={44} />
+                    <span className={brandFilter === b.name ? "font-bold text-center" : "text-center"}>{b.name}</span>
                   </button>
                 ))}
                 {!brandSearch && (

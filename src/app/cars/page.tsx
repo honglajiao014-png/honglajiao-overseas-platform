@@ -138,8 +138,8 @@ export default function CarsPage() {
                     <FilterBtn active={!brandFilter} onClick={() => setBrandFilter("")}>{t(T.carsFilter.allBrands)}</FilterBtn>
                     {(brandSearch ? filteredBrands : BRANDS).map(b => (
                       <FilterBtn key={b.name} active={brandFilter === b.name} onClick={() => setBrandFilter(b.name)}>
-                        <span className="flex items-center gap-2">
-                          <BrandLogo brand={b} size={28} />
+                        <span className="flex flex-col items-center gap-1">
+                          <BrandLogo brand={b} size={40} />
                           {b.name}
                         </span>
                       </FilterBtn>
