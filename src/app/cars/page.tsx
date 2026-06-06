@@ -129,20 +129,19 @@ export default function CarsPage() {
 
                 {/* 品牌 */}
                 <div className="mb-5">
-                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t(T.carsFilter.brand)}</h4>
-                  <input
-                    type="text" value={brandSearch} onChange={e => setBrandSearch(e.target.value)}
-                    placeholder={t(T.carsFilter.searchBrand)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs mb-2 focus:outline-none focus:border-primary"
-                  />
-                  <div className="max-h-60 overflow-y-auto flex flex-wrap gap-1.5">
+                  <div className="flex gap-2 mb-2">
+                    <input
+                      type="text" value={brandSearch} onChange={e => setBrandSearch(e.target.value)}
+                      placeholder={t(T.carsFilter.searchBrand)} className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-primary"
+                    />
                     <button
-                      onClick={() => setBrandFilter("")}
-                      className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                        !brandFilter ? "bg-primary text-white shadow-md" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                      }`}
+                      onClick={() => document.querySelector<HTMLInputElement>('input[type="text"]')?.focus()}
+                      className="px-4 py-2 bg-primary text-white rounded-lg text-xs font-bold hover:bg-primary-dark transition-all shrink-0"
                     >
-                      {t(T.carsFilter.allBrands)}
+                      {t(T.homeFilter.searchBtn)}
                     </button>
+                  </div>
+                  <div className="max-h-60 overflow-y-auto flex flex-wrap gap-1.5">
                     {(brandSearch ? filteredBrands : BRANDS).map(b => (
                       <button
                         key={b.name}
