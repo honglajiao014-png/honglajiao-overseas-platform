@@ -1475,7 +1475,7 @@ const vehicleSpecs = [
       seats: { material: "织物/仿皮", magicSeat: true, foldFlat: true },
       media: { screen: "触控液晶屏 7寸可选", bluetooth: true, speakers: "4-6喇叭", carplay: "可选" },
       lights: { ledHeadlights: "可选", autoHeadlights: "可选", daytimeRunning: "可选" },
-      ac: { type: "手动/自动空调"， pm25Filter: "可选" },
+      ac: { type: "手动/自动空调", pm25Filter: "可选" },
     }
   },
   {
