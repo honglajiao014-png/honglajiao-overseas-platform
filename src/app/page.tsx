@@ -6,7 +6,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { BrandLogo } from "@/components/BrandLogo";
 import { useT, T } from "@/i18n/useT";
-import { HOT_BRANDS, BRANDS, PRICE_RANGES, CAR_LEVELS, AGE_RANGES, SORT_OPTIONS } from "@/data/brands";
+import { BRANDS, PRICE_RANGES, CAR_LEVELS, AGE_RANGES, SORT_OPTIONS } from "@/data/brands";
 
 // 车源数据（后续可从API获取）
 const ALL_VEHICLES = [
@@ -53,7 +53,6 @@ export default function Home() {
   const [sortBy, setSortBy] = useState<string>("default");
   const [customMinPrice, setCustomMinPrice] = useState("");
   const [customMaxPrice, setCustomMaxPrice] = useState("");
-  const [showAllBrands, setShowAllBrands] = useState(false);
   const [brandSearch, setBrandSearch] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -115,7 +114,6 @@ export default function Home() {
     return result;
   }, [brandFilter, priceRange, levelFilter, ageRange, sortBy, customMinPrice, customMaxPrice, searchQuery]);
 
-  const displayBrands = showAllBrands ? BRANDS : HOT_BRANDS;
 
   return (
     <>
@@ -136,7 +134,7 @@ export default function Home() {
                   <input
                     type="text"
                     value={brandSearch}
-                    onChange={e => { setBrandSearch(e.target.value); setShowAllBrands(true); }}
+                    onChange={e => { setBrandSearch(e.target.value); }}
                     placeholder={t(T.homeFilter.searchBrand)}
                     className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                   />
@@ -157,7 +155,7 @@ export default function Home() {
                 >
                   {t(T.homeFilter.all)}
                 </button>
-                {(brandSearch ? filteredBrands : displayBrands).map(b => (
+                {(brandSearch ? filteredBrands : BRANDS).map(b => (
                   <button
                     key={b.name}
                     onClick={() => setBrandFilter(b.name)}
@@ -172,14 +170,7 @@ export default function Home() {
                     <span className={brandFilter === b.name ? "font-bold text-center" : "text-center"}>{b.name}</span>
                   </button>
                 ))}
-                {!brandSearch && (
-                  <button
-                    onClick={() => setShowAllBrands(!showAllBrands)}
-                    className="px-3 py-2 rounded-lg text-xs font-medium text-primary hover:bg-primary-light transition-all"
-                  >
-                    {showAllBrands ? t(T.homeFilter.collapse) : t(T.homeFilter.expand)}
-                  </button>
-                )}
+
               </div>
             </div>
 
