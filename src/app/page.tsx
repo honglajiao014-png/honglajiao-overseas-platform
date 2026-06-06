@@ -6,6 +6,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { BrandLogo } from "@/components/BrandLogo";
 import { useT, T } from "@/i18n/useT";
+import { useLang } from "@/i18n/LangContext";
 import { BRANDS, PRICE_RANGES, CAR_LEVELS, AGE_RANGES, SORT_OPTIONS } from "@/data/brands";
 
 // 车源数据（后续可从API获取）
@@ -44,11 +45,12 @@ const ALL_VEHICLES = [
 
 export default function Home() {
   const t = useT();
+  const { lang } = useLang();
 
   // 筛选状态
   const [brandFilter, setBrandFilter] = useState<string>("");
   const [priceRange, setPriceRange] = useState<number>(-1);
-  const [levelFilter, setLevelFilter] = useState<string>("{t(T.homeFilter.all)}");
+  const [levelFilter, setLevelFilter] = useState<string>("");
   const [ageRange, setAgeRange] = useState<number>(-1);
   const [sortBy, setSortBy] = useState<string>("default");
   const [customMinPrice, setCustomMinPrice] = useState("");
@@ -76,7 +78,7 @@ export default function Home() {
     if (customMaxPrice) result = result.filter(v => v.price <= Number(customMaxPrice) * 10000);
 
     // 级别筛选
-    if (levelFilter !== "{t(T.homeFilter.all)}") {
+    if (levelFilter) {
       result = result.filter(v => v.level === levelFilter);
     }
 
@@ -155,7 +157,7 @@ export default function Home() {
                   >
                     {/* 官方Logo图片 + fallback */}
                     <BrandLogo brand={b} size={44} />
-                    <span className={brandFilter === b.name ? "font-bold text-center" : "text-center"}>{b.name}</span>
+                    <span className={brandFilter === b.name ? "font-bold text-center" : "text-center"}>{lang === "zh" ? b.name : b.nameEn}</span>
                   </button>
                 ))}
 
@@ -166,21 +168,66 @@ export default function Home() {
             <div className="flex items-center gap-4 mb-4">
               <span className="text-base font-bold text-gray-700 shrink-0">{t(T.homeFilter.price)}：</span>
               <div className="flex flex-wrap gap-2 items-center">
-                {PRICE_RANGES.map((r, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setPriceRange(i)}
-                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                      priceRange === i ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                    }`}
-                  >
-                    {r.label}
-                  </button>
-                ))}
+                <button
+                  onClick={() => setPriceRange(0)}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                    priceRange === 0 ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
+                >
+                  {t(T.homeFilter.priceAll)}
+                </button>
+                <button
+                  onClick={() => setPriceRange(1)}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                    priceRange === 1 ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
+                >
+                  {t(T.homeFilter.priceUnder3)}
+                </button>
+                <button
+                  onClick={() => setPriceRange(2)}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                    priceRange === 2 ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
+                >
+                  {t(T.homeFilter.price3to5)}
+                </button>
+                <button
+                  onClick={() => setPriceRange(3)}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                    priceRange === 3 ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
+                >
+                  {t(T.homeFilter.price5to10)}
+                </button>
+                <button
+                  onClick={() => setPriceRange(4)}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                    priceRange === 4 ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
+                >
+                  {t(T.homeFilter.price10to15)}
+                </button>
+                <button
+                  onClick={() => setPriceRange(5)}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                    priceRange === 5 ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
+                >
+                  {t(T.homeFilter.price15to20)}
+                </button>
+                <button
+                  onClick={() => setPriceRange(6)}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                    priceRange === 6 ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
+                >
+                  {t(T.homeFilter.priceOver20)}
+                </button>
                 <div className="flex items-center gap-1 ml-2">
                   <input
                     type="number"
-                    placeholder="最低"
+                    placeholder={t(T.homeFilter.priceMin)}
                     value={customMinPrice}
                     onChange={e => { setCustomMinPrice(e.target.value); setPriceRange(-1); }}
                     className="w-16 px-2 py-1.5 border border-gray-200 rounded-lg text-sm text-center"
@@ -188,12 +235,12 @@ export default function Home() {
                   <span className="text-sm text-gray-400">—</span>
                   <input
                     type="number"
-                    placeholder="最高"
+                    placeholder={t(T.homeFilter.priceMax)}
                     value={customMaxPrice}
                     onChange={e => { setCustomMaxPrice(e.target.value); setPriceRange(-1); }}
                     className="w-16 px-2 py-1.5 border border-gray-200 rounded-lg text-sm text-center"
                   />
-                  <span className="text-sm text-gray-400">万</span>
+                  <span className="text-sm text-gray-400">{t(T.homeFilter.priceUnit)}</span>
                 </div>
               </div>
             </div>
@@ -202,17 +249,39 @@ export default function Home() {
             <div className="flex items-center gap-4 mb-4">
               <span className="text-base font-bold text-gray-700 shrink-0">{t(T.homeFilter.level)}：</span>
               <div className="flex flex-wrap gap-2">
-                {CAR_LEVELS.map(l => (
-                  <button
-                    key={l}
-                    onClick={() => setLevelFilter(l)}
-                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                      levelFilter === l ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                    }`}
-                  >
-                    {l}
-                  </button>
-                ))}
+                <button onClick={() => setLevelFilter("All")}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${levelFilter === "All" ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                >{t(T.homeFilter.all)}</button>
+                <button onClick={() => setLevelFilter("Sedan")}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${levelFilter === "Sedan" ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                >{t(T.homeFilter.levelSedan)}</button>
+                <button onClick={() => setLevelFilter("SUV")}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${levelFilter === "SUV" ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                >{t(T.homeFilter.levelSUV)}</button>
+                <button onClick={() => setLevelFilter("MPV")}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${levelFilter === "MPV" ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                >{t(T.homeFilter.levelMPV)}</button>
+                <button onClick={() => setLevelFilter("Sports")}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${levelFilter === "Sports" ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                >{t(T.homeFilter.levelSports)}</button>
+                <button onClick={() => setLevelFilter("Pickup")}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${levelFilter === "Pickup" ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                >{t(T.homeFilter.levelPickup)}</button>
+                <button onClick={() => setLevelFilter("3-Box")}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${levelFilter === "3-Box" ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                >{t(T.homeFilter.levelSedan3)}</button>
+                <button onClick={() => setLevelFilter("Hatchback")}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${levelFilter === "Hatchback" ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                >{t(T.homeFilter.levelHatchback)}</button>
+                <button onClick={() => setLevelFilter("Wagon")}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${levelFilter === "Wagon" ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                >{t(T.homeFilter.levelWagon)}</button>
+                <button onClick={() => setLevelFilter("Bus")}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${levelFilter === "Bus" ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                >{t(T.homeFilter.levelBus)}</button>
+                <button onClick={() => setLevelFilter("Truck")}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${levelFilter === "Truck" ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                >{t(T.homeFilter.levelTruck)}</button>
               </div>
             </div>
 
@@ -220,17 +289,24 @@ export default function Home() {
             <div className="flex items-center gap-4 mb-4">
               <span className="text-base font-bold text-gray-700 shrink-0">{t(T.homeFilter.age)}：</span>
               <div className="flex flex-wrap gap-2">
-                {AGE_RANGES.map((r, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setAgeRange(i)}
-                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                      ageRange === i ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                    }`}
-                  >
-                    {r.label}
-                  </button>
-                ))}
+                <button onClick={() => setAgeRange(0)}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${ageRange === 0 ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                >{t(T.homeFilter.ageAll)}</button>
+                <button onClick={() => setAgeRange(1)}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${ageRange === 1 ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                >{t(T.homeFilter.ageWithin1)}</button>
+                <button onClick={() => setAgeRange(2)}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${ageRange === 2 ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                >{t(T.homeFilter.age1to3)}</button>
+                <button onClick={() => setAgeRange(3)}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${ageRange === 3 ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                >{t(T.homeFilter.age3to5)}</button>
+                <button onClick={() => setAgeRange(4)}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${ageRange === 4 ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                >{t(T.homeFilter.age5to8)}</button>
+                <button onClick={() => setAgeRange(5)}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${ageRange === 5 ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                >{t(T.homeFilter.ageOver8)}</button>
               </div>
             </div>
 
@@ -238,17 +314,27 @@ export default function Home() {
             <div className="flex items-center gap-4">
               <span className="text-base font-bold text-gray-700 shrink-0">{t(T.homeFilter.sort)}：</span>
               <div className="flex flex-wrap gap-2">
-                {SORT_OPTIONS.map(o => (
-                  <button
-                    key={o.value}
-                    onClick={() => setSortBy(o.value)}
-                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                      sortBy === o.value ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                    }`}
-                  >
-                    {o.label}
-                  </button>
-                ))}
+                <button onClick={() => setSortBy("default")}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${sortBy === "default" ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                >{t(T.homeFilter.sortDefault)}</button>
+                <button onClick={() => setSortBy("newest")}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${sortBy === "newest" ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                >{t(T.homeFilter.sortNewest)}</button>
+                <button onClick={() => setSortBy("best")}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${sortBy === "best" ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                >{t(T.homeFilter.sortBest)}</button>
+                <button onClick={() => setSortBy("price_asc")}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${sortBy === "price_asc" ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                >{t(T.homeFilter.sortPriceAsc)}</button>
+                <button onClick={() => setSortBy("price_desc")}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${sortBy === "price_desc" ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                >{t(T.homeFilter.sortPriceDesc)}</button>
+                <button onClick={() => setSortBy("year_desc")}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${sortBy === "year_desc" ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                >{t(T.homeFilter.sortYearDesc)}</button>
+                <button onClick={() => setSortBy("mileage_asc")}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${sortBy === "mileage_asc" ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                >{t(T.homeFilter.sortMileageAsc)}</button>
               </div>
             </div>
           </div>
@@ -290,7 +376,7 @@ export default function Home() {
                     <div className="absolute top-3 left-3 flex gap-1.5">
                       {v.tags.map(tag => (
                         <span key={tag} className="px-2 py-0.5 bg-primary/90 text-white text-xs font-medium rounded-md">
-                          {tag}
+                          {tag === "实拍车源" ? t(T.homeFilter.tagVerified) : tag === "中国车源" ? t(T.homeFilter.tagChinaStock) : tag}
                         </span>
                       ))}
                     </div>
@@ -303,7 +389,7 @@ export default function Home() {
                     </h3>
 
                     <div className="flex flex-wrap gap-x-3 gap-y-1 text-sm text-gray-500 mb-4">
-                      <span>{v.year}年</span>
+                      <span>{v.year}{t(T.homeFilter.yearSuffix)}</span>
                       <span className="text-gray-300">|</span>
                       <span>{v.mileage}</span>
                       <span className="text-gray-300">|</span>
