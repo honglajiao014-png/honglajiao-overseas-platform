@@ -432,4 +432,58 @@ export const T = {
     email: E('Email', 'Email', 'Email', '邮箱'),
 
   },
+
+
+  // === Extended keys for homepage components ===
+
+  homeHero: {
+    trustBadge: E("Trusted Vehicle Sourcing — China to Africa & Worldwide", "Approvisionnement de véhicules de confiance — Chine vers l'Afrique et le monde", "Abastecimiento confiable de vehículos — China a África y el mundo", "值得信赖的车辆采购 — 中国到非洲及全球"),
+    heroTitle: E("Source Quality Vehicles from China", "Approvisionnement en véhicules de qualité depuis la Chine", "Abastecimiento de vehículos de calidad desde China", "从中国采购优质车辆"),
+    heroSubtitle: E("Delivered to Your Market", "Livré sur votre marché", "Entregado a su mercado", "送达您的市场"),
+    heroDesc: E("We help African dealers and businesses source certified used cars, EVs, commercial trucks and machinery from China's largest automotive markets — with real photos, factory inspection, and full export support.", "Nous aidons les concessionnaires et entreprises africains à s'approvisionner en voitures d'occasion certifiées, VE, camions commerciaux et machines des plus grands marchés automobiles chinois — avec photos réelles, inspection d'usine et support export complet.", "Ayudamos a concesionarios y empresas africanas a abastecerse de autos usados certificados, VE, camiones comerciales y maquinaria de los mercados automotrices más grandes de China — con fotos reales, inspección de fábrica y soporte completo de exportación.", "我们帮助非洲经销商和企业从中国最大的汽车市场采购经过认证的二手车、电动车、商用车和机械设备——提供真实照片、工厂检测和全程出口支持。"),
+    searchPlaceholder: E("Search by brand, model, or keyword...", "Rechercher par marque, modèle ou mot-clé...", "Buscar por marca, modelo o palabra clave...", "按品牌、车型或关键词搜索..."),
+    search: E("Search", "Rechercher", "Buscar", "搜索"),
+    ctaInquiry: E("Submit Buying Request", "Soumettre une demande d'achat", "Enviar solicitud de compra", "提交采购需求"),
+    ctaBrowse: E("Browse All Vehicles", "Voir tous les véhicules", "Ver todos los vehículos", "浏览全部车辆"),
+    statsVehicles: E("Vehicles Sourced", "Véhicules approvisionnés", "Vehículos abastecidos", "已采购车辆"),
+    statsCountries: E("African Countries", "Pays africains", "Países africanos", "非洲国家"),
+    statsSatisfaction: E("Client Satisfaction", "Satisfaction client", "Satisfacción del cliente", "客户满意度"),
+    statsYears: E("Years Experience", "Années d'expérience", "Años de experiencia", "年经验"),
+    trust1: E("Real Photo Inspection", "Inspection photo réelle", "Inspección con fotos reales", "真实照片检测"),
+    trust2: E("Supplier Verified", "Fournisseur vérifié", "Proveedor verificado", "供应商已验证"),
+    trust3: E("Export Documentation", "Documentation d'exportation", "Documentación de exportación", "出口文件"),
+    trust4: E("Secure Payment", "Paiement sécurisé", "Pago seguro", "安全支付"),
+  },
+
+  homeVehicles: {
+    inventory: E("Inventory", "Inventaire", "Inventario", "车源"),
+    featured: E("Featured Vehicles", "Véhicules en vedette", "Vehículos destacados", "精选车源"),
+    featuredDesc: E("Hand-picked vehicles with real photos and verified pricing", "Véhicules sélectionnés avec photos réelles et prix vérifiés", "Vehículos seleccionados con fotos reales y precios verificados", "精选车辆，真实照片，价格已验证"),
+    viewAll: E("View All Vehicles", "Voir tous les véhicules", "Ver todos los vehículos", "查看全部车辆"),
+    available: E("Available", "Disponible", "Disponible", "可售"),
+    viewDetails: E("View Details", "Voir les détails", "Ver detalles", "查看详情"),
+  },
+
+  homeProcess: {
+    badge: E("How It Works", "Comment ça marche", "Cómo funciona", "采购流程"),
+    title: E("Sourcing Process", "Processus d'approvisionnement", "Proceso de abastecimiento", "采购流程"),
+    subtitle: E("Simple 5-step process — from request to delivery", "Processus simple en 5 étapes — de la demande à la livraison", "Proceso simple de 5 pasos — de la solicitud a la entrega", "简单5步流程 — 从需求到交付"),
+    step1Title: E("Submit Request", "Soumettre la demande", "Enviar solicitud", "提交需求"),
+    step1Desc: E("Tell us your vehicle needs, budget, and destination country", "Indiquez vos besoins, budget et pays de destination", "Cuéntenos sus necesidades, presupuesto y país de destino", "告诉我们您的车辆需求、预算和目的国"),
+    step2Title: E("Source & Match", "Recherche et correspondance", "Búsqueda y coincidencia", "寻源匹配"),
+    step2Desc: E("We search China's largest auto markets for the best options", "Nous recherchons dans les plus grands marchés automobiles chinois", "Buscamos en los mercados automotrices más grandes de China", "在中国最大的汽车市场为您寻找最佳选择"),
+    step3Title: E("Inspect & Verify", "Inspecter et vérifier", "Inspeccionar y verificar", "检测验证"),
+    step3Desc: E("Real photos, videos, and inspection reports provided", "Photos réelles, vidéos et rapports d'inspection fournis", "Fotos reales, videos e informes de inspección proporcionados", "提供真实照片、视频和检测报告"),
+    step4Title: E("Quote & Confirm", "Devis et confirmation", "Cotización y confirmación", "报价确认"),
+    step4Desc: E("Complete pricing with vehicle, shipping, and export fees", "Prix complet avec véhicule, expédition et frais d'exportation", "Precio completo con vehículo, envío y tarifas de exportación", "包含车辆、运费和出口费用的完整报价"),
+    step5Title: E("Ship & Deliver", "Expédier et livrer", "Enviar y entregar", "发运交付"),
+    step5Desc: E("Contract signing, payment, and logistics to your port", "Signature du contrat, paiement et logistique jusqu'à votre port", "Firma de contrato, pago y logística hasta su puerto", "签约、付款、物流到港"),
+  },
+
+  homeInquiry: {
+    ctaTitle: E("Ready to Source Vehicles?", "Prêt à vous approvisionner ?", "¿Listo para abastecerse?", "准备好采购车辆了吗？"),
+    ctaDesc: E("Tell us your requirements and we'll match you with the best vehicle options. Free consultation, no fee until deal is done.", "Dites-nous vos besoins et nous trouverons les meilleures options. Consultation gratuite, pas de frais avant conclusion.", "Cuéntenos sus requisitos y encontraremos las mejores opciones. Consulta gratuita, sin cargo hasta cerrar el trato.", "告诉我们您的需求，我们为您匹配最优质的车源。免费咨询，不成交不收费。"),
+    ctaBtn: E("Submit Buying Request", "Soumettre une demande d'achat", "Enviar solicitud de compra", "提交采购需求"),
+  },
+
 };
