@@ -642,6 +642,11 @@ export const T = {
     tagVerified: E("Verified", "Vérifié", "Verificado", "实拍车源"),
     tagChinaStock: E("China Stock", "Stock Chine", "Stock China", "中国车源"),
     yearSuffix: E("yr", "an", "año", "年"),
+
+    // Currency per language
+    currencySymbol: E("$", "€", "€", "¥"),
+    currencyCode: E("USD", "EUR", "EUR", "CNY"),
+    currencySuffix: E("", "", "", "元"),
   },
 
   // 车辆列表页侧边栏

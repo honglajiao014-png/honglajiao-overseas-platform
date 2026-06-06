@@ -6,6 +6,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { BrandLogo } from "@/components/BrandLogo";
 import { useT, T } from "@/i18n/useT";
+import { useLang } from "@/i18n/LangContext";
 import { BRANDS, PRICE_RANGES, AGE_RANGES, MILEAGE_RANGES, TRANSMISSION_OPTIONS, FUEL_OPTIONS, BODY_TYPES, SORT_OPTIONS } from "@/data/brands";
 
 const ALL_VEHICLES = [
@@ -29,6 +30,7 @@ const ALL_VEHICLES = [
 
 export default function CarsPage() {
   const t = useT();
+  const { lang } = useLang();
 
   // 筛选状态
   const [brandFilter, setBrandFilter] = useState<string>("");
@@ -288,7 +290,7 @@ export default function CarsPage() {
                         </div>
                         <div className="flex items-end justify-between mt-3">
                           <span className="text-xl font-extrabold text-red-500">
-                            ¥{v.price.toLocaleString()} <span className="text-xs font-normal text-gray-400">CNY</span>
+                                                      {t(T.homeFilter.currencySymbol)}{v.price.toLocaleString()} <span className="text-xs font-normal text-gray-400">{t(T.homeFilter.currencyCode)}{t(T.homeFilter.currencySuffix)}</span>
                           </span>
                           <span className="text-xs text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity">
                             {t(T.carsFilter.viewDetail)}
