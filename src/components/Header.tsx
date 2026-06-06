@@ -3,16 +3,15 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
+import { useLang } from "@/i18n/LangContext";
+import { LANGS, LANG_NAMES, type Lang } from "@/i18n/types";
 
-type LangCode = "en" | "zh" | "fr" | "pt" | "sw";
-
-const LANGS: { code: LangCode; label: string; flag: string }[] = [
-  { code: "en", label: "English", flag: "🇬🇧" },
-  { code: "zh", label: "中文", flag: "🇨🇳" },
-  { code: "fr", label: "Français", flag: "🇫🇷" },
-  { code: "pt", label: "Português", flag: "🇧🇷" },
-  { code: "sw", label: "Kiswahili", flag: "🇹🇿" },
-];
+const FLAGS: Record<Lang, string> = {
+  en: "🇬🇧",
+  zh: "🇨🇳",
+  fr: "🇫🇷",
+  es: "🇪🇸",
+};
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -21,29 +20,13 @@ const NAV_LINKS = [
   { href: "/blog", label: "Blog" },
 ];
 
-function getStoredLang(): LangCode {
-  if (typeof window === "undefined") return "en";
-  const stored = localStorage.getItem("lang");
-  if (stored && LANGS.some(l => l.code === stored)) return stored as LangCode;
-  return "en";
-}
-
 export function Header() {
   const pathname = usePathname();
-  const [currentLang, setCurrentLang] = useState<LangCode>("en");
+  const { lang: currentLang, setLang } = useLang();
   const [langOpen, setLangOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const initialized = useRef(false);
-
-  useEffect(() => {
-    if (initialized.current) return;
-    initialized.current = true;
-    const lang = getStoredLang();
-    setCurrentLang(lang);
-    document.documentElement.lang = lang;
-  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -67,14 +50,12 @@ export function Header() {
     return () => document.removeEventListener("keydown", handler);
   }, [langOpen]);
 
-  const switchLang = (code: LangCode) => {
-    setCurrentLang(code);
-    localStorage.setItem("lang", code);
-    document.documentElement.lang = code;
+  const switchLang = (code: Lang) => {
+    setLang(code);
     setLangOpen(false);
   };
 
-  const current = LANGS.find(l => l.code === currentLang) || LANGS[0];
+  const current = FLAGS[currentLang] || "🇬🇧";
 
   return (
     <header
@@ -86,7 +67,6 @@ export function Header() {
     >
       <div className="container-wide">
         <div className="flex items-center justify-between h-16">
-          {/* Logo + Nav */}
           <div className="flex items-center gap-10">
             <Link href="/" className="flex items-center gap-3 flex-shrink-0 group">
               <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary-dark rounded-xl flex items-center justify-center text-white font-extrabold text-sm shadow-md group-hover:shadow-lg transition-shadow">
@@ -121,9 +101,7 @@ export function Header() {
             </nav>
           </div>
 
-          {/* Right Actions */}
           <div className="flex items-center gap-2">
-            {/* Login / Register */}
             <div className="hidden sm:flex items-center gap-2">
               <Link
                 href="/login"
@@ -139,10 +117,8 @@ export function Header() {
               </Link>
             </div>
 
-            {/* Divider */}
             <div className="hidden sm:block w-px h-6 bg-gray-200 mx-1" />
 
-            {/* Lang Switcher */}
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setLangOpen(!langOpen)}
@@ -150,8 +126,8 @@ export function Header() {
                 aria-expanded={langOpen}
                 aria-haspopup="listbox"
               >
-                <span className="text-base">{current.flag}</span>
-                <span className="uppercase text-xs font-bold">{current.code}</span>
+                <span className="text-base">{current}</span>
+                <span className="uppercase text-xs font-bold">{currentLang.toUpperCase()}</span>
                 <svg className={`w-3 h-3 text-gray-400 transition-transform duration-200 ${langOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
                 </svg>
@@ -162,17 +138,17 @@ export function Header() {
                   <div className="px-3 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Language</div>
                   {LANGS.map((l) => (
                     <button
-                      key={l.code}
-                      onClick={() => switchLang(l.code)}
+                      key={l}
+                      onClick={() => switchLang(l)}
                       className={`w-full text-left px-4 py-2.5 text-sm transition-colors flex items-center gap-3 ${
-                        currentLang === l.code
+                        currentLang === l
                           ? "bg-primary-light text-primary font-semibold"
                           : "text-gray-700 hover:bg-gray-50"
                       }`}
                     >
-                      <span className="text-lg">{l.flag}</span>
-                      <span>{l.label}</span>
-                      {currentLang === l.code && (
+                      <span className="text-lg">{FLAGS[l]}</span>
+                      <span>{LANG_NAMES[l]}</span>
+                      {currentLang === l && (
                         <svg className="w-4 h-4 ml-auto text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
                         </svg>
@@ -183,7 +159,6 @@ export function Header() {
               )}
             </div>
 
-            {/* Mobile Menu Toggle */}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
               className="lg:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
@@ -202,7 +177,6 @@ export function Header() {
           </div>
         </div>
 
-        {/* Mobile Nav */}
         {mobileOpen && (
           <div className="lg:hidden border-t border-gray-100 py-4 animate-fade-in-up">
             <nav className="flex flex-col gap-1">
