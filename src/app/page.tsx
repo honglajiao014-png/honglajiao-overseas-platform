@@ -1,11 +1,40 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { useT, T } from "@/i18n/useT";
-import { HOT_BRANDS, BRANDS, PRICE_RANGES, CAR_LEVELS, AGE_RANGES, SORT_OPTIONS } from "@/data/brands";
+import { HOT_BRANDS, BRANDS, PRICE_RANGES, CAR_LEVELS, AGE_RANGES, SORT_OPTIONS, type Brand } from "@/data/brands";
+
+// 品牌Logo组件 — 加载官方logo图片，失败时fallback到品牌色首字母
+function BrandLogo({ brand, size = 20 }: { brand: Brand; size?: number }) {
+  const [imgError, setImgError] = useState(false);
+
+  if (imgError) {
+    return (
+      <span
+        className="inline-flex items-center justify-center rounded-full text-[10px] font-bold text-white shrink-0"
+        style={{ width: size, height: size, backgroundColor: brand.color }}
+      >
+        {brand.name.charAt(0)}
+      </span>
+    );
+  }
+
+  return (
+    <Image
+      src={brand.logo}
+      alt={brand.name}
+      width={size}
+      height={size}
+      className="rounded-sm object-contain shrink-0"
+      onError={() => setImgError(true)}
+      unoptimized
+    />
+  );
+}
 
 // 车源数据（后续可从API获取）
 const ALL_VEHICLES = [
@@ -123,12 +152,12 @@ export default function Home() {
         {/* 筛选条件区域 */}
         <div className="bg-white border-b border-gray-200">
           <div className="max-w-[1400px] mx-auto px-4 py-6">
-            {/* 品牌筛选 — Logo网格 + 搜索框 */}
+            {/* 品牌筛选 — 官方Logo网格 + 搜索框 */}
             <div className="mb-6">
-              <div className="flex items-center gap-4 mb-3">
+              <div className="flex items-center gap-4 mb-4">
                 <span className="text-sm font-bold text-gray-700 shrink-0">品牌：</span>
                 {/* 品牌搜索框 */}
-                <div className="relative w-48">
+                <div className="relative w-56">
                   <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
@@ -137,15 +166,21 @@ export default function Home() {
                     value={brandSearch}
                     onChange={e => { setBrandSearch(e.target.value); setShowAllBrands(true); }}
                     placeholder="搜索品牌..."
-                    className="w-full pl-9 pr-3 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+                    className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
+                {brandSearch && (
+                  <span className="text-xs text-gray-400">
+                    找到 {filteredBrands.length} 个品牌
+                  </span>
+                )}
               </div>
-              <div className="flex flex-wrap gap-2">
+              {/* 品牌Logo网格 */}
+              <div className="flex flex-wrap gap-1.5">
                 <button
                   onClick={() => { setBrandFilter(""); setBrandSearch(""); }}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                    !brandFilter ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                    !brandFilter ? "bg-primary text-white shadow-md" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                   }`}
                 >
                   不限
@@ -154,24 +189,21 @@ export default function Home() {
                   <button
                     key={b.name}
                     onClick={() => setBrandFilter(b.name)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                      brandFilter === b.name ? "bg-primary text-white ring-2 ring-primary/30" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    className={`flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-all ${
+                      brandFilter === b.name
+                        ? "bg-white text-primary ring-2 ring-primary shadow-md scale-105"
+                        : "bg-gray-50 text-gray-600 hover:bg-gray-100 hover:shadow-sm"
                     }`}
                   >
-                    {/* 品牌logo — 首字母圆形 */}
-                    <span
-                      className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold text-white shrink-0"
-                      style={{ backgroundColor: b.color || "#666" }}
-                    >
-                      {b.name.charAt(0)}
-                    </span>
-                    {b.name}
+                    {/* 官方Logo图片 + fallback */}
+                    <BrandLogo brand={b} size={20} />
+                    <span className={brandFilter === b.name ? "font-bold" : ""}>{b.name}</span>
                   </button>
                 ))}
                 {!brandSearch && (
                   <button
                     onClick={() => setShowAllBrands(!showAllBrands)}
-                    className="px-3 py-1.5 rounded-lg text-xs font-medium text-primary hover:bg-primary-light transition-all"
+                    className="px-3 py-2 rounded-lg text-xs font-medium text-primary hover:bg-primary-light transition-all"
                   >
                     {showAllBrands ? "收起 ▲" : "展开 ▼"}
                   </button>
