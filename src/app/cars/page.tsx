@@ -134,15 +134,28 @@ export default function CarsPage() {
                     type="text" value={brandSearch} onChange={e => setBrandSearch(e.target.value)}
                     placeholder={t(T.carsFilter.searchBrand)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs mb-2 focus:outline-none focus:border-primary"
                   />
-                  <div className="max-h-48 overflow-y-auto space-y-0.5">
-                    <FilterBtn active={!brandFilter} onClick={() => setBrandFilter("")}>{t(T.carsFilter.allBrands)}</FilterBtn>
+                  <div className="max-h-60 overflow-y-auto flex flex-wrap gap-1.5">
+                    <button
+                      onClick={() => setBrandFilter("")}
+                      className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                        !brandFilter ? "bg-primary text-white shadow-md" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      }`}
+                    >
+                      {t(T.carsFilter.allBrands)}
+                    </button>
                     {(brandSearch ? filteredBrands : BRANDS).map(b => (
-                      <FilterBtn key={b.name} active={brandFilter === b.name} onClick={() => setBrandFilter(b.name)}>
-                        <span className="flex flex-col items-center gap-1">
-                          <BrandLogo brand={b} size={40} />
-                          {b.name}
-                        </span>
-                      </FilterBtn>
+                      <button
+                        key={b.name}
+                        onClick={() => setBrandFilter(b.name)}
+                        className={`flex flex-col items-center gap-1 px-2.5 py-2 rounded-lg text-sm font-medium transition-all ${
+                          brandFilter === b.name
+                            ? "bg-white text-primary ring-2 ring-primary shadow-md scale-105"
+                            : "bg-gray-50 text-gray-600 hover:bg-gray-100 hover:shadow-sm"
+                        }`}
+                      >
+                        <BrandLogo brand={b} size={40} />
+                        <span className={brandFilter === b.name ? "font-bold text-center" : "text-center"}>{b.name}</span>
+                      </button>
                     ))}
                   </div>
                 </div>
