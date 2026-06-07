@@ -70,13 +70,14 @@ export async function GET() {
       : `配置不完整，缺少: ${[!googleId && "GOOGLE_CLIENT_ID", !googleSecret && "GOOGLE_CLIENT_SECRET"].filter(Boolean).join(", ")}`,
   };
 
-  // 5. 内存使用
+  // 5. 内存使用（Serverless 环境下堆通常接近上限，放宽到 95%）
   const memUsage = process.memoryUsage();
   const heapUsedMB = Math.round(memUsage.heapUsed / 1024 / 1024);
   const heapTotalMB = Math.round(memUsage.heapTotal / 1024 / 1024);
+  const heapRatio = heapUsedMB / heapTotalMB;
   checks.memory = {
-    ok: heapUsedMB < heapTotalMB * 0.9,
-    detail: `堆 ${heapUsedMB}MB / ${heapTotalMB}MB, RSS ${Math.round(memUsage.rss / 1024 / 1024)}MB`,
+    ok: heapRatio < 0.95,
+    detail: `堆 ${heapUsedMB}MB / ${heapTotalMB}MB (${Math.round(heapRatio * 100)}%), RSS ${Math.round(memUsage.rss / 1024 / 1024)}MB`,
   };
 
   // 6. 运行环境
