@@ -85,6 +85,22 @@ export async function POST(req: NextRequest) {
     console.warn(`[admin/vehicles] 规格匹配异常:`, e);
   }
 
+  // 构建扩展字段（来自自动填充）
+  const extendedFields: Record<string, any> = {};
+  const numericFields = ["displacement", "displacementCc", "seatCount", "motorPowerKw", "vehicleLengthM", "rangeKm", "keyCount", "quantity", "loadCapacityTons", "tonnage", "workingHours", "originalPrice"];
+  const stringFields = ["engineModel", "bodyStyle", "fuelType", "series", "batteryType", "engineNo", "equipmentType", "exteriorColor", "interiorColor", "motorcycleType", "partCategory", "partCondition", "sourceId", "sourceSite", "compatibleModels"];
+
+  for (const field of numericFields) {
+    if (data[field] !== undefined && data[field] !== null) {
+      extendedFields[field] = Number(data[field]);
+    }
+  }
+  for (const field of stringFields) {
+    if (data[field] !== undefined && data[field] !== null && data[field] !== "") {
+      extendedFields[field] = data[field];
+    }
+  }
+
   const vehicle = await prisma.vehicle.create({
     data: {
       slug,
@@ -110,6 +126,7 @@ export async function POST(req: NextRequest) {
       dealerId: data.dealerId || null,
       specId,
       specsJson,
+      ...extendedFields,
     },
   });
 

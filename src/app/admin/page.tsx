@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import AutoSpecFill from "@/components/AutoSpecFill";
 
 // ===== Types =====
 interface Stats {
@@ -798,16 +799,58 @@ export default function AdminDashboard() {
   // ===== New Vehicle Modal =====
   const NewVehicleModal = () => {
     if (!showNewVehicle) return null;
-    const [form, setForm] = useState({ brand: "", model: "", year: 2024, type: "Used Passenger Car", mileage: 0, transmission: "Automatic", fuel: "Petrol", basePrice: 0, description: "" });
+    const [form, setForm] = useState({
+      brand: "", model: "", year: 2024, type: "Used Passenger Car",
+      mileage: 0, transmission: "Automatic", fuel: "Petrol",
+      steering: "LHD", color: "", supplier: "", location: "China",
+      basePrice: 0, description: "",
+      // 自动填充扩展字段
+      displacement: null as number | null,
+      engineModel: "", bodyStyle: "", seatCount: null as number | null,
+      vehicleLengthM: null as number | null, motorPowerKw: null as number | null,
+      series: "", fuelType: "",
+    });
     const [saving, setSaving] = useState(false);
+    const [showAutoFill, setShowAutoFill] = useState(false);
+    const [autoFillData, setAutoFillData] = useState<Record<string, any> | null>(null);
+
+    // 自动填充回调
+    const handleAutoFill = (data: { vehicleFields: Record<string, any>; formFields: Record<string, any> }) => {
+      setAutoFillData(data.formFields);
+      setForm(f => ({
+        ...f,
+        // 映射 vehicleFields 到表单字段
+        displacement: data.vehicleFields.displacement ?? f.displacement,
+        engineModel: data.vehicleFields.engineModel ?? f.engineModel,
+        bodyStyle: data.vehicleFields.bodyStyle ?? f.bodyStyle,
+        seatCount: data.vehicleFields.seatCount ?? f.seatCount,
+        vehicleLengthM: data.vehicleFields.vehicleLengthM ?? f.vehicleLengthM,
+        motorPowerKw: data.vehicleFields.motorPowerKw ?? f.motorPowerKw,
+        series: data.vehicleFields.series ?? f.series,
+        fuelType: data.vehicleFields.fuelType ?? f.fuelType,
+        // 自动映射变速箱和燃料
+        transmission: data.vehicleFields.transmission
+          ? (["Automatic","Manual","CVT","DCT"].find(t => data.vehicleFields.transmission.toLowerCase().includes(t.toLowerCase())) || data.vehicleFields.transmission)
+          : f.transmission,
+        fuel: data.vehicleFields.fuelType
+          ? (data.vehicleFields.fuelType.includes("电动") ? "Electric" :
+             data.vehicleFields.fuelType.includes("柴油") ? "Diesel" :
+             data.vehicleFields.fuelType.includes("混合") ? "Hybrid" : "Petrol")
+          : f.fuel,
+      }));
+      setShowAutoFill(false);
+    };
 
     const create = async () => {
       setSaving(true);
       try {
-        const res = await fetch("/api/admin/vehicles", { method: "POST", headers: headers(), body: JSON.stringify(form) });
+        // 合并自动填充的 vehicleFields
+        const body = { ...form, autoFillData };
+        const res = await fetch("/api/admin/vehicles", { method: "POST", headers: headers(), body: JSON.stringify(body) });
         const data = await res.json();
         if (!res.ok) { alert(data.error || "创建失败"); setSaving(false); return; }
         setShowNewVehicle(false);
+        setAutoFillData(null);
         fetchAll();
       } catch (e: any) {
         alert("创建失败: " + (e?.message || "网络错误"));
@@ -815,8 +858,35 @@ export default function AdminDashboard() {
       setSaving(false);
     };
 
+    // 是否已填写品牌+车型（触发自动填充的前置条件）
+    const canAutoFill = form.brand.trim() && form.model.trim();
+
     return (
-      <Modal open={showNewVehicle} onClose={() => setShowNewVehicle(false)} title="新增车辆">
+      <Modal open={showNewVehicle} onClose={() => { setShowNewVehicle(false); setShowAutoFill(false); setAutoFillData(null); }} title="新增车辆">
+        {/* 自动填充面板 */}
+        {showAutoFill && (
+          <div className="mb-6">
+            <AutoSpecFill
+              brand={form.brand}
+              model={form.model}
+              year={form.year}
+              onFill={handleAutoFill}
+              onClose={() => setShowAutoFill(false)}
+            />
+          </div>
+        )}
+
+        {/* 自动填充状态提示 */}
+        {!showAutoFill && autoFillData && (
+          <div className="mb-4 p-3 bg-green-50 rounded-xl flex items-center justify-between">
+            <span className="text-sm text-green-700">
+              ✅ 已自动填充配置参数
+              <button onClick={() => setShowAutoFill(true)} className="ml-2 text-accent underline text-xs">查看/修改</button>
+            </span>
+            <button onClick={() => setAutoFillData(null)} className="text-xs text-gray-400 hover:text-red-500">清除</button>
+          </div>
+        )}
+
         <div className="grid grid-cols-2 gap-4">
           <div><label className="text-xs text-gray-500">品牌 *</label><input value={form.brand} onChange={e => setForm(f => ({ ...f, brand: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
           <div><label className="text-xs text-gray-500">车型 *</label><input value={form.model} onChange={e => setForm(f => ({ ...f, model: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
@@ -830,6 +900,13 @@ export default function AdminDashboard() {
             <select value={form.fuel} onChange={e => setForm(f => ({ ...f, fuel: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1">
               <option>Petrol</option><option>Diesel</option><option>Electric</option><option>Hybrid</option>
             </select></div>
+          <div><label className="text-xs text-gray-500">方向盘位置</label>
+            <select value={form.steering} onChange={e => setForm(f => ({ ...f, steering: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1">
+              <option>LHD</option><option>RHD</option>
+            </select></div>
+          <div><label className="text-xs text-gray-500">颜色</label><input value={form.color} onChange={e => setForm(f => ({ ...f, color: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" placeholder="如 White, Black" /></div>
+          <div><label className="text-xs text-gray-500">供应商</label><input value={form.supplier} onChange={e => setForm(f => ({ ...f, supplier: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
+          <div><label className="text-xs text-gray-500">所在地</label><input value={form.location} onChange={e => setForm(f => ({ ...f, location: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
           <div><label className="text-xs text-gray-500">底价 $ *</label><input type="number" value={form.basePrice} onChange={e => setForm(f => ({ ...f, basePrice: +e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
           <div>
             <label className="text-xs text-gray-500">预计售价（自动计算）</label>
@@ -842,11 +919,42 @@ export default function AdminDashboard() {
               })()}
             </div>
           </div>
+
+          {/* 自动填充的扩展字段 */}
+          {autoFillData && (
+            <>
+              <div className="col-span-2 mt-2 pt-3 border-t border-gray-100">
+                <span className="text-xs text-accent font-semibold">📋 自动填充配置参数</span>
+              </div>
+              <div><label className="text-xs text-gray-500">排量(L)</label><input type="number" step="0.1" value={form.displacement ?? ""} onChange={e => setForm(f => ({ ...f, displacement: parseFloat(e.target.value) || null }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1 bg-blue-50" /></div>
+              <div><label className="text-xs text-gray-500">发动机型号</label><input value={form.engineModel} onChange={e => setForm(f => ({ ...f, engineModel: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1 bg-blue-50" /></div>
+              <div><label className="text-xs text-gray-500">车身形式</label><input value={form.bodyStyle} onChange={e => setForm(f => ({ ...f, bodyStyle: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1 bg-blue-50" /></div>
+              <div><label className="text-xs text-gray-500">座位数</label><input type="number" value={form.seatCount ?? ""} onChange={e => setForm(f => ({ ...f, seatCount: parseInt(e.target.value) || null }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1 bg-blue-50" /></div>
+              <div><label className="text-xs text-gray-500">车长(m)</label><input type="number" step="0.01" value={form.vehicleLengthM ?? ""} onChange={e => setForm(f => ({ ...f, vehicleLengthM: parseFloat(e.target.value) || null }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1 bg-blue-50" /></div>
+              <div><label className="text-xs text-gray-500">电机功率(kW)</label><input type="number" step="0.1" value={form.motorPowerKw ?? ""} onChange={e => setForm(f => ({ ...f, motorPowerKw: parseFloat(e.target.value) || null }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1 bg-blue-50" /></div>
+              <div><label className="text-xs text-gray-500">车系</label><input value={form.series} onChange={e => setForm(f => ({ ...f, series: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1 bg-blue-50" /></div>
+              <div><label className="text-xs text-gray-500">能源类型</label><input value={form.fuelType} onChange={e => setForm(f => ({ ...f, fuelType: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1 bg-blue-50" /></div>
+            </>
+          )}
+
           <div className="col-span-2"><label className="text-xs text-gray-500">描述</label><textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={3} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
         </div>
-        <div className="flex justify-end gap-3 mt-6">
-          <Btn variant="outline" onClick={() => setShowNewVehicle(false)}>取消</Btn>
-          <Btn onClick={create}>{saving ? "保存中..." : "创建"}</Btn>
+
+        <div className="flex items-center justify-between mt-6">
+          <div>
+            {canAutoFill && !showAutoFill && (
+              <button
+                onClick={() => setShowAutoFill(true)}
+                className="px-4 py-2 text-sm font-semibold rounded-lg border-2 border-dashed border-accent/40 text-accent hover:bg-accent/5 hover:border-accent transition-all"
+              >
+                🔍 自动填充配置
+              </button>
+            )}
+          </div>
+          <div className="flex gap-3">
+            <Btn variant="outline" onClick={() => { setShowNewVehicle(false); setShowAutoFill(false); setAutoFillData(null); }}>取消</Btn>
+            <Btn onClick={create}>{saving ? "保存中..." : "创建"}</Btn>
+          </div>
         </div>
       </Modal>
     );
