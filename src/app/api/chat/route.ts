@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { sendLeadNotification, shouldNotifyLead } from "@/lib/leadNotify";
 
 // ======================== Prompt 模版 ========================
 function getSystemPrompt(lang: string): string {
@@ -130,17 +131,26 @@ export async function POST(req: NextRequest) {
     const allText = history.map(m => m.content.toLowerCase()).concat(reply.toLowerCase()).join(" ");
     const emailMatch = allText.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
     if (emailMatch && newLevel >= 3) {
+      const email = emailMatch[0];
       // Try to find or create a customer lead
-      const existingLead = await prisma.customerLead.findFirst({ where: { email: emailMatch[0] } });
+      const existingLead = await prisma.customerLead.findFirst({ where: { email } });
       if (!existingLead) {
         await prisma.customerLead.create({
           data: {
-            email: emailMatch[0],
+            email,
             source: "chat",
             intentLevel: newLevel,
             notes: `From chat session: ${sessionId}`,
           },
         });
+        // 新线索 → 发邮件通知
+        if (shouldNotifyLead(email)) {
+          sendLeadNotification({
+            email,
+            intentLevel: newLevel,
+            chatSummary: history.slice(-3).map(m => `${m.role === "user" ? "客户" : "客服"}: ${m.content.substring(0, 100)}`).join("\n"),
+          });
+        }
       } else if (newLevel > existingLead.intentLevel) {
         await prisma.customerLead.update({ where: { id: existingLead.id }, data: { intentLevel: newLevel } });
       }
