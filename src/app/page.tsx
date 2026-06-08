@@ -54,20 +54,20 @@ export default function Home() {
       result = result.filter(v => v.brand === brandFilter);
     }
 
-    // 价格筛选
+    // 价格筛选（API 返回 salePrice，单位 USD）
     if (priceRange >= 0 && PRICE_RANGES[priceRange]) {
       const range = PRICE_RANGES[priceRange];
-      if (range.min !== undefined) result = result.filter(v => v.price >= range.min!);
-      if (range.max !== undefined) result = result.filter(v => v.price <= range.max!);
+      if (range.min !== undefined) result = result.filter(v => v.salePrice >= range.min!);
+      if (range.max !== undefined) result = result.filter(v => v.salePrice <= range.max!);
     }
 
     // 自定义价格
-    if (customMinPrice) result = result.filter(v => v.price >= Number(customMinPrice) * 10000);
-    if (customMaxPrice) result = result.filter(v => v.price <= Number(customMaxPrice) * 10000);
+    if (customMinPrice) result = result.filter(v => v.salePrice >= Number(customMinPrice) * 10000);
+    if (customMaxPrice) result = result.filter(v => v.salePrice <= Number(customMaxPrice) * 10000);
 
-    // 级别筛选
+    // 级别筛选（API 有 type 字段，如 "Used Passenger Car"）
     if (levelFilter) {
-      result = result.filter(v => v.level === levelFilter);
+      result = result.filter(v => v.type === levelFilter);
     }
 
     // 车龄筛选
@@ -81,20 +81,20 @@ export default function Home() {
     // 搜索
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
-      result = result.filter(v => v.title.toLowerCase().includes(q) || v.brand.toLowerCase().includes(q));
+      result = result.filter(v => (v.brand + ' ' + v.model).toLowerCase().includes(q) || v.brand.toLowerCase().includes(q));
     }
 
     // 排序
     switch (sortBy) {
       case "newest": result.sort((a, b) => b.createdAt.localeCompare(a.createdAt)); break;
-      case "price_asc": result.sort((a, b) => a.price - b.price); break;
-      case "price_desc": result.sort((a, b) => b.price - a.price); break;
+      case "price_asc": result.sort((a, b) => (a.salePrice||0) - (b.salePrice||0)); break;
+      case "price_desc": result.sort((a, b) => (b.salePrice||0) - (a.salePrice||0)); break;
       case "year_desc": result.sort((a, b) => b.year - a.year); break;
-      case "mileage_asc": result.sort((a, b) => parseInt(a.mileage) - parseInt(b.mileage)); break;
+      case "mileage_asc": result.sort((a, b) => (a.mileage||0) - (b.mileage||0)); break;
     }
 
     return result;
-  }, [brandFilter, priceRange, levelFilter, ageRange, sortBy, customMinPrice, customMaxPrice, searchQuery]);
+  }, [allVehicles, brandFilter, priceRange, levelFilter, ageRange, sortBy, customMinPrice, customMaxPrice, searchQuery]);
 
 
   if (loading) {
@@ -396,41 +396,43 @@ export default function Home() {
                 >
                   {/* 图片 */}
                   <div className="aspect-[4/3] bg-gray-100 relative overflow-hidden">
-                    <div className="w-full h-full flex items-center justify-center text-7xl">
-                      🚘
-                    </div>
+                    {v.images && v.images[0] ? (
+                      <img src={v.images[0]} alt={`${v.brand} ${v.model}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-7xl">🚘</div>
+                    )}
                     {/* 标签 */}
-                    <div className="absolute top-3 left-3 flex gap-1.5">
-                      {v.tags.map((tag: string) => (
-                        <span key={tag} className="px-2 py-0.5 bg-primary/90 text-white text-xs font-medium rounded-md">
-                          {tag === "实拍车源" ? t(T.homeFilter.tagVerified) : tag === "中国车源" ? t(T.homeFilter.tagChinaStock) : tag}
+                    {v.type && (
+                      <div className="absolute top-3 left-3 flex gap-1.5">
+                        <span className="px-2 py-0.5 bg-primary/90 text-white text-xs font-medium rounded-md">
+                          {t(T.homeFilter.tagVerified)}
                         </span>
-                      ))}
-                    </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* 信息 */}
                   <div className="p-4 flex flex-col flex-1">
                     <h3 className="text-base font-bold text-gray-900 line-clamp-2 group-hover:text-primary transition-colors mb-3">
-                      {v.title}
+                      {v.brand} {v.model}
                     </h3>
 
                     <div className="flex flex-wrap gap-x-3 gap-y-1 text-sm text-gray-500 mb-4">
                       <span>{v.year}{t(T.homeFilter.yearSuffix)}</span>
                       <span className="text-gray-300">|</span>
-                      <span>{v.mileage}</span>
+                      <span>{v.mileage ? `${v.mileage.toLocaleString()} km` : '-'}</span>
                       <span className="text-gray-300">|</span>
-                      <span>{v.location}</span>
+                      <span>{v.location || 'China'}</span>
                       <span className="text-gray-300">|</span>
-                      <span>{v.transmission}</span>
+                      <span>{v.transmission || '-'}</span>
                     </div>
 
                     <div className="mt-auto flex items-end justify-between">
                       <div>
                         <span className="text-xl font-extrabold text-red-500">
-                          {t(T.homeFilter.currencySymbol)}{v.price.toLocaleString()}
+                          ${v.salePrice.toLocaleString()}
                         </span>
-                        <span className="text-sm text-gray-400 ml-1">{t(T.homeFilter.currencyCode)}</span>
+                        <span className="text-sm text-gray-400 ml-1">USD</span>
                       </div>
                       <span className="text-sm text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity">
                         {t(T.homeFilter.viewDetail)}
