@@ -1,12 +1,9 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
+import { headers } from "next/headers";
 import "./globals.css";
 import { ChatWidget } from "@/components/ChatWidget";
 import { LangProvider, LANGS, DEFAULT_LANG } from "@/i18n/LangContext";
 import type { Lang } from "@/i18n/LangContext";
-
-// 强制动态渲染，确保 SSR 能读取 Cookie
-export const dynamic = 'force-dynamic';
 
 // 元数据兜底 — 固定英文（SEO 需要稳定）
 export const metadata: Metadata = {
@@ -77,16 +74,17 @@ export const metadata: Metadata = {
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  // SSR: 读取 hlj-lang cookie 传给 LangProvider
+  // SSR: 从 middleware 设置的请求头读取语言
+  // 比 cookies() 更可靠，因为 middleware 在每个请求前执行
   let initialLang: Lang = DEFAULT_LANG;
   try {
-    const cookieStore = await cookies();
-    const langCookie = cookieStore.get("hlj-lang")?.value;
-    if (langCookie && LANGS.includes(langCookie as Lang)) {
-      initialLang = langCookie as Lang;
+    const headersList = await headers();
+    const langFromHeader = headersList.get("x-hlj-lang");
+    if (langFromHeader && LANGS.includes(langFromHeader as Lang)) {
+      initialLang = langFromHeader as Lang;
     }
   } catch {
-    // cookies() 在 build 或 edge 环境下可能抛异常，兜底
+    // headers() 在 build 时可能不可用，兜底
   }
 
   return (
