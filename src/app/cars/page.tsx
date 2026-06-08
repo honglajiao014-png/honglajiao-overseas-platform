@@ -9,24 +9,7 @@ import { useT, T } from "@/i18n/useT";
 import { useLang } from "@/i18n/LangContext";
 import { BRANDS, PRICE_RANGES, AGE_RANGES, MILEAGE_RANGES, TRANSMISSION_OPTIONS, FUEL_OPTIONS, BODY_TYPES, SORT_OPTIONS } from "@/data/brands";
 
-const ALL_VEHICLES = [
-  {
-    slug: "audiq3-2022-20260603",
-    title: "奥迪Q3 2022款 35 TFSI 进取动感型",
-    brand: "奥迪", year: 2022, mileageKm: 3.8, location: "广西柳州",
-    transmission: "自动", fuel: "汽油", bodyType: "SUV",
-    price: 134700, image: "/vehicles/audiq3-2022-20260603/front.jpg",
-    createdAt: "2026-06-03",
-  },
-  {
-    slug: "wulinghongguangs3-2018-20260603",
-    title: "五菱宏光S3 2018款 1.5L 手动标准型 国V",
-    brand: "五菱", year: 2018, mileageKm: 7.5, location: "柳州",
-    transmission: "手动", fuel: "汽油", bodyType: "SUV",
-    price: 38200, image: "/vehicles/wulinghongguangs3-2018-20260603/front.jpg",
-    createdAt: "2026-06-03",
-  },
-];
+const ALL_VEHICLES: { slug: string; title: string; brand: string; year: number; mileageKm: number; location: string; transmission: string; fuel: string; bodyType: string; price: number; image: string; createdAt: string }[] = [];
 
 export default function CarsPage() {
   const t = useT();
