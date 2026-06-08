@@ -28,6 +28,14 @@ export function Header() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // 从 URL 读取 token（OAuth 回跳）
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlToken = urlParams.get("token");
+    if (urlToken) {
+      localStorage.setItem("hlj_token", urlToken);
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+
     const token = localStorage.getItem("hlj_token");
     if (token) {
       setIsLoggedIn(true);
