@@ -99,7 +99,6 @@ async function main() {
 
   // 1. 读取国内站车辆
   console.log("\n连接国内站数据库...");
-  const { neon } = await import("@neondatabase/serverless");
   const sql = neon(DOMESTIC_DB_URL);
 
   const rows = await sql`

@@ -68,8 +68,60 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const vehicles: SyncVehicleInput[] = body.vehicles || [];
+  let vehicles: SyncVehicleInput[] = body.vehicles || [];
   const rate = body.exchangeRate || 6.8;
+
+  // 如果没有传入 vehicles，尝试从国内站 DB 自动读取
+  if (vehicles.length === 0 && process.env.DOMESTIC_DB_URL) {
+    try {
+      const { neon } = await import("@neondatabase/serverless");
+      const cleanUrl = process.env.DOMESTIC_DB_URL.replace(/^"|"$/g, "").replace(
+        /[?&]channel_binding=require/g, ""
+      );
+      const sql = neon(cleanUrl);
+      const QUERY = "SELECT v.*, COALESCE(" +
+        "(SELECT json_agg(json_build_object('url', vi.url)) " +
+        "FROM \"VehicleImage\" vi WHERE vi.\"vehicleId\" = v.id), " +
+        "'[]'::json) AS images " +
+        "FROM \"Vehicle\" v " +
+        "WHERE v.status IN ('APPROVED', 'PUBLISHED') " +
+        "ORDER BY v.\"createdAt\" DESC";
+      const rows = await sql.query(QUERY);
+
+      vehicles = rows.map((v: any) => ({
+        sourceId: v.id,
+        sourceSite: "domestic",
+        brand: String(v.brand || ""),
+        model: String(v.model || ""),
+        year: parseInt(v.year) || new Date().getFullYear(),
+        type: v.equipmenttype ? "Construction Machinery" :
+              v.motorcycletype ? "Motorcycle" :
+              v.partcategory ? "Auto Parts" :
+              v.loadcapacitytons ? "Truck" :
+              v.batterytype ? "New Energy Vehicle" : "Used Passenger Car",
+        mileage: v.mileagekm ? parseInt(v.mileagekm) : null,
+        transmission: v.transmission || null,
+        fuel: v.fueltype || null,
+        steering: v.steering || null,
+        exteriorColor: v.exteriorcolor || null,
+        interiorColor: v.interiorcolor || null,
+        condition: v.condition || "Excellent",
+        series: v.series || null,
+        bodyStyle: v.bodystyle || null,
+        originalRmbPrice: parseFloat(v.price) || 0,
+        images: (() => {
+          try {
+            const raw = typeof v.images === "string" ? JSON.parse(v.images) : v.images;
+            return (Array.isArray(raw) ? raw : []).map((i: any) => typeof i === "string" ? i : i?.url).filter(Boolean);
+          } catch { return []; }
+        })(),
+        description: [v.description, v.repairrecords ? "Maintenance: " + v.repairrecords : ""].filter(Boolean).join("\n") || null,
+      }));
+      console.log("[Sync] Auto-read " + vehicles.length + " vehicles from domestic DB");
+    } catch (e: any) {
+      return NextResponse.json({ error: "Failed to read domestic DB: " + e.message }, { status: 500 });
+    }
+  }
 
   if (vehicles.length === 0) {
     return NextResponse.json({ error: "No vehicles provided" }, { status: 400 });

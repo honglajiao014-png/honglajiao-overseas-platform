@@ -76,6 +76,7 @@ export default function AdminDashboard() {
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [users, setUsers] = useState<User[]>([]);
+  const [syncing, setSyncing] = useState(false);
   const [leads, setLeads] = useState<any[]>([]);
 
   // UI state
@@ -154,6 +155,29 @@ export default function AdminDashboard() {
       fetch("/api/admin/leads", { headers: h }).then(r => r.json()).then(d => setLeads(d.leads || [])).catch(() => {});
     } catch (e) { console.error(e); }
     setLoading(false);
+  };
+
+  // ===== Sync to Overseas =====
+  const syncToOverseas = async () => {
+    if (syncing) return;
+    setSyncing(true);
+    try {
+      const res = await fetch("/api/admin/sync", {
+        method: "POST",
+        headers: headers(),
+        body: JSON.stringify({ exchangeRate: 6.8 }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert(`✅ 同步完成！\n总计: ${data.total}\n成功: ${data.success}\n失败: ${data.failed}`);
+        fetchAll();
+      } else {
+        alert(`❌ 同步失败: ${data.error || res.statusText}`);
+      }
+    } catch (e: any) {
+      alert(`❌ 同步异常: ${e.message}`);
+    }
+    setSyncing(false);
   };
 
   // ===== Tab Ref =====
@@ -880,6 +904,12 @@ export default function AdminDashboard() {
           </nav>
         </div>
         <div className="flex items-center gap-4">
+          <button onClick={syncToOverseas} disabled={syncing}
+            className={`text-xs font-semibold px-3 py-1.5 rounded-lg transition-all ${
+              syncing ? "bg-gray-100 text-gray-400" : "bg-blue-100 text-blue-700 hover:bg-blue-200"
+            }`}>
+            {syncing ? "同步中..." : "🔄 同步到海外站"}
+          </button>
           <a href="/" className="text-xs text-gray-400 hover:text-accent">返回前台</a>
           <button onClick={() => { setToken(""); setLoggedIn(false); }} className="text-sm text-gray-500 hover:text-red-500">退出</button>
         </div>
