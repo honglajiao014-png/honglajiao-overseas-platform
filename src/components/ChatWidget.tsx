@@ -8,7 +8,7 @@ interface Message { role: "user" | "bot" | "system"; content: string }
 export function ChatWidget() {
   const { lang } = useLang();
   const [open, setOpen] = useState(false);
-  const [tab, setTab] = useState<"chat" | "whatsapp" | "email">("chat");
+  const [tab, setTab] = useState<"chat" | "whatsapp" | "wechat" | "email">("chat");
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [waiting, setWaiting] = useState(false);
@@ -90,6 +90,7 @@ export function ChatWidget() {
           {[
             { key: "chat" as const, icon: "💬", label: "Chat" },
             { key: "whatsapp" as const, icon: "📱", label: "WhatsApp" },
+            { key: "wechat" as const, icon: "💚", label: "WeChat" },
             { key: "email" as const, icon: "📧", label: "Email" },
           ].map((tb) => (
             <button key={tb.key} onClick={() => setTab(tb.key)}
@@ -174,6 +175,26 @@ export function ChatWidget() {
               </button>
             </div>
             <p className="text-gray-400 text-xs mt-4">Search this number in WhatsApp to contact us</p>
+          </div>
+        )}
+
+        {/* WeChat Tab */}
+        {tab === "wechat" && (
+          <div className="p-8 text-center flex-1 flex flex-col items-center justify-center">
+            <div className="w-20 h-20 mb-5 rounded-2xl bg-green-50 flex items-center justify-center">
+              <svg className="w-10 h-10 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 01.213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 00.167-.054l1.903-1.114a.864.864 0 01.717-.098 10.16 10.16 0 002.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-2.1 6.083-2.114-.525-3.19-4.032-5.66-8.416-5.66zM5.309 5.99c.642 0 1.162.525 1.162 1.17a1.16 1.16 0 01-1.162 1.168A1.16 1.16 0 014.147 7.16c0-.645.52-1.17 1.162-1.17zm5.387 0c.642 0 1.162.525 1.162 1.17a1.16 1.16 0 01-1.162 1.168 1.16 1.16 0 01-1.162-1.168c0-.645.52-1.17 1.162-1.17zM15.309 9.91c-2.006 0-3.904.628-5.406 1.754-1.729 1.293-2.745 3.22-2.745 5.322 0 2.24 1.224 4.251 3.226 5.506.246.154.41.463.296.768l-.26.987c-.014.05-.032.098-.032.148 0 .112.087.203.194.203a.24.24 0 00.124-.04l1.475-.865a.711.711 0 01.547-.055 8.609 8.609 0 002.78.47c2.447 0 4.675-.91 6.248-2.39 1.392-1.31 2.182-2.99 2.182-4.8 0-1.82-.794-3.506-2.195-4.818-1.575-1.476-3.79-2.38-6.224-2.38h-.03zm-2.955 2.224c.493 0 .893.404.893.902a.897.897 0 01-.893.902.897.897 0 01-.893-.902c0-.498.4-.902.893-.902zm5.91 0c.493 0 .893.404.893.902a.897.897 0 01-.893.902.897.897 0 01-.893-.902c0-.498.4-.902.893-.902zm-2.99 2.278c1.242.149 2.47.585 3.445 1.279.959.68 1.831 1.653 1.831 2.764 0 .779-.472 1.552-1.177 2.12-.528.425-1.176.724-1.905.898" />
+              </svg>
+            </div>
+            <h4 className="text-gray-900 font-bold mb-1">WeChat</h4>
+            <p className="text-gray-500 text-sm mb-4">Add our WeChat for quick communication</p>
+            <div className="flex items-center gap-3 px-6 py-3.5 bg-gray-50 border border-gray-200 rounded-xl">
+              <span className="text-green-600 font-bold text-lg select-all">MJ9588666</span>
+              <button onClick={() => { navigator.clipboard.writeText("MJ9588666"); alert("Copied!"); }} className="shrink-0 px-3 py-1.5 bg-green-500 text-white rounded-lg text-xs font-bold hover:bg-green-600 transition-all active:scale-95">
+                Copy
+              </button>
+            </div>
+            <p className="text-gray-400 text-xs mt-4">Search this ID in WeChat to add us</p>
           </div>
         )}
 

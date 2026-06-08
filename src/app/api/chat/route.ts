@@ -17,8 +17,8 @@ function getSystemPrompt(lang: string): string {
    - 引导客户通过以下方式联系我们：
      📧 junmu783@gmail.com
      💬 WhatsApp：+1 (310) 290-1842
-4. 绝对不能提到微信、MJ9588666 或任何中国国内联系方式。
-5. 语气：专业、简洁、有帮助。不要着急，不要过度推销。
+     💚 WeChat：MJ9588666
+4. 语气：专业、简洁、有帮助。不要着急，不要过度推销。
 
 当前对话：`;
   }
@@ -34,8 +34,8 @@ IMPORTANT RULES:
    - Guide customers to contact us via:
      📧 junmu783@gmail.com
      💬 WhatsApp: +1 (310) 290-1842
-4. NEVER mention WeChat, MJ9588666, or any China domestic contact.
-5. Tone: Professional, concise, helpful. Don't rush. Don't oversell.
+     💚 WeChat: MJ9588666
+4. Tone: Professional, concise, helpful. Don't rush. Don't oversell.
 
 Current conversation:`;
 }
