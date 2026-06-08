@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/adminAuth";
 import { calcPrice } from "@/lib/pricing";
+import { matchSpecsFromDb } from "@/lib/specMatcher";
 
 /** 校验 Blob URL 格式 */
 function isValidBlobUrl(url: string): boolean {
@@ -68,6 +69,22 @@ export async function POST(req: NextRequest) {
 
   const slug = `${data.brand}-${data.model}-${data.year}-${Date.now()}`.toLowerCase().replace(/\s+/g, "-");
 
+  // 自动匹配 VehicleSpec 规格
+  let specId: string | null = null;
+  let specsJson: string | null = null;
+  try {
+    const specMatch = await matchSpecsFromDb(data.brand, data.model);
+    if (specMatch) {
+      specId = specMatch.specId;
+      specsJson = specMatch.specsJson;
+      console.log(`[admin/vehicles] 规格匹配成功: ${data.brand} ${data.model} → specId=${specId}`);
+    } else {
+      console.log(`[admin/vehicles] 未找到匹配规格: ${data.brand} ${data.model}`);
+    }
+  } catch (e) {
+    console.warn(`[admin/vehicles] 规格匹配异常:`, e);
+  }
+
   const vehicle = await prisma.vehicle.create({
     data: {
       slug,
@@ -91,6 +108,8 @@ export async function POST(req: NextRequest) {
       published: data.published !== false,
       featured: data.featured || false,
       dealerId: data.dealerId || null,
+      specId,
+      specsJson,
     },
   });
 
@@ -122,6 +141,24 @@ export async function PATCH(req: NextRequest) {
     update.salePrice = p.salePrice;
     update.profit = p.profit;
   }
+
+  // 如果 brand 或 model 变更，重新匹配规格
+  if (data.brand || data.model) {
+    try {
+      const vehicle = await prisma.vehicle.findUnique({ where: { id }, select: { brand: true, model: true } });
+      const brand = data.brand || vehicle?.brand || "";
+      const model = data.model || vehicle?.model || "";
+      const specMatch = await matchSpecsFromDb(brand, model);
+      if (specMatch) {
+        update.specId = specMatch.specId;
+        update.specsJson = specMatch.specsJson;
+        console.log(`[admin/vehicles] PATCH 规格重新匹配: ${brand} ${model} → specId=${specMatch.specId}`);
+      }
+    } catch (e) {
+      console.warn(`[admin/vehicles] PATCH 规格匹配异常:`, e);
+    }
+  }
+
   const vehicle = await prisma.vehicle.update({ where: { id }, data: update });
   return NextResponse.json({ vehicle });
 }

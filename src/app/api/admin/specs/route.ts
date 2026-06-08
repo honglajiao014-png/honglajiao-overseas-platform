@@ -14,9 +14,9 @@ export async function GET(req: NextRequest) {
 
   if (!brand || !model) return NextResponse.json({ error: "brand and model required" }, { status: 400 });
 
-  // Try exact match first
+  // Try exact match first (VehicleSpec uses `series` for model/series name)
   let spec = await prisma.vehicleSpec.findFirst({
-    where: { brand, model },
+    where: { brand, series: model },
   });
 
   // Try fuzzy match
@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
     spec = await prisma.vehicleSpec.findFirst({
       where: {
         brand: { contains: brand },
-        model: { contains: model },
+        series: { contains: model },
       },
     });
   }
@@ -36,10 +36,8 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({
     specId: spec.id,
     manufacturer: spec.manufacturer,
-    vehicleType: spec.vehicleType,
-    releaseDate: spec.releaseDate,
     energyType: spec.energyType,
-    specs: JSON.parse(spec.specs),
+    specs: JSON.parse(spec.specsJson),
   });
 }
 
@@ -51,12 +49,12 @@ export async function POST(req: NextRequest) {
   const data = await req.json();
   const { brand, model, year, basePrice, markup, ...rest } = data;
 
-  // Auto-match spec
+  // Auto-match spec (VehicleSpec uses `series` for model/series name)
   let specId: string | null = null;
   const spec = await prisma.vehicleSpec.findFirst({
     where: {
       brand: { contains: brand },
-      model: { contains: model },
+      series: { contains: model },
     },
   });
   if (spec) specId = spec.id;

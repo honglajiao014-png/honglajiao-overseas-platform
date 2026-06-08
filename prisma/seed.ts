@@ -1968,25 +1968,28 @@ async function main() {
 
   // Seed vehicle specs
   for (const spec of vehicleSpecs) {
+    const id = `${spec.brand}-${spec.model}-${spec.yearRange}`.toLowerCase().replace(/\s+/g, "-");
+    // Merge vehicleType, releaseDate, yearRange into specsJson alongside engine/transmission/etc.
+    const mergedSpecs = {
+      ...spec.specs,
+      vehicleType: spec.vehicleType,
+      releaseDate: spec.releaseDate,
+      yearRange: spec.yearRange,
+    };
     await prisma.vehicleSpec.upsert({
-      where: { id: `${spec.brand}-${spec.model}-${spec.yearRange}`.toLowerCase().replace(/\s+/g, "-") },
+      where: { id },
       update: {
-        specs: JSON.stringify(spec.specs),
+        specsJson: JSON.stringify(mergedSpecs),
         manufacturer: spec.manufacturer,
-        vehicleType: spec.vehicleType,
-        releaseDate: spec.releaseDate,
         energyType: spec.energyType,
       },
       create: {
-        id: `${spec.brand}-${spec.model}-${spec.yearRange}`.toLowerCase().replace(/\s+/g, "-"),
+        id,
         brand: spec.brand,
-        model: spec.model,
-        yearRange: spec.yearRange,
+        series: spec.model, // schema uses `series` for model/series name
         manufacturer: spec.manufacturer,
-        vehicleType: spec.vehicleType,
-        releaseDate: spec.releaseDate,
         energyType: spec.energyType,
-        specs: JSON.stringify(spec.specs),
+        specsJson: JSON.stringify(mergedSpecs),
       },
     });
   }

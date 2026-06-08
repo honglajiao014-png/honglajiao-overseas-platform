@@ -10,9 +10,117 @@
  */
 
 import { openAsBlob } from "fs";
+import { prisma } from "@/lib/prisma";
 
 // 缓存 xlsx 数据到内存
 const XLSX_PATH = process.env.XLSX_PATH || "/Users/mj/Desktop/全部车型数据.xlsx";
+
+// ─── 数据库规格匹配（优先） ───
+
+interface DbSpecMatch {
+  specsJson: string;
+  specId: string;
+  brand: string;
+  series: string;
+}
+
+let dbSpecCache: DbSpecMatch[] | null = null;
+let dbSpecCacheTime = 0;
+const DB_SPEC_CACHE_TTL = 5 * 60 * 1000; // 5分钟
+
+/** 从 VehicleSpec 表加载规格到内存缓存 */
+async function loadDbSpecs(): Promise<DbSpecMatch[]> {
+  const now = Date.now();
+  if (dbSpecCache && now - dbSpecCacheTime < DB_SPEC_CACHE_TTL) return dbSpecCache;
+
+  const specs = await prisma.vehicleSpec.findMany({
+    select: { id: true, brand: true, series: true, specsJson: true },
+  });
+  dbSpecCache = specs.map(s => ({
+    specsJson: s.specsJson,
+    specId: s.id,
+    brand: s.brand,
+    series: s.series,
+  }));
+  dbSpecCacheTime = now;
+  console.log(`[SpecMatcher] DB规格缓存刷新: ${dbSpecCache.length} 条`);
+  return dbSpecCache;
+}
+
+/** 清除数据库规格缓存（新增规格后调用） */
+export function clearDbSpecCache() {
+  dbSpecCache = null;
+  dbSpecCacheTime = 0;
+}
+
+/**
+ * 从 VehicleSpec 表匹配规格
+ * 匹配策略：品牌精确匹配 + 车型精确匹配（忽略空格和大小写）
+ * 返回 { specsJson, specId } 或 null
+ */
+export async function matchSpecsFromDb(
+  brand: string,
+  model: string,
+): Promise<{ specsJson: string; specId: string } | null> {
+  const cache = await loadDbSpecs();
+  const b = brand.trim().toLowerCase();
+  const m = model.trim().toLowerCase();
+
+  // 精确匹配（VehicleSpec 用 series 字段存车系/车型）
+  let match = cache.find(s => s.brand.toLowerCase() === b && s.series.toLowerCase() === m);
+
+  // 品牌模糊匹配（中文品牌名 vs 英文品牌名）
+  if (!match) {
+    // 中文→英文映射
+    const brandMap: Record<string, string[]> = {
+      '丰田': ['toyota'], '本田': ['honda'], '日产': ['nissan'],
+      '奥迪': ['audi'], '宝马': ['bmw'], '奔驰': ['mercedes', 'mercedes-benz'],
+      '大众': ['volkswagen', 'vw'], '比亚迪': ['byd'], '特斯拉': ['tesla'],
+      '现代': ['hyundai'], '起亚': ['kia'], '福特': ['ford'],
+      '别克': ['buick'], '雪佛兰': ['chevrolet'], '马自达': ['mazda'],
+      '三菱': ['mitsubishi'], '沃尔沃': ['volvo'], '路虎': ['land rover', 'landrover'],
+      '保时捷': ['porsche'], '法拉利': ['ferrari'], '兰博基尼': ['lamborghini'],
+      '长城': ['great wall', 'greatwall'], '哈弗': ['haval'],
+      '吉利': ['geely'], '长安': ['changan'], '奇瑞': ['chery', 'cherry'],
+      '江淮': ['jac'], '福田': ['foton'], '东风': ['dongfeng'],
+      '红旗': ['hongqi'], '荣威': ['roewe'], '广汽传祺': ['gac', 'trumpchi'],
+      '五菱': ['wuling'], '蔚来': ['nio'], '小鹏': ['xpeng'],
+      '理想': ['li auto', 'lixiang'], '极氪': ['zeekr'], '问界': ['aito'],
+      '雷克萨斯': ['lexus'], '标致': ['peugeot'], '雪铁龙': ['citroen'],
+      '捷豹': ['jaguar'], '路特斯': ['lotus'],
+    };
+
+    const enBrands = brandMap[b] || [];
+    if (enBrands.length > 0) {
+      match = cache.find(s => enBrands.includes(s.brand.toLowerCase()) && s.series.toLowerCase() === m);
+    }
+    // 反向：数据库中文品牌 vs 输入英文品牌
+    if (!match) {
+      for (const [cn, ens] of Object.entries(brandMap)) {
+        if (ens.includes(b)) {
+          match = cache.find(s => s.brand === cn && s.series.toLowerCase() === m);
+          if (match) break;
+        }
+      }
+    }
+  }
+
+  // 车型模糊匹配（处理国内外命名差异，如 Corolla→卡罗拉, RAV4→RAV4荣放）
+  if (!match) {
+    match = cache.find(s => {
+      const sm = s.series.toLowerCase();
+      return s.brand.toLowerCase() === b && (
+        sm.includes(m) || m.includes(sm) ||
+        sm.replace(/\s+/g, '') === m.replace(/\s+/g, '')
+      );
+    });
+  }
+
+  if (match) {
+    return { specsJson: match.specsJson, specId: match.specId };
+  }
+  return null;
+}
 
 interface SpecRow {
   brand: string;
