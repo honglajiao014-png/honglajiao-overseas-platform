@@ -141,9 +141,25 @@ export async function POST(req: NextRequest) {
       const basePriceUSD = Math.round((v.originalRmbPrice || 0) / rate);
       const pricing = calcPrice(basePriceUSD);
 
-      // 2. 生成 slug
-      const slug = `${v.brand}-${v.model}-${v.year}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`
-        .toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+      // 2. 生成 slug（中文转拼音近似）
+      const slugBrand = v.brand
+        .replace(/奥迪/g, "audi").replace(/宝马/g, "bmw").replace(/奔驰/g, "mercedes")
+        .replace(/大众/g, "volkswagen").replace(/丰田/g, "toyota").replace(/本田/g, "honda")
+        .replace(/日产/g, "nissan").replace(/现代/g, "hyundai").replace(/起亚/g, "kia")
+        .replace(/福特/g, "ford").replace(/别克/g, "buick").replace(/雪佛兰/g, "chevrolet")
+        .replace(/标致/g, "peugeot").replace(/雪铁龙/g, "citroen").replace(/马自达/g, "mazda")
+        .replace(/三菱/g, "mitsubishi").replace(/沃尔沃/g, "volvo").replace(/路虎/g, "landrover")
+        .replace(/捷豹/g, "jaguar").replace(/保时捷/g, "porsche").replace(/法拉利/g, "ferrari")
+        .replace(/兰博基尼/g, "lamborghini").replace(/比亚迪/g, "byd").replace(/长城/g, "greatwall")
+        .replace(/吉利/g, "geely").replace(/长安/g, "changan").replace(/奇瑞/g, "cherry")
+        .replace(/江淮/g, "jac").replace(/福田/g, "foton").replace(/东风/g, "dongfeng")
+        .replace(/中国/g, "china")
+        .replace(/[^a-zA-Z0-9]+/g, "-").replace(/^-|-$/g, "");
+      const slugModel = v.model
+        .replace(/[^a-zA-Z0-9一-鿿]+/g, "-").replace(/^-|-$/g, "")
+        .substring(0, 30);
+      const slug = [slugBrand, slugModel, v.year, Math.random().toString(36).slice(2, 6)]
+        .filter(Boolean).join("-").toLowerCase();
 
       // 3. 检查是否已同步（sourceId 判重）
       if (v.sourceId) {
