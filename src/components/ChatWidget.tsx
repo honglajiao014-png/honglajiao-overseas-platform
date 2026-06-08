@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useT, T } from "@/i18n/useT";
+import { useLang } from "@/i18n/LangContext";
 
 interface Message { role: "user" | "bot" | "system"; content: string }
 
 export function ChatWidget() {
-  const t = useT();
+  const { lang } = useLang();
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<"chat" | "whatsapp" | "email">("chat");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -22,9 +22,11 @@ export function ChatWidget() {
     initialized.current = true;
     setMessages([{
       role: "system",
-      content: "Hello! Welcome to ChinaCarExport 🚗\n\nWe are a professional China-based used car export platform.\nMay I know which country you are shipping to and what vehicles you are looking for?",
+      content: lang === "zh"
+        ? "您好！欢迎来到 ChinaCarExport 🚗\n\n我们是一家专业的中国二手车出口平台。\n请问您需要发往哪个国家？寻找什么车型？"
+        : "Hello! Welcome to ChinaCarExport 🚗\n\nWe are a professional China-based used car export platform.\nMay I know which country you are shipping to and what vehicles you are looking for?",
     }]);
-  }, []);
+  }, [lang]);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
   useEffect(() => {
@@ -44,7 +46,7 @@ export function ChatWidget() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: msg, sessionId }),
+        body: JSON.stringify({ message: msg, sessionId, lang }),
       });
       const data = await res.json();
       setMessages(m => [...m, { role: "bot" as const, content: data.reply || "Thank you! Please contact us directly:\n📧 junmu783@gmail.com\n💬 WhatsApp: +1 (310) 290-1842" }]);
