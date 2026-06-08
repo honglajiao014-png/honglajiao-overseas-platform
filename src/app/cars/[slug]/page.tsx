@@ -3,6 +3,9 @@ import { Footer } from "@/components/Footer";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
+import { cookies } from "next/headers";
+import { tServer } from "@/i18n/useT";
+import { T } from "@/i18n/translations";
 
 export const dynamic = "force-dynamic";
 
@@ -49,15 +52,37 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
     notFound();
   }
 
-  // 品类标签
-  const categoryLabel = vehicle.equipmentType ? `Construction Machinery - ${vehicle.equipmentType}` :
-    vehicle.motorcycleType ? `Motorcycle - ${vehicle.motorcycleType}` :
-    vehicle.partCategory ? `Auto Parts - ${vehicle.partCategory}` :
-    vehicle.loadCapacityTons ? "Truck" :
-    vehicle.batteryType ? "New Energy Vehicle" : "Used Passenger Car";
+  // 读取语言 cookie
+  const cookieStore = await cookies();
+  const lang = (cookieStore.get("hlj-lang")?.value || "en") as "en" | "fr" | "es" | "zh";
+  const t = tServer(lang);
 
-  // 价格裸露提示
-  const priceNote = "* Base vehicle price only. Excludes shipping, insurance & duties.";
+  // 品类标签（翻译）
+  const categoryLabel = vehicle.equipmentType
+    ? `${t(T.details.machinery)} - ${vehicle.equipmentType}`
+    : vehicle.motorcycleType
+    ? `${t(T.details.motorcycle)} - ${vehicle.motorcycleType}`
+    : vehicle.partCategory
+    ? `${t(T.details.autoParts)} - ${vehicle.partCategory}`
+    : vehicle.loadCapacityTons
+    ? t(T.details.truck)
+    : vehicle.batteryType
+    ? t(T.details.newEnergy)
+    : t(T.details.usedPassengerCar);
+
+  // 格式化里程
+  const formatMileage = (km: number | null) => {
+    if (!km) return "-";
+    if (lang === "zh") {
+      return km >= 10000 ? `${(km / 10000).toFixed(1)}万${t(T.details.km)}` : `${km.toLocaleString()}${t(T.details.km)}`;
+    }
+    return `${km.toLocaleString()} ${t(T.details.km)}`;
+  };
+
+  // 确定转向翻译
+  const steeringLabel = vehicle.steering?.toUpperCase() === "RHD"
+    ? t(T.details.rhd)
+    : t(T.details.lhd);
 
   return (
     <>
@@ -66,9 +91,9 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
         <div className="max-w-[1200px] mx-auto px-4 py-6">
           {/* 面包屑 */}
           <div className="text-xs text-gray-400 mb-6">
-            <Link href="/" className="hover:text-primary">Home</Link>
+            <Link href="/" className="hover:text-primary">{t(T.details.breadcrumbHome)}</Link>
             <span className="mx-2">›</span>
-            <Link href="/cars" className="hover:text-primary">Cars</Link>
+            <Link href="/cars" className="hover:text-primary">{t(T.details.breadcrumbCars)}</Link>
             <span className="mx-2">›</span>
             <span className="text-gray-600">{vehicle.brand} {vehicle.model}</span>
           </div>
@@ -107,30 +132,30 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
                   <div className="text-4xl font-extrabold text-danger">
                     ${vehicle.salePrice.toLocaleString()}
                   </div>
-                  <p className="text-xs text-gray-400 mt-1">{priceNote}</p>
+                  <p className="text-xs text-gray-400 mt-1">{t(T.details.priceNote)}</p>
                   <div className="flex gap-4 mt-2 text-xs text-gray-500">
-                    <span>Base: ${vehicle.basePrice.toLocaleString()}</span>
+                    <span>{t(T.details.basePrice)}: ${vehicle.basePrice.toLocaleString()}</span>
                   </div>
                 </div>
 
                 {/* 规格表格 */}
                 <div className="mt-6 space-y-3">
                   <div className="grid grid-cols-2 gap-3 text-sm">
-                    <Spec label="Year" value={String(vehicle.year)} />
-                    <Spec label="Mileage" value={vehicle.mileage ? `${vehicle.mileage.toLocaleString()} km` : "-"} />
-                    <Spec label="Transmission" value={vehicle.transmission || "-"} />
-                    <Spec label="Fuel" value={vehicle.fuel || "-"} />
-                    <Spec label="Steering" value={vehicle.steering || "LHD"} />
-                    <Spec label="Color" value={vehicle.exteriorColor || "-"} />
-                    {vehicle.displacement && <Spec label="Displacement" value={`${vehicle.displacement}L`} />}
-                    {vehicle.bodyStyle && <Spec label="Body Style" value={vehicle.bodyStyle} />}
-                    {vehicle.seatCount && <Spec label="Seats" value={`${vehicle.seatCount}`} />}
-                    {vehicle.engineModel && <Spec label="Engine" value={vehicle.engineModel} />}
-                    {vehicle.rangeKm && <Spec label="Range" value={`${vehicle.rangeKm} km`} />}
-                    {vehicle.batteryType && <Spec label="Battery" value={vehicle.batteryType} />}
-                    {vehicle.workingHours && <Spec label="Hours" value={`${vehicle.workingHours} h`} />}
-                    {vehicle.tonnage && <Spec label="Tonnage" value={`${vehicle.tonnage}t`} />}
-                    {vehicle.loadCapacityTons && <Spec label="Load" value={`${vehicle.loadCapacityTons}t`} />}
+                    <Spec label={t(T.details.specYear)} value={String(vehicle.year)} />
+                    <Spec label={t(T.details.specMileage)} value={formatMileage(vehicle.mileage)} />
+                    <Spec label={t(T.details.specTransmission)} value={vehicle.transmission || "-"} />
+                    <Spec label={t(T.details.specFuel)} value={vehicle.fuel || "-"} />
+                    <Spec label={t(T.details.specSteering)} value={steeringLabel} />
+                    <Spec label={t(T.details.specColor)} value={vehicle.exteriorColor || "-"} />
+                    {vehicle.displacement && <Spec label={t(T.details.specDisplacement)} value={`${vehicle.displacement}L`} />}
+                    {vehicle.bodyStyle && <Spec label={t(T.details.specBodyStyle)} value={vehicle.bodyStyle} />}
+                    {vehicle.seatCount && <Spec label={t(T.details.specSeats)} value={`${vehicle.seatCount}`} />}
+                    {vehicle.engineModel && <Spec label={t(T.details.specEngine)} value={vehicle.engineModel} />}
+                    {vehicle.rangeKm && <Spec label={t(T.details.specRange)} value={`${vehicle.rangeKm} ${t(T.details.km)}`} />}
+                    {vehicle.batteryType && <Spec label={t(T.details.specBattery)} value={vehicle.batteryType} />}
+                    {vehicle.workingHours && <Spec label={t(T.details.specHours)} value={`${vehicle.workingHours} h`} />}
+                    {vehicle.tonnage && <Spec label={t(T.details.specTonnage)} value={`${vehicle.tonnage}t`} />}
+                    {vehicle.loadCapacityTons && <Spec label={t(T.details.specLoad)} value={`${vehicle.loadCapacityTons}t`} />}
                   </div>
                 </div>
 
@@ -147,14 +172,14 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
                     href={`/inquiry?slug=${vehicle.brand}-${vehicle.model}-${vehicle.year}`}
                     className="block w-full text-center bg-accent text-white py-3 rounded-xl font-bold hover:bg-accent-dark transition-all"
                   >
-                    Inquire Now
+                    {t(T.details.inquireNow)}
                   </a>
                   <a
                     href={`https://wa.me/861234567890?text=Hi%2C%20I%27m%20interested%20in%20${encodeURIComponent(vehicle.brand + " " + vehicle.model + " " + vehicle.year)}`}
                     target="_blank"
                     className="block w-full text-center bg-green-500 text-white py-3 rounded-xl font-bold hover:bg-green-600 transition-all"
                   >
-                    Contact via WhatsApp
+                    {t(T.details.contactWhatsApp)}
                   </a>
                 </div>
               </div>
