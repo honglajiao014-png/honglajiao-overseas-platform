@@ -90,6 +90,8 @@ export default function AdminDashboard() {
   const [specFilter, setSpecFilter] = useState("");
   const [vehPage, setVehPage] = useState(0);
   const [vehFilter, setVehFilter] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState<Vehicle | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const PER_PAGE = 20;
 
@@ -189,6 +191,32 @@ export default function AdminDashboard() {
     setSyncing(false);
   };
 
+  // ===== 删除车辆（级联） =====
+  const deleteVehicle = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      const res = await fetch("/api/admin/vehicles", { method: "DELETE", headers: headers(), body: JSON.stringify({ id: deleteTarget.id }) });
+      const data = await res.json();
+      if (!res.ok) {
+        alert(`❌ 删除失败: ${data.error || res.statusText}`);
+        setDeleting(false);
+        return;
+      }
+      const detail = data.detail;
+      const msg = detail
+        ? `✅ 已删除 ${detail.vehicle}\n级联删除: ${detail.deletedInquiries} 条询价、${detail.deletedOrders} 条订单`
+        : "✅ 删除成功";
+      alert(msg);
+      setDeleteTarget(null);
+      setDeleting(false);
+      fetchAll();
+    } catch (e: any) {
+      alert(`❌ 删除异常: ${e.message}`);
+      setDeleting(false);
+    }
+  };
+
   // ===== Tab Ref =====
   const scrollRefs: Record<string, React.RefObject<HTMLDivElement | null>> = {};
 
@@ -285,12 +313,6 @@ export default function AdminDashboard() {
       fetchAll();
     };
 
-    const deleteV = async (id: string) => {
-      if (!confirm("确认删除该车辆？")) return;
-      await fetch("/api/admin/vehicles", { method: "DELETE", headers: headers(), body: JSON.stringify({ id }) });
-      fetchAll();
-    };
-
     return (
       <div>
         <div className="flex items-center justify-between mb-4">
@@ -352,7 +374,7 @@ export default function AdminDashboard() {
                       <td className="px-4 py-3">
                         <div className="flex gap-1">
                           <button onClick={() => setEditVehicle(v)} className="text-accent hover:text-accent-dark text-xs">编辑</button>
-                          <button onClick={() => deleteV(v.id)} className="text-red-400 hover:text-red-600 text-xs ml-2">删除</button>
+                          <button onClick={() => setDeleteTarget(v)} className="text-red-400 hover:text-red-600 text-xs ml-2">删除</button>
                         </div>
                       </td>
                     </tr>
@@ -936,6 +958,42 @@ export default function AdminDashboard() {
         {activeTab === "customers" && <CustomersTab />}
         {activeTab === "content" && <ContentTab />}
       </section>
+
+      {/* Delete Confirm Modal */}
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => { if (!deleting) setDeleteTarget(null); }}>
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4" onClick={e => e.stopPropagation()}>
+            <div className="px-6 py-5 border-b border-gray-200">
+              <h3 className="text-lg font-bold text-red-600">⚠️ 确认删除</h3>
+            </div>
+            <div className="p-6">
+              <div className="mb-4 p-4 bg-red-50 rounded-xl text-sm text-red-800">
+                <p className="font-bold text-base mb-2">{deleteTarget.brand} {deleteTarget.model} ({deleteTarget.year})</p>
+                <p className="mb-1">底价: <strong>${deleteTarget.basePrice.toLocaleString()}</strong></p>
+                <p className="mb-1">售价: <strong>${deleteTarget.salePrice.toLocaleString()}</strong></p>
+                <p className="mb-1">状态: <strong>{deleteTarget.status === "available" ? "可售" : deleteTarget.status === "sold" ? "已售" : "待定"}</strong></p>
+                {deleteTarget.published && <p className="text-orange-700 mt-2">⚠ 该车辆当前已公开显示在前台</p>}
+              </div>
+              <p className="text-sm text-gray-600 mb-2">删除此车辆将<strong className="text-red-600">同时删除</strong>其关联的：</p>
+              <ul className="text-sm text-gray-600 list-disc list-inside mb-4 space-y-1">
+                <li>所有询价记录</li>
+                <li>所有订单记录</li>
+              </ul>
+              <p className="text-xs text-red-500 font-semibold mb-4">此操作不可撤销！</p>
+              <div className="flex justify-end gap-3">
+                <button onClick={() => setDeleteTarget(null)} disabled={deleting}
+                  className="px-4 py-2 text-sm font-semibold rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-40">
+                  取消
+                </button>
+                <button onClick={deleteVehicle} disabled={deleting}
+                  className="px-4 py-2 text-sm font-semibold rounded-lg bg-red-500 text-white hover:bg-red-600 disabled:opacity-40">
+                  {deleting ? "删除中..." : "确认删除"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modals */}
       <EditVehicleModal />

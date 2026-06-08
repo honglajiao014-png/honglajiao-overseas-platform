@@ -163,11 +163,35 @@ export async function PATCH(req: NextRequest) {
   return NextResponse.json({ vehicle });
 }
 
-// 删除车辆
+// 删除车辆（级联删除关联数据）
 export async function DELETE(req: NextRequest) {
   const admin = requireAdmin(req);
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await req.json();
+
+  if (!id) {
+    return NextResponse.json({ error: "缺少车辆ID" }, { status: 400 });
+  }
+
+  // 先检查车辆是否存在
+  const vehicle = await prisma.vehicle.findUnique({ where: { id } });
+  if (!vehicle) {
+    return NextResponse.json({ error: "车辆不存在" }, { status: 404 });
+  }
+
+  // 级联删除：先删关联的询价和订单，再删车辆
+  const deletedInquiries = await prisma.inquiry.deleteMany({ where: { vehicleId: id } });
+  const deletedOrders = await prisma.order.deleteMany({ where: { vehicleId: id } });
   await prisma.vehicle.delete({ where: { id } });
-  return NextResponse.json({ success: true });
+
+  console.log(`[admin/vehicles] 删除车辆 ${vehicle.brand} ${vehicle.model} (${vehicle.year})，级联删除 ${deletedInquiries.count} 条询价、${deletedOrders.count} 条订单`);
+
+  return NextResponse.json({
+    success: true,
+    detail: {
+      vehicle: `${vehicle.brand} ${vehicle.model} (${vehicle.year})`,
+      deletedInquiries: deletedInquiries.count,
+      deletedOrders: deletedOrders.count,
+    },
+  });
 }
