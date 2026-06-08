@@ -94,16 +94,26 @@ export default function BlogPage() {
             ))}
           </div>
 
-          {/* Newsletter CTA */}
+          {/* CTA — 直接展示联系方式 */}
           <div className="mt-12 bg-primary-light rounded-2xl p-8 text-center">
-            <h2 className="text-xl font-bold text-gray-900 mb-2">{t(T.newsletter.heading)}</h2>
-            <p className="text-sm text-gray-500 mb-4">{t(T.newsletter.desc)}</p>
-            <a
-              href="/contact"
-              className="inline-block bg-primary text-white px-8 py-3 rounded-xl text-sm font-bold hover:bg-primary-dark transition-all"
-            >
-              {t(T.blogPage.contactUs)}
-            </a>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">联系我们</h2>
+            <p className="text-sm text-gray-500 mb-5">如需了解更多出口服务，请通过以下方式直接联系</p>
+            <div className="flex flex-col items-center gap-3 mb-5">
+              <a href="tel:+8615208423621" className="flex items-center gap-2 text-sm text-gray-700 hover:text-primary transition-colors">
+                <span>📱</span> +86 152 0842 3621
+              </a>
+              <a href="mailto:info@honglajiao1688.com" className="flex items-center gap-2 text-sm text-gray-700 hover:text-primary transition-colors">
+                <span>📧</span> info@honglajiao1688.com
+              </a>
+            </div>
+            <div className="flex items-center justify-center gap-3">
+              <a href="https://wa.me/8615208423621" className="inline-flex items-center gap-1.5 bg-primary text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-primary-dark transition-all">
+                <span>💬</span> WhatsApp
+              </a>
+              <a href="/contact" className="inline-flex items-center gap-1.5 border border-gray-300 text-gray-700 px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-white hover:border-primary transition-all">
+                询价表单
+              </a>
+            </div>
           </div>
         </section>
 

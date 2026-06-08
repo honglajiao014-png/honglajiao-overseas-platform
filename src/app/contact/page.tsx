@@ -29,11 +29,11 @@ export default function ContactPage() {
                 <div className="space-y-6">
                   <div>
                     <h3 className="text-sm font-bold text-dark mb-1">{t(T.contact.phone)} / WhatsApp</h3>
-                    <p className="text-gray-500 text-sm">提交询价后获取专属顾问联系方式</p>
+                    <a href="tel:+8615208423621" className="text-brand hover:text-brand-dark">+86 152 0842 3621</a>
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-dark mb-1">{t(T.contact.email)}</h3>
-                    <a href="mailto:export@honglajiao1688.com" className="text-brand hover:text-brand-dark">export@honglajiao1688.com</a>
+                    <a href="mailto:info@honglajiao1688.com" className="text-brand hover:text-brand-dark">info@honglajiao1688.com</a>
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-dark mb-1">{t(T.contact.address)}</h3>
