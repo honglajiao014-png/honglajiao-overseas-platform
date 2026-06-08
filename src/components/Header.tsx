@@ -221,17 +221,6 @@ export function Header() {
               <span>{t(T.header.admin)}</span>
             </a>
 
-            {/* 账号设置 — 管理者右侧 */}
-            <a
-              href="/account"
-              className="hidden lg:flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-bold text-accent hover:text-accent-dark hover:bg-accent/10 transition-all"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-              <span>{t(T.header.account)}</span>
-            </a>
-
             {/* 移动端菜单按钮 */}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
