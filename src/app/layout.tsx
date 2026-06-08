@@ -1,8 +1,14 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import "./globals.css";
 import { ChatWidget } from "@/components/ChatWidget";
-import { LangProvider } from "@/i18n/LangContext";
+import { LangProvider, LANGS, DEFAULT_LANG } from "@/i18n/LangContext";
+import type { Lang } from "@/i18n/LangContext";
 
+// 强制动态渲染，确保 SSR 能读取 Cookie
+export const dynamic = 'force-dynamic';
+
+// 元数据兜底 — 固定英文（SEO 需要稳定）
 export const metadata: Metadata = {
   title: "ChinaCarExport | Used Car & Vehicle Export Sourcing from China",
   description:
@@ -68,13 +74,25 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  // SSR: 读取 hlj-lang cookie 传给 LangProvider
+  let initialLang: Lang = DEFAULT_LANG;
+  try {
+    const cookieStore = await cookies();
+    const langCookie = cookieStore.get("hlj-lang")?.value;
+    if (langCookie && LANGS.includes(langCookie as Lang)) {
+      initialLang = langCookie as Lang;
+    }
+  } catch {
+    // cookies() 在 build 或 edge 环境下可能抛异常，兜底
+  }
+
   return (
-    <html lang="en">
+    <html lang={initialLang}>
       <body className="min-h-screen flex flex-col">
-        <LangProvider>
+        <LangProvider initialLang={initialLang}>
           {children}
           <ChatWidget />
         </LangProvider>

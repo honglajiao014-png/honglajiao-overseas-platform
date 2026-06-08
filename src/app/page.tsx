@@ -9,39 +9,10 @@ import { useT, T } from "@/i18n/useT";
 import { useLang } from "@/i18n/LangContext";
 import { BRANDS, PRICE_RANGES, CAR_LEVELS, AGE_RANGES, SORT_OPTIONS } from "@/data/brands";
 
-// 车源数据（后续可从API获取）
-const ALL_VEHICLES = [
-  {
-    slug: "audiq3-2022-20260603",
-    title: "奥迪Q3 2022款 35 TFSI 进取动感型",
-    brand: "奥迪",
-    year: 2022,
-    mileage: "3.8万公里",
-    location: "广西柳州",
-    transmission: "自动",
-    price: 134700,
-    image: "/vehicles/audiq3-2022-20260603/front.jpg",
-    tags: ["实拍车源", "中国车源"],
-    level: "SUV",
-    fuel: "汽油",
-    createdAt: "2026-06-03",
-  },
-  {
-    slug: "wulinghongguangs3-2018-20260603",
-    title: "五菱宏光S3 2018款 1.5L 手动标准型 国V",
-    brand: "五菱",
-    year: 2018,
-    mileage: "7.5万公里",
-    location: "柳州",
-    transmission: "手动",
-    price: 38200,
-    image: "/vehicles/wulinghongguangs3-2018-20260603/front.jpg",
-    tags: ["实拍车源", "中国车源"],
-    level: "SUV",
-    fuel: "汽油",
-    createdAt: "2026-06-03",
-  },
-];
+// 车源从 API 获取，本地硬编码已全部清除
+const ALL_VEHICLES: any[] = [];
+
+const BRAND_SHOW_COUNT = 20;
 
 export default function Home() {
   const t = useT();
@@ -49,6 +20,7 @@ export default function Home() {
 
   // 筛选状态
   const [brandFilter, setBrandFilter] = useState<string>("");
+  const [brandShowAll, setBrandShowAll] = useState(false);
   const [priceRange, setPriceRange] = useState<number>(-1);
   const [levelFilter, setLevelFilter] = useState<string>("");
   const [ageRange, setAgeRange] = useState<number>(-1);
@@ -143,9 +115,9 @@ export default function Home() {
         <div className="bg-white border-b border-gray-200">
           <div className="max-w-[1400px] mx-auto px-4 py-6">
             <div className="mb-6">
-              {/* 品牌Logo网格 */}
+              {/* 品牌Logo网格 — 带收起/展开 */}
               <div className="flex flex-wrap gap-1.5">
-                {BRANDS.map(b => (
+                {(brandShowAll ? BRANDS : BRANDS.slice(0, BRAND_SHOW_COUNT)).map(b => (
                   <button
                     key={b.name}
                     onClick={() => setBrandFilter(b.name)}
@@ -155,12 +127,20 @@ export default function Home() {
                         : "bg-gray-50 text-gray-600 hover:bg-gray-100 hover:shadow-sm"
                     }`}
                   >
-                    {/* 官方Logo图片 + fallback */}
                     <BrandLogo brand={b} size={44} />
                     <span className={brandFilter === b.name ? "font-bold text-center" : "text-center"}>{lang === "zh" ? b.name : b.nameEn}</span>
                   </button>
                 ))}
-
+                {BRANDS.length > BRAND_SHOW_COUNT && (
+                  <button
+                    onClick={() => setBrandShowAll(!brandShowAll)}
+                    className="flex flex-col items-center justify-center gap-1 px-2.5 py-2 rounded-lg text-sm font-medium transition-all bg-gray-50 text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+                    style={{ minWidth: 52, minHeight: 64 }}
+                  >
+                    <span className="text-xl">{brandShowAll ? "▲" : "▼"}</span>
+                    <span className="text-xs">{brandShowAll ? (lang === "zh" ? "收起" : "Less") : (lang === "zh" ? "全部" : "All")}</span>
+                  </button>
+                )}
               </div>
             </div>
 
@@ -374,7 +354,7 @@ export default function Home() {
                     </div>
                     {/* 标签 */}
                     <div className="absolute top-3 left-3 flex gap-1.5">
-                      {v.tags.map(tag => (
+                      {v.tags.map((tag: string) => (
                         <span key={tag} className="px-2 py-0.5 bg-primary/90 text-white text-xs font-medium rounded-md">
                           {tag === "实拍车源" ? t(T.homeFilter.tagVerified) : tag === "中国车源" ? t(T.homeFilter.tagChinaStock) : tag}
                         </span>
