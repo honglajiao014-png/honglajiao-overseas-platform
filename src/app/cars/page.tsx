@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -9,11 +9,30 @@ import { useT, T } from "@/i18n/useT";
 import { useLang } from "@/i18n/LangContext";
 import { BRANDS, PRICE_RANGES, AGE_RANGES, MILEAGE_RANGES, TRANSMISSION_OPTIONS, FUEL_OPTIONS, BODY_TYPES, SORT_OPTIONS } from "@/data/brands";
 
-const ALL_VEHICLES: { slug: string; title: string; brand: string; year: number; mileageKm: number; location: string; transmission: string; fuel: string; bodyType: string; price: number; image: string; createdAt: string }[] = [];
+interface VehicleBrief {
+  slug: string; brand: string; model: string; year: number;
+  mileage: number | null; location: string | null;
+  transmission: string | null; fuel: string | null;
+  bodyStyle: string | null; salePrice: number;
+  images: string[]; createdAt: string;
+}
+
+// 品牌中文映射（用于展示）
 
 export default function CarsPage() {
   const t = useT();
   const { lang } = useLang();
+
+  // 从 API 获取车辆
+  const [vehicles, setVehicles] = useState<VehicleBrief[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/vehicles")
+      .then(r => r.json())
+      .then(d => { setVehicles(d.vehicles || []); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, []);
 
   // 筛选状态
   const [brandFilter, setBrandFilter] = useState<string>("");
@@ -35,14 +54,14 @@ export default function CarsPage() {
 
   // 车辆筛选
   const filtered = useMemo(() => {
-    let result = [...ALL_VEHICLES];
+    let result = [...vehicles];
 
     if (brandFilter) result = result.filter(v => v.brand === brandFilter);
 
     if (priceRange >= 0 && PRICE_RANGES[priceRange]) {
       const r = PRICE_RANGES[priceRange];
-      if (r.min !== undefined) result = result.filter(v => v.price >= r.min!);
-      if (r.max !== undefined) result = result.filter(v => v.price <= r.max!);
+      if (r.min !== undefined) result = result.filter(v => v.salePrice >= r.min!);
+      if (r.max !== undefined) result = result.filter(v => v.salePrice <= r.max!);
     }
 
     if (ageRange >= 0 && AGE_RANGES[ageRange]) {
@@ -54,20 +73,20 @@ export default function CarsPage() {
 
     if (mileageRange >= 0 && MILEAGE_RANGES[mileageRange]) {
       const r = MILEAGE_RANGES[mileageRange];
-      if (r.min !== undefined) result = result.filter(v => v.mileageKm >= r.min!);
-      if (r.max !== undefined) result = result.filter(v => v.mileageKm <= r.max!);
+      if (r.min !== undefined) result = result.filter(v => (v.mileage || 0) >= r.min!);
+      if (r.max !== undefined) result = result.filter(v => (v.mileage || 0) <= r.max!);
     }
 
     if (transmissionFilter !== "不限") result = result.filter(v => v.transmission === transmissionFilter);
     if (fuelFilter !== "不限") result = result.filter(v => v.fuel === fuelFilter);
-    if (bodyTypeFilter !== "不限") result = result.filter(v => v.bodyType === bodyTypeFilter);
+    if (bodyTypeFilter !== "不限") result = result.filter(v => v.bodyStyle === bodyTypeFilter);
 
     switch (sortBy) {
       case "newest": result.sort((a, b) => b.createdAt.localeCompare(a.createdAt)); break;
-      case "price_asc": result.sort((a, b) => a.price - b.price); break;
-      case "price_desc": result.sort((a, b) => b.price - a.price); break;
+      case "price_asc": result.sort((a, b) => a.salePrice - b.salePrice); break;
+      case "price_desc": result.sort((a, b) => b.salePrice - a.salePrice); break;
       case "year_desc": result.sort((a, b) => b.year - a.year); break;
-      case "mileage_asc": result.sort((a, b) => a.mileageKm - b.mileageKm); break;
+      case "mileage_asc": result.sort((a, b) => (a.mileage || 0) - (b.mileage || 0)); break;
     }
 
     return result;
@@ -238,7 +257,12 @@ export default function CarsPage() {
               </div>
 
               {/* 车辆列表 */}
-              {filtered.length === 0 ? (
+              {loading ? (
+                <div className="text-center py-20 bg-white rounded-2xl border border-gray-100">
+                  <div className="text-4xl mb-4 animate-pulse">⏳</div>
+                  <p className="text-sm text-gray-400">加载中...</p>
+                </div>
+              ) : filtered.length === 0 ? (
                 <div className="text-center py-20 bg-white rounded-2xl border border-gray-100">
                   <div className="text-5xl mb-4">🚗</div>
                   <h3 className="text-lg font-bold text-gray-400 mb-2">{t(T.carsFilter.noResult)}</h3>
@@ -254,26 +278,30 @@ export default function CarsPage() {
                       className="flex bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg hover:border-gray-200 transition-all group"
                     >
                       {/* 缩略图 */}
-                      <div className="w-48 h-36 bg-gray-100 shrink-0 flex items-center justify-center text-5xl">
-                        🚘
+                      <div className="w-48 h-36 bg-gray-100 shrink-0 flex items-center justify-center overflow-hidden">
+                        {v.images && v.images[0] ? (
+                          <img src={v.images[0]} alt={v.model} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="text-5xl">🚘</div>
+                        )}
                       </div>
                       {/* 信息 */}
                       <div className="flex-1 p-5 flex flex-col justify-between">
                         <div>
                           <h3 className="text-base font-bold text-gray-900 group-hover:text-primary transition-colors line-clamp-1">
-                            {v.title}
+                            {v.brand} {v.model}{v.year ? ` ${v.year}` : ""}
                           </h3>
                           <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs text-gray-500">
                             <span>{v.year}年</span>
-                            <span>{v.mileageKm}万公里</span>
-                            <span>{v.location}</span>
-                            <span>{v.transmission}</span>
-                            <span>{v.fuel}</span>
+                            <span>{v.mileage ? `${v.mileage.toLocaleString()}km` : "-"}</span>
+                            <span>{v.location || "China"}</span>
+                            <span>{v.transmission || "-"}</span>
+                            <span>{v.fuel || "-"}</span>
                           </div>
                         </div>
                         <div className="flex items-end justify-between mt-3">
                           <span className="text-xl font-extrabold text-red-500">
-                                                      {t(T.homeFilter.currencySymbol)}{v.price.toLocaleString()} <span className="text-xs font-normal text-gray-400">{t(T.homeFilter.currencyCode)}</span>
+                            ${v.salePrice.toLocaleString()} <span className="text-xs font-normal text-gray-400">USD</span>
                           </span>
                           <span className="text-xs text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity">
                             {t(T.carsFilter.viewDetail)}
