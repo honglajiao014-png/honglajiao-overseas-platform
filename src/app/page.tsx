@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -9,14 +9,30 @@ import { useT, T } from "@/i18n/useT";
 import { useLang } from "@/i18n/LangContext";
 import { BRANDS, PRICE_RANGES, CAR_LEVELS, AGE_RANGES, SORT_OPTIONS } from "@/data/brands";
 
-// 车源从 API 获取，本地硬编码已全部清除
-const ALL_VEHICLES: any[] = [];
-
 const BRAND_SHOW_COUNT = 20;
 
 export default function Home() {
   const t = useT();
   const { lang } = useLang();
+
+  // 从 API 获取车辆数据
+  const [allVehicles, setAllVehicles] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
+
+  useEffect(() => {
+    fetch("/api/vehicles?limit=100")
+      .then(r => r.json())
+      .then(data => {
+        setAllVehicles(data.vehicles || []);
+        setLoading(false);
+      })
+      .catch(e => {
+        console.error("加载车辆失败:", e);
+        setLoadError(e?.message || "加载失败");
+        setLoading(false);
+      });
+  }, []);
 
   // 筛选状态
   const [brandFilter, setBrandFilter] = useState<string>("");
@@ -31,7 +47,7 @@ export default function Home() {
 
   // 筛选逻辑
   const filtered = useMemo(() => {
-    let result = [...ALL_VEHICLES];
+    let result = [...allVehicles];
 
     // 品牌筛选
     if (brandFilter) {
@@ -80,6 +96,37 @@ export default function Home() {
     return result;
   }, [brandFilter, priceRange, levelFilter, ageRange, sortBy, customMinPrice, customMaxPrice, searchQuery]);
 
+
+  if (loading) {
+    return (
+      <>
+        <Header />
+        <main className="flex-1 bg-gray-50 flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+            <p className="text-gray-500">Loading vehicles...</p>
+          </div>
+        </main>
+        <Footer />
+      </>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <>
+        <Header />
+        <main className="flex-1 bg-gray-50 flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <p className="text-red-500 mb-2">Failed to load vehicles</p>
+            <p className="text-gray-400 text-sm">{loadError}</p>
+            <button onClick={() => window.location.reload()} className="mt-4 px-4 py-2 bg-primary text-white rounded-lg text-sm">Retry</button>
+          </div>
+        </main>
+        <Footer />
+      </>
+    );
+  }
 
   return (
     <>
