@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const next = searchParams.get("next") || "/account";
+  const next = searchParams.get("next") || "/";
 
   const clientId = process.env.GOOGLE_CLIENT_ID;
   if (!clientId) {

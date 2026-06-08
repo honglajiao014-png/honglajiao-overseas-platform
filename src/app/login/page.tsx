@@ -25,7 +25,7 @@ export default function LoginPage() {
       const data = await res.json();
       if (data.error) { setError(data.error); return; }
       localStorage.setItem("hlj_token", data.token);
-      window.location.href = "/account";
+      window.location.href = "/";
     } catch {
       setError(t(T.loginPage.loginBtn) + " failed");
     } finally {
@@ -49,7 +49,7 @@ export default function LoginPage() {
 
           {/* Google OAuth 按钮 */}
           <a
-            href="/api/auth/oauth/google/start?next=/account"
+            href="/api/auth/oauth/google/start?next=/"
             className="w-full flex items-center justify-center gap-3 py-3 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-300 transition-all mb-4"
           >
             <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24">
