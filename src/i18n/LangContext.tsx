@@ -3,10 +3,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
 import { type Lang, LANGS, DEFAULT_LANG } from "./types";
 
-// 导出 LANGS / DEFAULT_LANG 供 layout SSR 使用
-export { LANGS, DEFAULT_LANG };
-export type { Lang };
-
 interface LangState {
   lang: Lang;
   setLang: (l: Lang) => void;
