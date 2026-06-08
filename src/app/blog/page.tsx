@@ -99,17 +99,20 @@ export default function BlogPage() {
             <h2 className="text-xl font-bold text-gray-900 mb-2">联系我们</h2>
             <p className="text-sm text-gray-500 mb-5">如需了解更多出口服务，请通过以下方式直接联系</p>
             <div className="flex flex-col items-center gap-3 mb-5">
-              <a href="tel:+8615208423621" className="flex items-center gap-2 text-sm text-gray-700 hover:text-primary transition-colors">
-                <span>📱</span> +86 152 0842 3621
-              </a>
+              <div className="flex items-center gap-2 text-sm text-gray-700">
+                <span>📱</span>
+                <span className="select-all font-medium">+1 (310) 290-1842</span>
+                <button onClick={() => { navigator.clipboard.writeText("+1 (310) 290-1842"); alert("Copied!"); }} className="text-xs px-2 py-0.5 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">Copy</button>
+              </div>
               <a href="mailto:info@honglajiao1688.com" className="flex items-center gap-2 text-sm text-gray-700 hover:text-primary transition-colors">
                 <span>📧</span> info@honglajiao1688.com
               </a>
             </div>
             <div className="flex items-center justify-center gap-3">
-              <a href="https://wa.me/8615208423621" className="inline-flex items-center gap-1.5 bg-primary text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-primary-dark transition-all">
-                <span>💬</span> WhatsApp
-              </a>
+              <div className="flex items-center gap-2 text-sm text-gray-700">
+                <span className="text-green-500 font-bold select-all">+1 (310) 290-1842</span>
+                <button onClick={() => { navigator.clipboard.writeText("+1 (310) 290-1842"); alert("Copied!"); }} className="px-2 py-0.5 text-xs text-green-600 border border-green-300 rounded-lg hover:bg-green-50 transition-colors">Copy</button>
+              </div>
               <a href="/contact" className="inline-flex items-center gap-1.5 border border-gray-300 text-gray-700 px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-white hover:border-primary transition-all">
                 询价表单
               </a>

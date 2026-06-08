@@ -29,7 +29,10 @@ export default function ContactPage() {
                 <div className="space-y-6">
                   <div>
                     <h3 className="text-sm font-bold text-dark mb-1">{t(T.contact.phone)} / WhatsApp</h3>
-                    <a href="tel:+8615208423621" className="text-brand hover:text-brand-dark">+86 152 0842 3621</a>
+                    <div className="flex items-center gap-2">
+                      <span className="text-brand font-medium select-all">+1 (310) 290-1842</span>
+                      <button onClick={() => { navigator.clipboard.writeText("+1 (310) 290-1842"); alert("Copied!"); }} className="text-xs px-2 py-0.5 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">Copy</button>
+                    </div>
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-dark mb-1">{t(T.contact.email)}</h3>

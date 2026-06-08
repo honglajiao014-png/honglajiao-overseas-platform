@@ -1,33 +1,132 @@
 import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
-const AUTO_REPLIES: { keywords: string[]; reply: string }[] = [
-  { keywords: ["price", "how much", "cost"], reply: "Our vehicle prices are competitive. Please tell me which vehicle you are interested in, and I will send you a detailed quotation within 2 hours." },
-  { keywords: ["ship", "delivery", "transport", "shipping"], reply: "We coordinate shipping to major ports worldwide including Africa (Lagos, Mombasa, Dar es Salaam, Accra) and Middle East. Shipping cost depends on vehicle and destination." },
-  { keywords: ["inspection", "check", "quality"], reply: "Every vehicle undergoes a 200+ point inspection before listing. We provide real photos, video walkthroughs, and inspection reports." },
-  { keywords: ["register", "account", "sign up"], reply: "Welcome! You can register as a dealer at /register to access wholesale pricing. It is free to join." },
-  { keywords: ["payment", "pay", "deposit"], reply: "We support T/T (wire transfer), L/C (Letter of Credit), and secure escrow. Standard terms: 30% deposit to start, 70% before shipping." },
-  { keywords: ["hello", "hi", "hey"], reply: "Hello! Welcome to ChinaCarExport. How can I help you today? I assist with vehicle sourcing, pricing, shipping, and more." },
-  { keywords: ["africa", "nigeria", "kenya", "ghana", "tanzania", "ethiopia"], reply: "Africa is our key market! We ship to Lagos, Mombasa, Dar es Salaam, Accra. Our team knows African import regulations and local preferences well." },
-  { keywords: ["ev", "electric", "byd", "tesla"], reply: "Great choice! We source EVs including BYD, Tesla, NIO, XPeng. Chinese EVs offer excellent value for African and Middle Eastern markets." },
-];
+// ======================== Prompt 模版 ========================
+const SYSTEM_PROMPT = `You are a professional B2B auto export agent for ChinaCarExport (honglajiao1688.com). 
 
-const FALLBACKS = [
-  "Thank you! Our team will get back to you within 2 hours. For urgent matters, please use WhatsApp.",
-  "Noted. A sourcing specialist will follow up shortly. Browse our inventory at /cars in the meantime.",
-  "Great question! Let me connect you with our team. You can also reach us via WhatsApp for faster communication.",
-];
+IMPORTANT RULES:
+1. Language: Always reply in ENGLISH.
+2. Scope: ONLY talk about USED CAR EXPORT. NEVER mention auto parts, machinery, motorcycles, or any other product categories.
+3. Purpose: 
+   - First: Understand customer needs (destination country, vehicle type, budget, quantity).
+   - NEVER give a fixed price. Explain: "Price depends on quantity and destination port. 10 cars vs 20 cars differ. Ports like Dar es Salaam vs Lagos have different shipping costs."
+   - Guide customers to fill the inquiry form on the website.
+   - Guide customers to contact us via: 
+     📧 junmu783@gmail.com
+     💬 WhatsApp: +1 (310) 290-1842
+4. NEVER mention WeChat, MJ9588666, or any China domestic contact.
+5. Tone: Professional, concise, helpful. Don't rush. Don't oversell.
 
-function getReply(msg: string): string {
-  const lower = msg.toLowerCase();
-  for (const rule of AUTO_REPLIES) {
-    if (rule.keywords.some(kw => lower.includes(kw.toLowerCase()))) return rule.reply;
+Current conversation:`;
+
+function buildPrompt(history: { role: string; content: string }[]): string {
+  const messages = [{ role: "system", content: SYSTEM_PROMPT }];
+  for (const m of history.slice(-10)) {
+    if (m.role === "system") continue;
+    messages.push({ role: m.role === "user" ? "user" : "assistant", content: m.content });
   }
-  return FALLBACKS[Math.floor(Math.random() * FALLBACKS.length)];
+  return messages.map(m => `${m.role === "user" ? "User" : m.role === "assistant" ? "Assistant" : "System"}: ${m.content}`).join("\n\n");
 }
 
+// ======================== 意向等级判断 ========================
+const INTENT_KEYWORDS: [number, string[]][] = [
+  [1, ["country", "destination", "ship to", "africa", "middle east", "nigeria", "kenya", "ghana", "tanzania", "ethiopia", "market"]],
+  [2, ["toyota", "bmw", "mercedes", "audi", "byd", "honda", "nissan", "volkswagen", "lexus", "land rover", "porsche",
+       "model", "budget", "price", "cost", "dollar", "usd", "quantity", "container", "port", "shipping cost",
+       "20", "30", "40", "50", "how many"]],
+  [3, ["email", "@", "whatsapp", "phone", "call", "contact", "add", "form", "inquiry"]],
+  [4, ["order", "deposit", "l/c", "letter of credit", "contract", "invoice", "booking", "purchase order"]],
+];
+
+function detectIntent(history: { role: string; content: string }[]): number {
+  const texts = history.map(m => m.content.toLowerCase()).join(" ");
+  let maxLevel = 0;
+  for (const [level, keywords] of INTENT_KEYWORDS) {
+    if (keywords.some(kw => texts.includes(kw))) {
+      if (maxLevel < level) maxLevel = level; // only upgrade
+    }
+  }
+  return maxLevel;
+}
+
+// ======================== POST Handler ========================
 export async function POST(req: NextRequest) {
-  const { message } = await req.json();
-  if (!message) return NextResponse.json({ error: "Message required" }, { status: 400 });
-  await new Promise(r => setTimeout(r, Math.random() * 800 + 400));
-  return NextResponse.json({ reply: getReply(message) });
+  try {
+    const { message, sessionId } = await req.json();
+    if (!message) return NextResponse.json({ error: "Message required" }, { status: 400 });
+
+    // 获取/创建 session
+    let session = await prisma.chatSession.findUnique({ where: { id: sessionId }, include: { messages: { orderBy: { createdAt: "asc" } } } });
+    if (!session) {
+      session = await prisma.chatSession.create({ data: { id: sessionId }, include: { messages: { orderBy: { createdAt: "asc" } } } });
+    }
+
+    // 保存用户消息
+    await prisma.chatMessage.create({
+      data: { sessionId: session.id, role: "user", content: message },
+    });
+
+    // 构建对话历史
+    const history = [...session.messages.map(m => ({ role: m.role, content: m.content })), { role: "user", content: message }];
+    const prompt = buildPrompt(history);
+
+    // 调用本地千问
+    let reply = "";
+    try {
+      const res = await fetch("http://localhost:11434/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "qwen3-vl:30b-a3b-instruct-q4_K_M",
+          prompt: prompt,
+          stream: false,
+          options: { num_predict: 300, temperature: 0.7 },
+        }),
+      });
+      const data = await res.json();
+      reply = (data.response || "").trim();
+    } catch (e) {
+      reply = "Sorry, our AI assistant is temporarily unavailable. Please contact us directly:\n📧 junmu783@gmail.com\n💬 WhatsApp: +1 (310) 290-1842";
+    }
+
+    if (!reply) {
+      reply = "Thank you for your message. For a faster response, please contact us:\n📧 junmu783@gmail.com\n💬 WhatsApp: +1 (310) 290-1842";
+    }
+
+    // 保存 AI 回复
+    await prisma.chatMessage.create({
+      data: { sessionId: session.id, role: "bot", content: reply },
+    });
+
+    // 更新 intent level（只升不降）
+    const newLevel = detectIntent([...session.messages.map(m => ({ role: m.role, content: m.content })), { role: "user", content: message }, { role: "bot", content: reply }]);
+    if (newLevel > (session?.intentLevel ?? 0)) {
+      await prisma.chatSession.update({ where: { id: session.id }, data: { intentLevel: newLevel } });
+    }
+
+    // 检测到客户留了联系方式，记入 lead
+    const allText = history.map(m => m.content.toLowerCase()).concat(reply.toLowerCase()).join(" ");
+    const emailMatch = allText.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+    if (emailMatch && newLevel >= 3) {
+      // Try to find or create a customer lead
+      const existingLead = await prisma.customerLead.findFirst({ where: { email: emailMatch[0] } });
+      if (!existingLead) {
+        await prisma.customerLead.create({
+          data: {
+            email: emailMatch[0],
+            source: "chat",
+            intentLevel: newLevel,
+            notes: `From chat session: ${sessionId}`,
+          },
+        });
+      } else if (newLevel > existingLead.intentLevel) {
+        await prisma.customerLead.update({ where: { id: existingLead.id }, data: { intentLevel: newLevel } });
+      }
+    }
+
+    return NextResponse.json({ reply });
+  } catch (e) {
+    console.error("Chat API error:", e);
+    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+  }
 }

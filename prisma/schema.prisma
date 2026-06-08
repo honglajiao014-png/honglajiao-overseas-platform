@@ -23,6 +23,7 @@ model User {
   inquiries Inquiry[]
   orders    Order[]
   chatMessages ChatMessage[]
+  chatSessions ChatSession[]
 }
 
 model VehicleSpec {
@@ -114,6 +115,52 @@ model ChatMessage {
   userId    String?
   user      User?    @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
+
+  session   ChatSession @relation(fields: [sessionId], references: [id])
+
+  @@index([sessionId])
+}
+
+model ChatSession {
+  id          String   @id @default(cuid())
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
+  visitorId   String?
+  intentLevel Int      @default(0)  // 0=L0, 1=L1, 2=L2, 3=L3, 4=L4
+  country     String?
+  vehicleReq  String?
+  budget      String?
+  quantity    Int?
+  contactCollected Boolean @default(false)
+  formFilled       Boolean @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  messages    ChatMessage[]
+
+  @@index([userId])
+  @@index([intentLevel])
+}
+
+model CustomerLead {
+  id             String   @id @default(cuid())
+  name           String?
+  email          String?
+  phone          String?
+  country        String?
+  vehicleReq     String?
+  budget         String?
+  quantity       Int?
+  source         String?  // chat / register / inquiry
+  intentLevel    Int      @default(0)
+  emailSent      Boolean  @default(false)
+  emailSentAt    DateTime?
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([email])
+  @@index([intentLevel])
+  @@index([emailSent])
 }
 
 model VerificationCode {

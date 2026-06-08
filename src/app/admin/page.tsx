@@ -19,7 +19,7 @@ interface Order { id: string; vehicle: { brand: string; model: string; year: num
 
 interface User { id: string; email: string; name: string; role: string; phone: string | null; company: string | null; country: string | null; createdAt: string; }
 
-type TabId = "dashboard" | "vehicles" | "specs" | "inquiries" | "orders" | "users" | "content";
+type TabId = "dashboard" | "vehicles" | "specs" | "inquiries" | "orders" | "users" | "customers" | "content";
 
 // ===== Reusable UI =====
 function StatCard({ label, value, color }: { label: string; value: string | number; color?: string }) {
@@ -76,6 +76,7 @@ export default function AdminDashboard() {
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [users, setUsers] = useState<User[]>([]);
+  const [leads, setLeads] = useState<any[]>([]);
 
   // UI state
   const [activeTab, setActiveTab] = useState<TabId>("dashboard");
@@ -150,11 +151,10 @@ export default function AdminDashboard() {
       ]);
       setStats(s); setVehicles(v.vehicles || []); setSpecs(sp.specs || []);
       setInquiries(iq.inquiries || []); setOrders(o.orders || []);
+      fetch("/api/admin/leads", { headers: h }).then(r => r.json()).then(d => setLeads(d.leads || [])).catch(() => {});
     } catch (e) { console.error(e); }
     setLoading(false);
   };
-
-  useEffect(() => { if (token) fetchAll(); }, [token]);
 
   // ===== Tab Ref =====
   const scrollRefs: Record<string, React.RefObject<HTMLDivElement | null>> = {};
@@ -565,6 +565,81 @@ export default function AdminDashboard() {
     </div>
   );
 
+  // ===== Customers Tab =====
+  const CustomersTab = () => (
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h2 className="text-lg font-bold text-gray-900">客户数据</h2>
+          <p className="text-xs text-gray-400 mt-1">来自聊天会话、注册表单和询价的客户线索</p>
+        </div>
+        <button onClick={async () => {
+          const res = await fetch("/api/admin/leads/export", { headers: headers() });
+          if (!res.ok) { alert("导出失败"); return; }
+          const blob = await res.blob();
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url; a.download = `customer_data_${new Date().toISOString().slice(0, 10)}.xlsx`;
+          a.click(); URL.revokeObjectURL(url);
+        }} className="flex items-center gap-2 px-4 py-2.5 bg-accent text-white rounded-lg text-sm font-bold hover:bg-accent-dark transition-all">
+          📥 导出 .xlsx
+        </button>
+      </div>
+      {leads.length === 0 ? (
+        <div className="text-center py-16 text-gray-400">暂无客户数据</div>
+      ) : (
+        <div className="bg-white rounded-2xl border border-gray-200 overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-gray-100 bg-gray-50">
+                <th className="text-left px-4 py-3 font-semibold text-gray-600">姓名</th>
+                <th className="text-left px-4 py-3 font-semibold text-gray-600">邮箱</th>
+                <th className="text-left px-4 py-3 font-semibold text-gray-600">电话</th>
+                <th className="text-left px-4 py-3 font-semibold text-gray-600">国家</th>
+                <th className="text-left px-4 py-3 font-semibold text-gray-600">需求</th>
+                <th className="text-center px-4 py-3 font-semibold text-gray-600">意向</th>
+                <th className="text-center px-4 py-3 font-semibold text-gray-600">开发信</th>
+                <th className="text-center px-4 py-3 font-semibold text-gray-600">来源</th>
+                <th className="text-right px-4 py-3 font-semibold text-gray-600">时间</th>
+              </tr>
+            </thead>
+            <tbody>
+              {leads.map(l => (
+                <tr key={l.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                  <td className="px-4 py-3 font-medium">{l.name || "—"}</td>
+                  <td className="px-4 py-3">{l.email || "—"}</td>
+                  <td className="px-4 py-3">{l.phone || "—"}</td>
+                  <td className="px-4 py-3">{l.country || "—"}</td>
+                  <td className="px-4 py-3 max-w-[150px] truncate">{l.vehicleReq || "—"}</td>
+                  <td className="px-4 py-3 text-center">
+                    <span className={[
+                      "px-2 py-0.5 rounded text-xs font-medium",
+                      l.intentLevel >= 4 ? "bg-green-100 text-green-700" :
+                      l.intentLevel >= 3 ? "bg-blue-100 text-blue-700" :
+                      l.intentLevel >= 2 ? "bg-orange-100 text-orange-700" :
+                      "bg-gray-100 text-gray-500"
+                    ].join(" ")}>
+                      L{l.intentLevel}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    {l.emailSent ? (
+                      <span className="text-green-600 text-xs">✅ {l.emailSentAt ? new Date(l.emailSentAt).toLocaleDateString() : ""}</span>
+                    ) : (
+                      <span className="text-gray-300 text-xs">⬜ 未发</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 text-center text-xs text-gray-400">{l.source || "—"}</td>
+                  <td className="px-4 py-3 text-right text-xs text-gray-400">{new Date(l.createdAt).toLocaleDateString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+
   // ===== Content Tab =====
   const ContentTab = () => {
     const [featuredIds, setFeaturedIds] = useState<string[]>([]);
@@ -761,6 +836,7 @@ export default function AdminDashboard() {
     { id: "inquiries", label: "询价", count: inquiries.length },
     { id: "orders", label: "订单", count: orders.length },
     { id: "users", label: "用户", count: users.length },
+    { id: "customers", label: "客户", count: leads.length },
     { id: "content", label: "内容" },
   ];
 
@@ -798,6 +874,7 @@ export default function AdminDashboard() {
         {activeTab === "inquiries" && <InquiriesTab />}
         {activeTab === "orders" && <OrdersTab />}
         {activeTab === "users" && <UsersTab />}
+        {activeTab === "customers" && <CustomersTab />}
         {activeTab === "content" && <ContentTab />}
       </section>
 
