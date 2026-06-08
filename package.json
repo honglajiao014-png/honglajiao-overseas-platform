@@ -9,7 +9,11 @@
     "lint": "eslint",
     "postinstall": "prisma generate",
     "db:push": "prisma db push",
-    "db:seed": "npx tsx prisma/seed.ts"
+    "db:seed": "npx tsx prisma/seed.ts",
+    "pre-deploy": "node scripts/pre-deploy-check.js",
+    "post-deploy": "node scripts/post-deploy-verify.js",
+    "deploy": "npm run pre-deploy && vercel deploy --prod --yes --force && npm run post-deploy",
+    "deploy:quick": "npm run pre-deploy && vercel deploy --prod --yes"
   },
   "dependencies": {
     "@prisma/client": "^6.0.0",
