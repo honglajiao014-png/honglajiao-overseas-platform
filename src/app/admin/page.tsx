@@ -1,95 +1,184 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useT, T } from "@/i18n/useT";
-import { Header } from "@/components/Header";
+import { useState, useEffect, useCallback } from "react";
 
-interface Stats { totalVehicles: number; soldVehicles: number; availableVehicles: number; totalUsers: number; newInquiries: number; completedOrders: number; totalProfit: number }
-interface Vehicle { id: string; brand: string; model: string; year: number; salePrice: number; basePrice: number; profit: number; status: string; dealer?: { name: string; company: string } }
+// ===== Types =====
+interface Stats {
+  totalVehicles: number; soldVehicles: number; availableVehicles: number;
+  totalUsers: number; newInquiries: number; completedOrders: number;
+  totalProfit: number; totalSpecs: number;
+}
 
+interface Vehicle { id: string; slug: string; brand: string; model: string; year: number; type: string; mileage: number | null; transmission: string | null; fuel: string | null; steering: string | null; color: string | null; condition: string; supplier: string | null; location: string | null; images: string[]; basePrice: number; markup: number; salePrice: number; profit: number; status: string; published: boolean; featured: boolean; description: string | null; dealer?: { name: string; company: string } | null; specId: string | null; createdAt: string; }
+
+interface VehicleSpec { id: string; brand: string; model: string; yearRange: string; vehicleType: string | null; energyType: string | null; specs: string; }
+
+interface Inquiry { id: string; name: string; contact: string; country: string | null; vehicleType: string | null; message: string; status: string; createdAt: string; vehicle?: { brand: string; model: string; year: number } | null; }
+
+interface Order { id: string; vehicle: { brand: string; model: string; year: number; basePrice: number } | null; buyerName: string; buyerContact: string; salePrice: number; profit: number; status: string; createdAt: string; }
+
+interface User { id: string; email: string; name: string; role: string; phone: string | null; company: string | null; country: string | null; createdAt: string; }
+
+type TabId = "dashboard" | "vehicles" | "specs" | "inquiries" | "orders" | "users" | "content";
+
+// ===== Reusable UI =====
+function StatCard({ label, value, color }: { label: string; value: string | number; color?: string }) {
+  return (
+    <div className={`${color || "bg-white border border-gray-200"} rounded-2xl p-5`}>
+      <div className="text-3xl font-extrabold">{value ?? "-"}</div>
+      <div className="text-sm mt-1 opacity-70">{label}</div>
+    </div>
+  );
+}
+
+function Modal({ open, onClose, title, children }: { open: boolean; onClose: () => void; title: string; children: React.ReactNode }) {
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto mx-4" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+          <h3 className="text-lg font-bold text-gray-900">{title}</h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+        </div>
+        <div className="p-6">{children}</div>
+      </div>
+    </div>
+  );
+}
+
+function Btn({ children, onClick, variant = "primary", small }: { children: React.ReactNode; onClick?: () => void; variant?: string; small?: boolean; type?: "button" | "submit" }) {
+  const base = small ? "px-3 py-1.5 text-xs" : "px-4 py-2 text-sm";
+  const colors: Record<string, string> = {
+    primary: "bg-accent text-white hover:bg-accent-dark",
+    danger: "bg-red-500 text-white hover:bg-red-600",
+    outline: "border border-gray-300 text-gray-700 hover:bg-gray-50",
+    ghost: "text-gray-500 hover:text-gray-700",
+  };
+  return <button onClick={onClick} className={`${base} font-semibold rounded-lg transition-all ${colors[variant] || colors.primary}`}>{children}</button>;
+}
+
+function Empty({ text }: { text?: string }) {
+  return <div className="py-12 text-center text-gray-400 text-sm">{text || "No data"}</div>;
+}
+
+// ===== Admin Main =====
 export default function AdminDashboard() {
-  const t = useT();
+  // Auth
   const [token, setToken] = useState("");
   const [loginForm, setLoginForm] = useState({ username: "", password: "" });
   const [loggedIn, setLoggedIn] = useState(false);
-  const [stats, setStats] = useState<Stats | null>(null);
-  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  const [activeTab, setActiveTab] = useState<"dashboard" | "vehicles">("dashboard");
   const [loginError, setLoginError] = useState("");
 
+  // Data
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [specs, setSpecs] = useState<VehicleSpec[]>([]);
+  const [inquiries, setInquiries] = useState<Inquiry[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+
+  // UI state
+  const [activeTab, setActiveTab] = useState<TabId>("dashboard");
+  const [loading, setLoading] = useState(false);
+  const [editVehicle, setEditVehicle] = useState<Vehicle | null>(null);
+  const [editSpec, setEditSpec] = useState<VehicleSpec | null>(null);
+  const [showNewSpec, setShowNewSpec] = useState(false);
+  const [showNewVehicle, setShowNewVehicle] = useState(false);
+  const [specPage, setSpecPage] = useState(0);
+  const [specFilter, setSpecFilter] = useState("");
+  const [vehPage, setVehPage] = useState(0);
+  const [vehFilter, setVehFilter] = useState("");
+
+  const PER_PAGE = 20;
+
+  // ===== Auth =====
   const login = async () => {
     setLoginError("");
-    const res = await fetch("/api/admin/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(loginForm),
-    });
+    const res = await fetch("/api/admin/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(loginForm) });
     const data = await res.json();
-    if (data.token) { setToken(data.token); setLoggedIn(true); }
+    if (data.token) { setToken(data.token); setLoggedIn(true); fetchAll(data.token); }
     else setLoginError(data.error || "Login failed");
   };
 
-  const loginThenBackend = async () => {
-    // First authenticate with admin credentials
-    const res = await fetch("/api/admin/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(loginForm),
-    });
-    const data = await res.json();
-    if (!data.token) { setLoginError(data.error || "Login failed"); return; }
-    setToken(data.token);
-    setLoggedIn(true);
+  const headers = useCallback(() => ({ "Content-Type": "application/json", Authorization: `Bearer ${token}` }), [token]);
+
+  /** 上传文件到 /api/upload，失败自动重试 3 次 */
+  const uploadFile = async (file: File, angle: string): Promise<string> => {
+    let lastErr: Error | null = null;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        const fd = new FormData();
+        fd.append("file", file);
+        fd.append("angle", angle);
+        const res = await fetch("/api/upload", { method: "POST", headers: { Authorization: `Bearer ${token}` }, body: fd });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ error: "上传失败" }));
+          throw new Error(err.error || `上传失败 (${res.status})`);
+        }
+        const data = await res.json();
+        return data.url as string;
+      } catch (err: any) {
+        lastErr = err;
+        if (attempt < 3) await new Promise(r => setTimeout(r, 1000 * Math.pow(2, attempt - 1)));
+      }
+    }
+    throw lastErr || new Error("上传失败");
   };
 
-  useEffect(() => { if (!token) return; fetchStats(); fetchVehicles(); }, [token]);
-
-  const fetchStats = async () => {
-    const res = await fetch("/api/admin/stats", { headers: { Authorization: `Bearer ${token}` } });
-    if (!res.ok) return;
-    const data = await res.json();
-    setStats(data);
-  };
-  const fetchVehicles = async () => {
-    const res = await fetch("/api/admin/vehicles", { headers: { Authorization: `Bearer ${token}` } });
-    if (!res.ok) return;
-    const data = await res.json();
-    setVehicles(data.vehicles || []);
+  /** 预检 Blob 服务 */
+  const checkBlobHealth = async (): Promise<boolean> => {
+    try {
+      const res = await fetch("/api/health/blob");
+      const data = await res.json();
+      return data.status === "healthy";
+    } catch {
+      return false;
+    }
   };
 
-  const deleteVehicle = async (id: string) => {
-    if (!confirm(t(T.admin.confirmDelete))) return;
-    await fetch("/api/admin/vehicles", { method: "DELETE", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify({ id }) });
-    fetchVehicles();
+  const fetchAll = async (tok?: string) => {
+    const t = tok || token;
+    const h = { Authorization: `Bearer ${t}` };
+    setLoading(true);
+    try {
+      const [s, v, sp, iq, o] = await Promise.all([
+        fetch("/api/admin/stats", { headers: h }).then(r => r.json()),
+        fetch("/api/admin/vehicles", { headers: h }).then(r => r.json()),
+        fetch("/api/admin/specs", { headers: h }).then(r => r.json()),
+        fetch("/api/admin/inquiries", { headers: h }).then(r => r.json()),
+        fetch("/api/admin/orders", { headers: h }).then(r => r.json()),
+      ]);
+      setStats(s); setVehicles(v.vehicles || []); setSpecs(sp.specs || []);
+      setInquiries(iq.inquiries || []); setOrders(o.orders || []);
+    } catch (e) { console.error(e); }
+    setLoading(false);
   };
 
+  useEffect(() => { if (token) fetchAll(); }, [token]);
+
+  // ===== Tab Ref =====
+  const scrollRefs: Record<string, React.RefObject<HTMLDivElement | null>> = {};
+
+  // ===== Login Screen =====
   if (!loggedIn) {
     return (
       <main className="min-h-screen bg-gray-50">
-        <Header />
-        <div className="min-h-[calc(100vh-64px)] flex items-center justify-center px-4">
+        <div className="min-h-screen flex items-center justify-center px-4">
           <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 w-full max-w-sm">
-            <h2 className="text-xl font-bold text-gray-900 mb-6 text-center">{t(T.admin.title)}</h2>
-            <p className="text-xs text-gray-500 text-center mb-6">{t(T.admin.subtitle)}</p>
+            <h2 className="text-xl font-bold text-gray-900 mb-6 text-center">后台管理</h2>
+            <p className="text-xs text-gray-500 text-center mb-6">Honglajiao Auto Export Admin</p>
             {loginError && <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm">{loginError}</div>}
             <div className="space-y-4">
-              <input
-                type="text" placeholder={t(T.nav.home) ? "Username" : "Username"}
-                value={loginForm.username} onChange={e => setLoginForm(f => ({ ...f, username: e.target.value }))}
-                onKeyDown={e => e.key === "Enter" && loginThenBackend()}
+              <input type="text" placeholder="Username" value={loginForm.username}
+                onChange={e => setLoginForm(f => ({ ...f, username: e.target.value }))}
+                onKeyDown={e => e.key === "Enter" && login()}
                 className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20" />
-              <input
-                type="password" placeholder="Password"
-                value={loginForm.password} onChange={e => setLoginForm(f => ({ ...f, password: e.target.value }))}
-                onKeyDown={e => e.key === "Enter" && loginThenBackend()}
+              <input type="password" placeholder="Password" value={loginForm.password}
+                onChange={e => setLoginForm(f => ({ ...f, password: e.target.value }))}
+                onKeyDown={e => e.key === "Enter" && login()}
                 className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20" />
-              <button onClick={loginThenBackend}
-                className="w-full bg-accent text-white py-3 rounded-xl font-bold text-sm hover:bg-accent-dark transition-all">
-                {t(T.admin.unlock)}
-              </button>
-              <div className="text-center">
-                <a href="/" className="text-xs text-gray-400 hover:text-accent">{t(T.admin.backSite)}</a>
-              </div>
+              <button onClick={login} className="w-full bg-accent text-white py-3 rounded-xl font-bold text-sm hover:bg-accent-dark transition-all">解锁</button>
+              <div className="text-center"><a href="/" className="text-xs text-gray-400 hover:text-accent">返回前台</a></div>
             </div>
           </div>
         </div>
@@ -97,119 +186,625 @@ export default function AdminDashboard() {
     );
   }
 
-  return (
-    <main className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-6">
-          <h1 className="text-lg font-bold text-gray-900">{t(T.admin.title)}</h1>
-          <nav className="flex gap-1">
-            <button onClick={() => setActiveTab("dashboard")}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold ${activeTab === "dashboard" ? "bg-accent text-white" : "text-gray-600 hover:bg-gray-100"}`}>
-              Dashboard
-            </button>
-            <button onClick={() => setActiveTab("vehicles")}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold ${activeTab === "vehicles" ? "bg-accent text-white" : "text-gray-600 hover:bg-gray-100"}`}>
-              {t(T.admin.vehicleManagement)}
-            </button>
-          </nav>
-        </div>
-        <div className="flex items-center gap-4">
-          <a href="/" className="text-xs text-gray-400 hover:text-accent">{t(T.admin.backSite)}</a>
-          <button onClick={() => { setToken(""); setLoggedIn(false); }} className="text-sm text-gray-500 hover:text-red-500">{t(T.accountPage.logout)}</button>
-        </div>
-      </header>
+  // ===== Dashboard Tab =====
+  const DashboardTab = () => (
+    <div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <StatCard label="车辆总数" value={stats?.totalVehicles ?? "-"} color="bg-blue-50 border-0 text-blue-700" />
+        <StatCard label="可售车辆" value={stats?.availableVehicles ?? "-"} color="bg-green-50 border-0 text-green-700" />
+        <StatCard label="已售车辆" value={stats?.soldVehicles ?? "-"} color="bg-amber-50 border-0 text-amber-700" />
+        <StatCard label="总利润" value={`$${(stats?.totalProfit ?? 0).toLocaleString()}`} color="bg-purple-50 border-0 text-purple-700" />
+        <StatCard label="车型规格数" value={stats?.totalSpecs ?? specs.length} color="bg-indigo-50 border-0 text-indigo-700" />
+        <StatCard label="新询价" value={stats?.newInquiries ?? "-"} color="bg-orange-50 border-0 text-orange-700" />
+        <StatCard label="已完成订单" value={stats?.completedOrders ?? "-"} color="bg-teal-50 border-0 text-teal-700" />
+        <StatCard label="注册用户" value={stats?.totalUsers ?? "-"} color="bg-pink-50 border-0 text-pink-700" />
+      </div>
 
-      <section className="max-w-7xl mx-auto px-6 py-8">
-        {activeTab === "dashboard" && (
-          <>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-              {[
-                { label: t(T.admin.totalVehicles), value: stats?.totalVehicles ?? "-", col: "bg-blue-50 text-blue-700" },
-                { label: t(T.admin.status) + " Sold", value: stats?.soldVehicles ?? "-", col: "bg-green-50 text-green-700" },
-                { label: t(T.admin.status) + " Available", value: stats?.availableVehicles ?? "-", col: "bg-amber-50 text-amber-700" },
-                { label: "Profit", value: `$${(stats?.totalProfit ?? 0).toLocaleString()}`, col: "bg-purple-50 text-purple-700" },
-                { label: "New " + t(T.admin.totalInquiries), value: stats?.newInquiries ?? "-", col: "bg-orange-50 text-orange-700" },
-                { label: "Completed Orders", value: stats?.completedOrders ?? "-", col: "bg-teal-50 text-teal-700" },
-              ].map(s => (
-                <div key={s.label} className={`${s.col} rounded-2xl p-5`}>
-                  <div className="text-3xl font-extrabold">{s.value}</div>
-                  <div className="text-sm mt-1 opacity-80">{s.label}</div>
+      {/* Latest Inquiries */}
+      <div className="bg-white rounded-2xl border border-gray-200 mb-6">
+        <div className="px-6 py-4 border-b border-gray-200 font-semibold text-gray-900 flex items-center justify-between">
+          <span>最新询价 ({inquiries.length})</span>
+          <button onClick={() => setActiveTab("inquiries")} className="text-xs text-accent hover:underline">查看全部</button>
+        </div>
+        {inquiries.length === 0 ? <Empty /> : (
+          <div className="divide-y divide-gray-100">
+            {inquiries.slice(0, 5).map(iq => (
+              <div key={iq.id} className="px-6 py-3 flex items-center justify-between">
+                <div>
+                  <span className="font-medium text-sm">{iq.name}</span>
+                  <span className="text-xs text-gray-400 ml-2">{iq.contact} {iq.country ? `(${iq.country})` : ""}</span>
                 </div>
-              ))}
-            </div>
-
-            <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-200 font-semibold text-gray-900">Recent Vehicles</div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead className="bg-gray-50 text-left">
-                    <tr>
-                      <th className="px-6 py-3 font-semibold">Vehicle</th>
-                      <th className="px-6 py-3 font-semibold">Base</th>
-                      <th className="px-6 py-3 font-semibold">Sale</th>
-                      <th className="px-6 py-3 font-semibold">Profit</th>
-                      <th className="px-6 py-3 font-semibold">{t(T.admin.status)}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {vehicles.map(v => (
-                      <tr key={v.id} className="border-t border-gray-200 hover:bg-gray-50">
-                        <td className="px-6 py-3 font-medium">{v.brand} {v.model} ({v.year})</td>
-                        <td className="px-6 py-3">${v.basePrice?.toLocaleString() || "-"}</td>
-                        <td className="px-6 py-3 text-accent font-bold">${v.salePrice?.toLocaleString() || "-"}</td>
-                        <td className="px-6 py-3 text-green-600 font-bold">${v.profit?.toLocaleString() || "-"}</td>
-                        <td className="px-6 py-3">
-                          <span className={`px-2 py-1 rounded-full text-xs font-semibold ${v.status === "available" ? "bg-green-100 text-green-700" : v.status === "sold" ? "bg-red-100 text-red-700" : "bg-gray-100 text-gray-700"}`}>
-                            {v.status}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
+                  iq.status === "new" ? "bg-orange-100 text-orange-700" : iq.status === "contacted" ? "bg-blue-100 text-blue-700" : "bg-green-100 text-green-700"
+                }`}>{iq.status}</span>
               </div>
-            </div>
-          </>
+            ))}
+          </div>
         )}
+      </div>
 
-        {activeTab === "vehicles" && (
-          <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-200 font-semibold text-gray-900">{t(T.admin.vehicleManagement)}</div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50 text-left">
-                  <tr>
-                    <th className="px-4 py-3">{t(T.admin.brandField)}/{t(T.admin.modelField)}</th>
-                    <th className="px-4 py-3">{t(T.admin.price)} (Base)</th>
-                    <th className="px-4 py-3">{t(T.admin.price)} (Sale)</th>
-                    <th className="px-4 py-3">Profit</th>
-                    <th className="px-4 py-3">{t(T.admin.status)}</th>
-                    <th className="px-4 py-3"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {vehicles.map(v => (
+      {/* Quick Actions */}
+      <div className="bg-white rounded-2xl border border-gray-200 p-6">
+        <h3 className="font-semibold text-gray-900 mb-4">快捷操作</h3>
+        <div className="flex flex-wrap gap-3">
+          <Btn onClick={() => { setShowNewVehicle(true); setActiveTab("vehicles"); }}>新增车辆</Btn>
+          <Btn onClick={() => { setShowNewSpec(true); setActiveTab("specs"); }}>新增车型规格</Btn>
+          <Btn variant="outline" onClick={() => setActiveTab("inquiries")}>查看询价</Btn>
+          <Btn variant="outline" onClick={() => setActiveTab("orders")}>查看订单</Btn>
+        </div>
+      </div>
+    </div>
+  );
+
+  // ===== Vehicles Tab =====
+  const VehiclesTab = () => {
+    const filtered = vehicles.filter(v => !vehFilter || v.brand.includes(vehFilter) || v.model.includes(vehFilter));
+    const paged = filtered.slice(vehPage * PER_PAGE, (vehPage + 1) * PER_PAGE);
+    const totalPages = Math.ceil(filtered.length / PER_PAGE);
+
+    const updateStatus = async (id: string, status: string) => {
+      await fetch("/api/admin/vehicles", { method: "PATCH", headers: headers(), body: JSON.stringify({ id, status }) });
+      fetchAll();
+    };
+
+    const togglePublish = async (id: string, published: boolean) => {
+      await fetch("/api/admin/vehicles", { method: "PATCH", headers: headers(), body: JSON.stringify({ id, published }) });
+      fetchAll();
+    };
+
+    const deleteV = async (id: string) => {
+      if (!confirm("确认删除该车辆？")) return;
+      await fetch("/api/admin/vehicles", { method: "DELETE", headers: headers(), body: JSON.stringify({ id }) });
+      fetchAll();
+    };
+
+    return (
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-bold text-gray-900">车辆管理</h2>
+          <Btn onClick={() => setShowNewVehicle(true)}>+ 新增车辆</Btn>
+        </div>
+
+        <input placeholder="搜索品牌/车型..." value={vehFilter} onChange={e => { setVehFilter(e.target.value); setVehPage(0); }}
+          className="w-full md:w-72 border border-gray-200 rounded-lg px-4 py-2 text-sm mb-4 focus:outline-none focus:border-accent" />
+
+        <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 text-left">
+                <tr>
+                  <th className="px-4 py-3 font-semibold">车辆</th>
+                  <th className="px-4 py-3 font-semibold">年份</th>
+                  <th className="px-4 py-3 font-semibold">里程</th>
+                  <th className="px-4 py-3 font-semibold">底价</th>
+                  <th className="px-4 py-3 font-semibold">售价</th>
+                  <th className="px-4 py-3 font-semibold">利润</th>
+                  <th className="px-4 py-3 font-semibold">状态</th>
+                  <th className="px-4 py-3 font-semibold">公开</th>
+                  <th className="px-4 py-3 font-semibold"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {paged.length === 0 ? <tr><td colSpan={9}><Empty /></td></tr> :
+                  paged.map(v => (
                     <tr key={v.id} className="border-t border-gray-200 hover:bg-gray-50">
-                      <td className="px-4 py-3">{v.brand} {v.model} ({v.year})</td>
-                      <td className="px-4 py-3">${v.basePrice?.toLocaleString() || "-"}</td>
-                      <td className="px-4 py-3 text-accent font-bold">${v.salePrice?.toLocaleString() || "-"}</td>
-                      <td className="px-4 py-3 text-green-600">${v.profit?.toLocaleString() || "-"}</td>
                       <td className="px-4 py-3">
-                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${v.status === "available" ? "bg-green-100 text-green-700" : v.status === "sold" ? "bg-red-100 text-red-700" : "bg-gray-100 text-gray-700"}`}>
-                          {v.status}
-                        </span>
+                        <div className="font-medium">{v.brand} {v.model}</div>
+                        <div className="text-xs text-gray-400">{v.type} · {v.steering || "LHD"}</div>
+                      </td>
+                      <td className="px-4 py-3">{v.year}</td>
+                      <td className="px-4 py-3">{v.mileage ? `${v.mileage.toLocaleString()}km` : "-"}</td>
+                      <td className="px-4 py-3">${v.basePrice.toLocaleString()}</td>
+                      <td className="px-4 py-3 text-accent font-bold">${v.salePrice.toLocaleString()}</td>
+                      <td className="px-4 py-3">
+                        <span className={v.profit > 0 ? "text-green-600 font-bold" : "text-gray-400"}>${v.profit.toLocaleString()}</span>
                       </td>
                       <td className="px-4 py-3">
-                        <button onClick={() => deleteVehicle(v.id)} className="text-red-500 hover:text-red-700 text-xs">{t(T.admin.deleteVehicle)}</button>
+                        <select value={v.status} onChange={e => updateStatus(v.id, e.target.value)}
+                          className={`text-xs font-semibold rounded-full px-2 py-1 border-0 ${
+                            v.status === "available" ? "bg-green-100 text-green-700" :
+                            v.status === "sold" ? "bg-red-100 text-red-700" : "bg-gray-100 text-gray-700"
+                          }`}>
+                          <option value="available">Available</option>
+                          <option value="sold">Sold</option>
+                          <option value="pending">Pending</option>
+                        </select>
+                      </td>
+                      <td className="px-4 py-3">
+                        <button onClick={() => togglePublish(v.id, !v.published)}
+                          className={`text-xs font-semibold px-2 py-1 rounded-full ${v.published ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-400"}`}>
+                          {v.published ? "显示" : "隐藏"}
+                        </button>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex gap-1">
+                          <button onClick={() => setEditVehicle(v)} className="text-accent hover:text-accent-dark text-xs">编辑</button>
+                          <button onClick={() => deleteV(v.id)} className="text-red-400 hover:text-red-600 text-xs ml-2">删除</button>
+                        </div>
                       </td>
                     </tr>
                   ))}
-                </tbody>
-              </table>
-            </div>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 mt-4">
+            <button disabled={vehPage === 0} onClick={() => setVehPage(p => p - 1)}
+              className="px-3 py-1 rounded border border-gray-300 text-sm disabled:opacity-30">上一页</button>
+            <span className="text-sm text-gray-500">{vehPage + 1} / {totalPages}</span>
+            <button disabled={vehPage >= totalPages - 1} onClick={() => setVehPage(p => p + 1)}
+              className="px-3 py-1 rounded border border-gray-300 text-sm disabled:opacity-30">下一页</button>
           </div>
         )}
+      </div>
+    );
+  };
+
+  // ===== Specs Tab =====
+  const SpecsTab = () => {
+    const filtered = specs.filter(s => !specFilter || s.brand.includes(specFilter) || s.model.includes(specFilter));
+    const paged = filtered.slice(specPage * PER_PAGE, (specPage + 1) * PER_PAGE);
+    const totalPages = Math.ceil(filtered.length / PER_PAGE);
+
+    const deleteSpec = async (id: string) => {
+      if (!confirm("确认删除该规格？")) return;
+      await fetch("/api/admin/specs", { method: "DELETE", headers: headers(), body: JSON.stringify({ id }) });
+      fetchAll();
+    };
+
+    return (
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-bold text-gray-900">车型规格管理 ({specs.length})</h2>
+          <Btn onClick={() => setShowNewSpec(true)}>+ 新增规格</Btn>
+        </div>
+
+        <input placeholder="搜索品牌/车型..." value={specFilter} onChange={e => { setSpecFilter(e.target.value); setSpecPage(0); }}
+          className="w-full md:w-72 border border-gray-200 rounded-lg px-4 py-2 text-sm mb-4 focus:outline-none focus:border-accent" />
+
+        <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 text-left">
+                <tr>
+                  <th className="px-4 py-3 font-semibold">品牌</th>
+                  <th className="px-4 py-3 font-semibold">车型</th>
+                  <th className="px-4 py-3 font-semibold">年份范围</th>
+                  <th className="px-4 py-3 font-semibold">类型</th>
+                  <th className="px-4 py-3 font-semibold">能源</th>
+                  <th className="px-4 py-3 font-semibold">规格字段数</th>
+                  <th className="px-4 py-3 font-semibold"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {paged.length === 0 ? <tr><td colSpan={7}><Empty /></td></tr> :
+                  paged.map(s => {
+                    let specCount = 0;
+                    try { specCount = Object.keys(JSON.parse(s.specs)).length; } catch {}
+                    return (
+                      <tr key={s.id} className="border-t border-gray-200 hover:bg-gray-50">
+                        <td className="px-4 py-3 font-medium">{s.brand}</td>
+                        <td className="px-4 py-3">{s.model}</td>
+                        <td className="px-4 py-3">{s.yearRange || "-"}</td>
+                        <td className="px-4 py-3">{s.vehicleType || "-"}</td>
+                        <td className="px-4 py-3">{s.energyType || "-"}</td>
+                        <td className="px-4 py-3">
+                          <span className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full text-xs">{specCount}</span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <button onClick={() => setEditSpec(s)} className="text-accent hover:text-accent-dark text-xs mr-2">编辑</button>
+                          <button onClick={() => deleteSpec(s.id)} className="text-red-400 hover:text-red-600 text-xs">删除</button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 mt-4">
+            <button disabled={specPage === 0} onClick={() => setSpecPage(p => p - 1)}
+              className="px-3 py-1 rounded border border-gray-300 text-sm disabled:opacity-30">上一页</button>
+            <span className="text-sm text-gray-500">{specPage + 1} / {totalPages}</span>
+            <button disabled={specPage >= totalPages - 1} onClick={() => setSpecPage(p => p + 1)}
+              className="px-3 py-1 rounded border border-gray-300 text-sm disabled:opacity-30">下一页</button>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // ===== Inquiries Tab =====
+  const InquiriesTab = () => {
+    const updateStatus = async (id: string, status: string) => {
+      await fetch("/api/admin/inquiries", { method: "PATCH", headers: headers(), body: JSON.stringify({ id, status }) });
+      fetchAll();
+    };
+
+    return (
+      <div>
+        <h2 className="text-lg font-bold text-gray-900 mb-4">询价管理 ({inquiries.length})</h2>
+        <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+          {inquiries.length === 0 ? <Empty text="暂无询价" /> : (
+            <div className="divide-y divide-gray-100">
+              {inquiries.map(iq => (
+                <div key={iq.id} className="px-6 py-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-semibold text-gray-900">{iq.name}</span>
+                        <span className="text-xs text-gray-400">{iq.contact}</span>
+                        {iq.country && <span className="text-xs bg-gray-100 px-2 py-0.5 rounded">{iq.country}</span>}
+                      </div>
+                      <p className="text-sm text-gray-600 mb-1">{iq.message}</p>
+                      {iq.vehicle && <p className="text-xs text-gray-400">咨询车辆: {iq.vehicle.brand} {iq.vehicle.model} ({iq.vehicle.year})</p>}
+                      <p className="text-xs text-gray-400 mt-1">{new Date(iq.createdAt).toLocaleString("zh-CN")}</p>
+                    </div>
+                    <div className="flex items-center gap-2 ml-4">
+                      <select value={iq.status} onChange={e => updateStatus(iq.id, e.target.value)}
+                        className={`text-xs font-semibold rounded-full px-3 py-1 border-0 ${
+                          iq.status === "new" ? "bg-orange-100 text-orange-700" :
+                          iq.status === "contacted" ? "bg-blue-100 text-blue-700" : "bg-green-100 text-green-700"
+                        }`}>
+                        <option value="new">New</option>
+                        <option value="contacted">Contacted</option>
+                        <option value="closed">Closed</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  // ===== Orders Tab =====
+  const OrdersTab = () => {
+    const updateStatus = async (id: string, status: string) => {
+      await fetch("/api/admin/orders", { method: "PATCH", headers: headers(), body: JSON.stringify({ id, status }) });
+      fetchAll();
+    };
+
+    return (
+      <div>
+        <h2 className="text-lg font-bold text-gray-900 mb-4">订单管理 ({orders.length})</h2>
+        <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 text-left">
+                <tr>
+                  <th className="px-4 py-3 font-semibold">车辆</th>
+                  <th className="px-4 py-3 font-semibold">买家</th>
+                  <th className="px-4 py-3 font-semibold">联系方式</th>
+                  <th className="px-4 py-3 font-semibold">售价</th>
+                  <th className="px-4 py-3 font-semibold">利润</th>
+                  <th className="px-4 py-3 font-semibold">状态</th>
+                  <th className="px-4 py-3 font-semibold">时间</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orders.length === 0 ? <tr><td colSpan={7}><Empty /></td></tr> :
+                  orders.map(o => (
+                    <tr key={o.id} className="border-t border-gray-200 hover:bg-gray-50">
+                      <td className="px-4 py-3">
+                        {o.vehicle ? `${o.vehicle.brand} ${o.vehicle.model} (${o.vehicle.year})` : "-"}
+                      </td>
+                      <td className="px-4 py-3 font-medium">{o.buyerName}</td>
+                      <td className="px-4 py-3 text-xs text-gray-500">{o.buyerContact}</td>
+                      <td className="px-4 py-3 text-accent font-bold">${o.salePrice.toLocaleString()}</td>
+                      <td className="px-4 py-3">
+                        <span className={o.profit > 0 ? "text-green-600 font-bold" : "text-gray-400"}>${o.profit.toLocaleString()}</span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <select value={o.status} onChange={e => updateStatus(o.id, e.target.value)}
+                          className={`text-xs font-semibold rounded-full px-2 py-1 border-0 ${
+                            o.status === "completed" ? "bg-green-100 text-green-700" :
+                            o.status === "pending" ? "bg-yellow-100 text-yellow-700" : "bg-gray-100 text-gray-700"
+                          }`}>
+                          <option value="pending">Pending</option>
+                          <option value="in_progress">In Progress</option>
+                          <option value="completed">Completed</option>
+                          <option value="cancelled">Cancelled</option>
+                        </select>
+                      </td>
+                      <td className="px-4 py-3 text-xs text-gray-400">{new Date(o.createdAt).toLocaleDateString("zh-CN")}</td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // ===== Users Tab =====
+  const UsersTab = () => (
+    <div>
+      <h2 className="text-lg font-bold text-gray-900 mb-4">用户管理 ({users.length})</h2>
+      <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 text-left">
+              <tr>
+                <th className="px-4 py-3 font-semibold">名称</th>
+                <th className="px-4 py-3 font-semibold">邮箱</th>
+                <th className="px-4 py-3 font-semibold">角色</th>
+                <th className="px-4 py-3 font-semibold">电话</th>
+                <th className="px-4 py-3 font-semibold">公司</th>
+                <th className="px-4 py-3 font-semibold">注册时间</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.length === 0 ? <tr><td colSpan={6}><Empty /></td></tr> :
+                users.map(u => (
+                  <tr key={u.id} className="border-t border-gray-200 hover:bg-gray-50">
+                    <td className="px-4 py-3 font-medium">{u.name}</td>
+                    <td className="px-4 py-3">{u.email}</td>
+                    <td className="px-4 py-3">
+                      <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${u.role === "admin" ? "bg-purple-100 text-purple-700" : "bg-blue-100 text-blue-700"}`}>
+                        {u.role}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">{u.phone || "-"}</td>
+                    <td className="px-4 py-3">{u.company || "-"}</td>
+                    <td className="px-4 py-3 text-xs text-gray-400">{new Date(u.createdAt).toLocaleDateString("zh-CN")}</td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+
+  // ===== Content Tab =====
+  const ContentTab = () => {
+    const [featuredIds, setFeaturedIds] = useState<string[]>([]);
+    const [pageTitle, setPageTitle] = useState("");
+
+    useEffect(() => {
+      setFeaturedIds(vehicles.filter(v => v.featured).map(v => v.id));
+    }, [vehicles]);
+
+    const toggleFeatured = async (id: string) => {
+      const isFeatured = featuredIds.includes(id);
+      await fetch("/api/admin/vehicles", { method: "PATCH", headers: headers(), body: JSON.stringify({ id, featured: !isFeatured }) });
+      fetchAll();
+    };
+
+    return (
+      <div>
+        <h2 className="text-lg font-bold text-gray-900 mb-4">内容管理</h2>
+
+        {/* Featured Vehicles */}
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 mb-6">
+          <h3 className="font-semibold text-gray-900 mb-3">精选推荐车辆</h3>
+          <p className="text-xs text-gray-400 mb-3">勾选的车辆将显示在首页精选推荐区</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 max-h-60 overflow-y-auto">
+            {vehicles.filter(v => v.published).slice(0, 50).map(v => (
+              <label key={v.id} className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-50 cursor-pointer text-sm">
+                <input type="checkbox" checked={featuredIds.includes(v.id)} onChange={() => toggleFeatured(v.id)}
+                  className="rounded accent-accent" />
+                <span>{v.brand} {v.model} ({v.year})</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        {/* Stats Overview */}
+        <div className="bg-white rounded-2xl border border-gray-200 p-6">
+          <h3 className="font-semibold text-gray-900 mb-3">站点概况</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+            <div><span className="text-gray-400">车辆总数</span><div className="font-bold">{stats?.totalVehicles ?? 0}</div></div>
+            <div><span className="text-gray-400">可售车辆</span><div className="font-bold">{stats?.availableVehicles ?? 0}</div></div>
+            <div><span className="text-gray-400">车型规格</span><div className="font-bold">{specs.length}</div></div>
+            <div><span className="text-gray-400">注册用户</span><div className="font-bold">{stats?.totalUsers ?? 0}</div></div>
+            <div><span className="text-gray-400">询价总数</span><div className="font-bold">{inquiries.length}</div></div>
+            <div><span className="text-gray-400">订单总数</span><div className="font-bold">{orders.length}</div></div>
+            <div><span className="text-gray-400">总利润</span><div className="font-bold text-green-600">${(stats?.totalProfit ?? 0).toLocaleString()}</div></div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // ===== Edit Vehicle Modal =====
+  const EditVehicleModal = () => {
+    if (!editVehicle) return null;
+    const [form, setForm] = useState({ ...editVehicle });
+
+    const save = async () => {
+      try {
+        const { id, ...rest } = form;
+        const res = await fetch("/api/admin/vehicles", { method: "PATCH", headers: headers(), body: JSON.stringify({ id, ...rest }) });
+        const data = await res.json();
+        if (!res.ok) { alert(data.error || "保存失败"); return; }
+        setEditVehicle(null);
+        fetchAll();
+      } catch (e: any) {
+        alert("保存失败: " + (e?.message || "网络错误"));
+      }
+    };
+
+    return (
+      <Modal open={!!editVehicle} onClose={() => setEditVehicle(null)} title="编辑车辆">
+        <div className="grid grid-cols-2 gap-4">
+          <div><label className="text-xs text-gray-500">品牌</label><input value={form.brand} onChange={e => setForm(f => ({ ...f, brand: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
+          <div><label className="text-xs text-gray-500">车型</label><input value={form.model} onChange={e => setForm(f => ({ ...f, model: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
+          <div><label className="text-xs text-gray-500">年份</label><input type="number" value={form.year} onChange={e => setForm(f => ({ ...f, year: +e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
+          <div><label className="text-xs text-gray-500">里程</label><input value={form.mileage ?? ""} onChange={e => setForm(f => ({ ...f, mileage: +e.target.value || null }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
+          <div><label className="text-xs text-gray-500">底价</label><input type="number" value={form.basePrice} onChange={e => setForm(f => ({ ...f, basePrice: +e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
+          <div><label className="text-xs text-gray-500">利润(Markup)</label><input type="number" value={form.markup} onChange={e => setForm(f => ({ ...f, markup: +e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
+          <div><label className="text-xs text-gray-500">变速箱</label><input value={form.transmission ?? ""} onChange={e => setForm(f => ({ ...f, transmission: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
+          <div><label className="text-xs text-gray-500">燃料类型</label><input value={form.fuel ?? ""} onChange={e => setForm(f => ({ ...f, fuel: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
+          <div className="col-span-2"><label className="text-xs text-gray-500">描述</label><textarea value={form.description ?? ""} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={3} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
+        </div>
+        <div className="flex justify-end gap-3 mt-6">
+          <Btn variant="outline" onClick={() => setEditVehicle(null)}>取消</Btn>
+          <Btn onClick={save}>保存</Btn>
+        </div>
+      </Modal>
+    );
+  };
+
+  // ===== New Vehicle Modal =====
+  const NewVehicleModal = () => {
+    if (!showNewVehicle) return null;
+    const [form, setForm] = useState({ brand: "", model: "", year: 2024, type: "Used Passenger Car", mileage: 0, transmission: "Automatic", fuel: "Petrol", basePrice: 0, markup: 0, description: "" });
+    const [saving, setSaving] = useState(false);
+
+    const create = async () => {
+      setSaving(true);
+      try {
+        const res = await fetch("/api/admin/vehicles", { method: "POST", headers: headers(), body: JSON.stringify(form) });
+        const data = await res.json();
+        if (!res.ok) { alert(data.error || "创建失败"); setSaving(false); return; }
+        setShowNewVehicle(false);
+        fetchAll();
+      } catch (e: any) {
+        alert("创建失败: " + (e?.message || "网络错误"));
+      }
+      setSaving(false);
+    };
+
+    return (
+      <Modal open={showNewVehicle} onClose={() => setShowNewVehicle(false)} title="新增车辆">
+        <div className="grid grid-cols-2 gap-4">
+          <div><label className="text-xs text-gray-500">品牌 *</label><input value={form.brand} onChange={e => setForm(f => ({ ...f, brand: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
+          <div><label className="text-xs text-gray-500">车型 *</label><input value={form.model} onChange={e => setForm(f => ({ ...f, model: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
+          <div><label className="text-xs text-gray-500">年份</label><input type="number" value={form.year} onChange={e => setForm(f => ({ ...f, year: +e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
+          <div><label className="text-xs text-gray-500">里程</label><input type="number" value={form.mileage} onChange={e => setForm(f => ({ ...f, mileage: +e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
+          <div><label className="text-xs text-gray-500">变速箱</label>
+            <select value={form.transmission} onChange={e => setForm(f => ({ ...f, transmission: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1">
+              <option>Automatic</option><option>Manual</option><option>CVT</option><option>DCT</option>
+            </select></div>
+          <div><label className="text-xs text-gray-500">燃料</label>
+            <select value={form.fuel} onChange={e => setForm(f => ({ ...f, fuel: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1">
+              <option>Petrol</option><option>Diesel</option><option>Electric</option><option>Hybrid</option>
+            </select></div>
+          <div><label className="text-xs text-gray-500">底价 *</label><input type="number" value={form.basePrice} onChange={e => setForm(f => ({ ...f, basePrice: +e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
+          <div><label className="text-xs text-gray-500">利润</label><input type="number" value={form.markup} onChange={e => setForm(f => ({ ...f, markup: +e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
+          <div className="col-span-2"><label className="text-xs text-gray-500">描述</label><textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={3} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
+        </div>
+        <div className="flex justify-end gap-3 mt-6">
+          <Btn variant="outline" onClick={() => setShowNewVehicle(false)}>取消</Btn>
+          <Btn onClick={create}>{saving ? "保存中..." : "创建"}</Btn>
+        </div>
+      </Modal>
+    );
+  };
+
+  // ===== New Spec Modal =====
+  const NewSpecModal = () => {
+    if (!showNewSpec && !editSpec) return null;
+    const isEdit = !!editSpec;
+    const [form, setForm] = useState({
+      brand: editSpec?.brand || "", model: editSpec?.model || "",
+      yearRange: editSpec?.yearRange || "2020-2026", vehicleType: editSpec?.vehicleType || "",
+      energyType: editSpec?.energyType || "", specs: editSpec?.specs || "{}",
+    });
+    const [saving, setSaving] = useState(false);
+
+    const save = async () => {
+      setSaving(true);
+      let specsStr = form.specs;
+      try { JSON.parse(specsStr); } catch { specsStr = JSON.stringify({}); }
+      const body = { ...form, specs: specsStr };
+      if (isEdit) {
+        await fetch("/api/admin/specs", { method: "PATCH", headers: headers(), body: JSON.stringify({ id: editSpec!.id, ...body }) });
+      } else {
+        await fetch("/api/admin/specs", { method: "POST", headers: headers(), body: JSON.stringify(body) });
+      }
+      setShowNewSpec(false); setEditSpec(null);
+      fetchAll();
+      setSaving(false);
+    };
+
+    return (
+      <Modal open={showNewSpec || !!editSpec} onClose={() => { setShowNewSpec(false); setEditSpec(null); }}
+        title={isEdit ? "编辑规格" : "新增规格"}>
+        <div className="grid grid-cols-2 gap-4">
+          <div><label className="text-xs text-gray-500">品牌 *</label><input value={form.brand} onChange={e => setForm(f => ({ ...f, brand: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
+          <div><label className="text-xs text-gray-500">车型 *</label><input value={form.model} onChange={e => setForm(f => ({ ...f, model: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
+          <div><label className="text-xs text-gray-500">年份范围</label><input value={form.yearRange} onChange={e => setForm(f => ({ ...f, yearRange: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
+          <div><label className="text-xs text-gray-500">车辆类型</label><input value={form.vehicleType} onChange={e => setForm(f => ({ ...f, vehicleType: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
+          <div><label className="text-xs text-gray-500">能源类型</label>
+            <select value={form.energyType} onChange={e => setForm(f => ({ ...f, energyType: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1">
+              <option value="">不限</option><option value="汽油">汽油</option><option value="柴油">柴油</option><option value="纯电动">纯电动</option><option value="插电式混合动力">插电式混合动力</option>
+            </select></div>
+          <div className="col-span-2"><label className="text-xs text-gray-500">规格配置 (JSON)</label>
+            <textarea value={form.specs} onChange={e => setForm(f => ({ ...f, specs: e.target.value }))} rows={8}
+              className="w-full border rounded-lg px-3 py-2 text-xs font-mono mt-1"
+              placeholder='{"engine":{"model":"...","displacement":2.0},"body":{"length":4800,...}}' /></div>
+        </div>
+        <div className="flex justify-end gap-3 mt-6">
+          <Btn variant="outline" onClick={() => { setShowNewSpec(false); setEditSpec(null); }}>取消</Btn>
+          <Btn onClick={save}>{saving ? "保存中..." : "保存"}</Btn>
+        </div>
+      </Modal>
+    );
+  };
+
+  // ===== Tab Config =====
+  const tabs: { id: TabId; label: string; count?: number }[] = [
+    { id: "dashboard", label: "总览" },
+    { id: "vehicles", label: "车辆", count: vehicles.length },
+    { id: "specs", label: "车型规格", count: specs.length },
+    { id: "inquiries", label: "询价", count: inquiries.length },
+    { id: "orders", label: "订单", count: orders.length },
+    { id: "users", label: "用户", count: users.length },
+    { id: "content", label: "内容" },
+  ];
+
+  // ===== Render =====
+  return (
+    <main className="min-h-screen bg-gray-50">
+      {/* Top Bar */}
+      <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between sticky top-0 z-40">
+        <div className="flex items-center gap-6 overflow-x-auto">
+          <h1 className="text-lg font-bold text-gray-900 whitespace-nowrap">后台管理</h1>
+          <nav className="flex gap-1">
+            {tabs.map(tab => (
+              <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+                className={`px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all ${
+                  activeTab === tab.id ? "bg-accent text-white shadow-sm" : "text-gray-600 hover:bg-gray-100"
+                }`}>
+                {tab.label}
+                {tab.count !== undefined && <span className="ml-1.5 text-xs opacity-70">({tab.count})</span>}
+              </button>
+            ))}
+          </nav>
+        </div>
+        <div className="flex items-center gap-4">
+          <a href="/" className="text-xs text-gray-400 hover:text-accent">返回前台</a>
+          <button onClick={() => { setToken(""); setLoggedIn(false); }} className="text-sm text-gray-500 hover:text-red-500">退出</button>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <section className="max-w-[1400px] mx-auto px-6 py-8">
+        {loading && <div className="text-center text-gray-400 text-sm mb-4">加载中...</div>}
+        {activeTab === "dashboard" && <DashboardTab />}
+        {activeTab === "vehicles" && <VehiclesTab />}
+        {activeTab === "specs" && <SpecsTab />}
+        {activeTab === "inquiries" && <InquiriesTab />}
+        {activeTab === "orders" && <OrdersTab />}
+        {activeTab === "users" && <UsersTab />}
+        {activeTab === "content" && <ContentTab />}
       </section>
+
+      {/* Modals */}
+      <EditVehicleModal />
+      <NewVehicleModal />
+      <NewSpecModal />
     </main>
   );
 }
