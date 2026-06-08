@@ -24,7 +24,7 @@ const I18N = {
   basePrice: T("Base Price","Prix de base","Precio base","底价"),
   priceNote: T("* Base vehicle price only. Excludes shipping, insurance & duties.","* Prix de base hors expédition, assurance et droits.","* Precio base solamente. Excluye envío, seguro e impuestos.","* 仅裸车价格。不含运费、保险和关税。"),
   inquire: T("Inquire Now","Demander","Consultar ahora","立即询价"),
-  waContact: T("Contact via WhatsApp","WhatsApp","WhatsApp","通过WhatsApp联系"),
+
   year: T("Year","Année","Año","年份"),
   mileage: T("Mileage","Kilométrage","Kilometraje","里程"),
   trans: T("Transmission","Transmission","Transmisión","变速箱"),
@@ -168,12 +168,9 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
                   <div className="mt-6 p-4 bg-gray-50 rounded-xl text-sm text-gray-600 whitespace-pre-wrap">{vehicle.description}</div>
                 )}
 
-                <div className="mt-6 space-y-3">
+                <div className="mt-6">
                   <a href={`/inquiry?slug=${encodeURIComponent(vehicle.brand + "-" + vehicle.model + "-" + vehicle.year)}`}
                     className="block w-full text-center bg-accent text-white py-3 rounded-xl font-bold hover:bg-accent-dark transition-all">{d(I18N.inquire)}</a>
-                  <a href={`https://wa.me/861234567890?text=${encodeURIComponent("Hi, I am interested in " + vehicle.brand + " " + vehicle.model + " " + vehicle.year)}`}
-                    target="_blank"
-                    className="block w-full text-center bg-green-500 text-white py-3 rounded-xl font-bold hover:bg-green-600 transition-all">{d(I18N.waContact)}</a>
                 </div>
               </div>
             </div>

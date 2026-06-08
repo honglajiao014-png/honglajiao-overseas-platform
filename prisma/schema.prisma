@@ -28,17 +28,23 @@ model User {
 
 model VehicleSpec {
   id          String   @id @default(cuid())
-  brand       String
-  model       String
-  yearRange   String   @default("2016-2026")
-  manufacturer String?
-  vehicleType String?
-  releaseDate String?
-  energyType  String?
-  specs       String   @default("{}")
-  vehicles    Vehicle[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  brand       String   // 品牌（中文，如"标致"）
+  series      String   // 车系（如"标致408"）
+  fullName    String?  // 车款全称（如"标致408 2020款 360THP 十周年质臻版"）
+  year        Int?     // 上市年份（如 2020）
+  manufacturer String? // 厂商
+  energyType  String?  // 能源形式
+  displacement Float?  // 排量(L)
+  transmission String? // 变速箱类型
+  bodyStyle    String? // 车身形式
+  seatCount    Int?    // 座位数
+  specsJson    String  @default("{}") // 完整125项配置JSON
+  vehicles     Vehicle[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([brand, series])
+  @@index([brand, series, year])
 }
 
 model Vehicle {

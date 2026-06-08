@@ -142,18 +142,27 @@ export default function AdminDashboard() {
     const t = tok || token;
     const h = { Authorization: `Bearer ${t}` };
     setLoading(true);
-    try {
-      const [s, v, sp, iq, o] = await Promise.all([
-        fetch("/api/admin/stats", { headers: h }).then(r => r.json()),
-        fetch("/api/admin/vehicles", { headers: h }).then(r => r.json()),
-        fetch("/api/admin/specs", { headers: h }).then(r => r.json()),
-        fetch("/api/admin/inquiries", { headers: h }).then(r => r.json()),
-        fetch("/api/admin/orders", { headers: h }).then(r => r.json()),
-      ]);
-      setStats(s); setVehicles(v.vehicles || []); setSpecs(sp.specs || []);
-      setInquiries(iq.inquiries || []); setOrders(o.orders || []);
-      fetch("/api/admin/leads", { headers: h }).then(r => r.json()).then(d => setLeads(d.leads || [])).catch(() => {});
-    } catch (e) { console.error(e); }
+
+    // 每个请求独立 catch，一个接口挂了不影响其他
+    const safeFetch = (url: string) =>
+      fetch(url, { headers: h })
+        .then(r => { if (!r.ok) throw new Error(`${url} ${r.status}`); return r.json(); })
+        .catch(e => { console.warn(`[admin] ${url} 请求失败:`, e.message); return null; });
+
+    const [s, v, sp, iq, o] = await Promise.all([
+      safeFetch("/api/admin/stats"),
+      safeFetch("/api/admin/vehicles"),
+      safeFetch("/api/admin/specs"),
+      safeFetch("/api/admin/inquiries"),
+      safeFetch("/api/admin/orders"),
+    ]);
+    if (s) setStats(s);
+    if (v) setVehicles(v.vehicles || []);
+    if (sp) setSpecs(sp.specs || []);
+    if (iq) setInquiries(iq.inquiries || []);
+    if (o) setOrders(o.orders || []);
+
+    fetch("/api/admin/leads", { headers: h }).then(r => r.json()).then(d => setLeads(d.leads || [])).catch(() => {});
     setLoading(false);
   };
 
