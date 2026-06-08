@@ -3,11 +3,74 @@ import { Footer } from "@/components/Footer";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
 
 export const dynamic = "force-dynamic";
 
+// ⚠️ 此处使用内联翻译，不导入 @/i18n/useT（避免"use client"污染服务端组件）
+type Lang = "en" | "fr" | "es" | "zh";
+type Trans = Record<string, string>;
+const T = (en: string, fr: string, es: string, zh: string): Trans => ({ en, fr, es, zh });
+
+const I18N = {
+  home: T("Home","Accueil","Inicio","首页"),
+  allCars: T("Cars","Véhicules","Vehículos","车辆列表"),
+  usedPassenger: T("Used Passenger Car","Voiture d'occasion","Auto usado","二手乘用车"),
+  newEnergy: T("New Energy Vehicle","Véhicule électrique","Vehículo eléctrico","新能源车"),
+  truck: T("Truck","Camion","Camión","卡车"),
+  machinery: T("Construction Machinery","Engins","Maquinaria","工程机械"),
+  motorcycle: T("Motorcycle","Moto","Motocicleta","摩托车"),
+  parts: T("Auto Parts","Pièces auto","Repuestos","汽车配件"),
+  basePrice: T("Base Price","Prix de base","Precio base","底价"),
+  priceNote: T("* Base vehicle price only. Excludes shipping, insurance & duties.","* Prix de base hors expédition, assurance et droits.","* Precio base solamente. Excluye envío, seguro e impuestos.","* 仅裸车价格。不含运费、保险和关税。"),
+  inquire: T("Inquire Now","Demander","Consultar ahora","立即询价"),
+  waContact: T("Contact via WhatsApp","WhatsApp","WhatsApp","通过WhatsApp联系"),
+  year: T("Year","Année","Año","年份"),
+  mileage: T("Mileage","Kilométrage","Kilometraje","里程"),
+  trans: T("Transmission","Transmission","Transmisión","变速箱"),
+  fuel: T("Fuel","Carburant","Combustible","燃料"),
+  steering: T("Steering","Direction","Dirección","方向盘"),
+  color: T("Color","Couleur","Color","颜色"),
+  displacement: T("Displacement","Cylindrée","Cilindrada","排量"),
+  bodyStyle: T("Body Style","Carrosserie","Carrocería","车身类型"),
+  seats: T("Seats","Places","Asientos","座位"),
+  engine: T("Engine","Moteur","Motor","发动机"),
+  range: T("Range","Autonomie","Autonomía","续航"),
+  battery: T("Battery","Batterie","Batería","电池"),
+  hours: T("Hours","Heures","Horas","工作时长"),
+  tonnage: T("Tonnage","Tonnage","Tonelaje","吨位"),
+  load: T("Load","Charge","Carga","载重"),
+  lhd: T("LHD","Conduite à gauche","Volante izquierdo","左舵"),
+  rhd: T("RHD","Conduite à droite","Volante derecho","右舵"),
+  km: T("km","km","km","公里"),
+};
+
+function tr(key: Trans, lang: Lang): string {
+  return key[lang] || key.en || "";
+}
+
+async function detectLang(): Promise<Lang> {
+  try {
+    const hdrs = await headers();
+    const c = hdrs.get("cookie") || "";
+    const m = c.match(/hlj-lang=([^;]+)/);
+    const v = m?.[1];
+    if (v && ["en","fr","es","zh"].includes(v)) return v as Lang;
+  } catch {}
+  return "en";
+}
+
 export default async function CarDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const lang = await detectLang();
+  const d = (k: Trans) => tr(k, lang);
+
+  const kmU = d(I18N.km);
+  const fmtKm = (km: number | null) => {
+    if (!km) return "-";
+    if (lang === "zh") return km >= 10000 ? `${(km / 10000).toFixed(1)}万${kmU}` : `${km.toLocaleString()}${kmU}`;
+    return `${km.toLocaleString()} ${kmU}`;
+  };
 
   const vehicle = await prisma.vehicle.findUnique({
     where: { slug },
@@ -27,16 +90,15 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
 
   if (!vehicle) notFound();
 
-  const categoryLabel = vehicle.equipmentType ? `Construction Machinery - ${vehicle.equipmentType}`
-    : vehicle.motorcycleType ? `Motorcycle - ${vehicle.motorcycleType}`
-    : vehicle.partCategory ? `Auto Parts - ${vehicle.partCategory}`
-    : vehicle.loadCapacityTons ? "Truck"
-    : vehicle.batteryType ? "New Energy Vehicle"
-    : "Used Passenger Car";
+  // 品类标签（翻译）
+  const catLabel = vehicle.equipmentType ? `${d(I18N.machinery)} - ${vehicle.equipmentType}`
+    : vehicle.motorcycleType ? `${d(I18N.motorcycle)} - ${vehicle.motorcycleType}`
+    : vehicle.partCategory ? `${d(I18N.parts)} - ${vehicle.partCategory}`
+    : vehicle.loadCapacityTons ? d(I18N.truck)
+    : vehicle.batteryType ? d(I18N.newEnergy)
+    : d(I18N.usedPassenger);
 
-  const steerLabel = vehicle.steering?.toUpperCase() === "RHD" ? "RHD" : "LHD";
-
-  const fmtMileage = (km: number | null) => km ? `${km.toLocaleString()} km` : "-";
+  const steer = vehicle.steering?.toUpperCase() === "RHD" ? d(I18N.rhd) : d(I18N.lhd);
 
   return (
     <>
@@ -44,9 +106,9 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
       <main className="bg-gray-50 min-h-screen">
         <div className="max-w-[1200px] mx-auto px-4 py-6">
           <div className="text-xs text-gray-400 mb-6">
-            <Link href="/" className="hover:text-primary">Home</Link>
+            <Link href="/" className="hover:text-primary">{d(I18N.home)}</Link>
             <span className="mx-2">›</span>
-            <Link href="/cars" className="hover:text-primary">Cars</Link>
+            <Link href="/cars" className="hover:text-primary">{d(I18N.allCars)}</Link>
             <span className="mx-2">›</span>
             <span className="text-gray-600">{vehicle.brand} {vehicle.model}</span>
           </div>
@@ -71,34 +133,34 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
 
             <div className="lg:col-span-5">
               <div className="bg-white rounded-2xl border border-gray-200 p-6">
-                <span className="text-xs font-semibold text-accent bg-accent/10 px-3 py-1 rounded-full">{categoryLabel}</span>
+                <span className="text-xs font-semibold text-accent bg-accent/10 px-3 py-1 rounded-full">{catLabel}</span>
                 <h1 className="text-2xl font-extrabold text-gray-900 mt-3">{vehicle.brand} {vehicle.model} {vehicle.year}</h1>
 
                 <div className="mt-6">
                   <div className="text-4xl font-extrabold text-danger">${vehicle.salePrice.toLocaleString()}</div>
-                  <p className="text-xs text-gray-400 mt-1">* Base vehicle price only. Excludes shipping, insurance & duties.</p>
+                  <p className="text-xs text-gray-400 mt-1">{d(I18N.priceNote)}</p>
                   <div className="flex gap-4 mt-2 text-xs text-gray-500">
-                    <span>Base: ${vehicle.basePrice.toLocaleString()}</span>
+                    <span>{d(I18N.basePrice)}: ${vehicle.basePrice.toLocaleString()}</span>
                   </div>
                 </div>
 
                 <div className="mt-6 space-y-3">
                   <div className="grid grid-cols-2 gap-3 text-sm">
-                    <Spec l="Year" v={String(vehicle.year)} />
-                    <Spec l="Mileage" v={fmtMileage(vehicle.mileage)} />
-                    <Spec l="Transmission" v={vehicle.transmission || "-"} />
-                    <Spec l="Fuel" v={vehicle.fuel || "-"} />
-                    <Spec l="Steering" v={steerLabel} />
-                    <Spec l="Color" v={vehicle.exteriorColor || "-"} />
-                    {vehicle.displacement && <Spec l="Displacement" v={`${vehicle.displacement}L`} />}
-                    {vehicle.bodyStyle && <Spec l="Body Style" v={vehicle.bodyStyle} />}
-                    {vehicle.seatCount && <Spec l="Seats" v={`${vehicle.seatCount}`} />}
-                    {vehicle.engineModel && <Spec l="Engine" v={vehicle.engineModel} />}
-                    {vehicle.rangeKm && <Spec l="Range" v={`${vehicle.rangeKm} km`} />}
-                    {vehicle.batteryType && <Spec l="Battery" v={vehicle.batteryType} />}
-                    {vehicle.workingHours && <Spec l="Hours" v={`${vehicle.workingHours} h`} />}
-                    {vehicle.tonnage && <Spec l="Tonnage" v={`${vehicle.tonnage}t`} />}
-                    {vehicle.loadCapacityTons && <Spec l="Load" v={`${vehicle.loadCapacityTons}t`} />}
+                    <Spec l={d(I18N.year)} v={String(vehicle.year)} />
+                    <Spec l={d(I18N.mileage)} v={fmtKm(vehicle.mileage)} />
+                    <Spec l={d(I18N.trans)} v={vehicle.transmission || "-"} />
+                    <Spec l={d(I18N.fuel)} v={vehicle.fuel || "-"} />
+                    <Spec l={d(I18N.steering)} v={steer} />
+                    <Spec l={d(I18N.color)} v={vehicle.exteriorColor || "-"} />
+                    {vehicle.displacement && <Spec l={d(I18N.displacement)} v={`${vehicle.displacement}L`} />}
+                    {vehicle.bodyStyle && <Spec l={d(I18N.bodyStyle)} v={vehicle.bodyStyle} />}
+                    {vehicle.seatCount && <Spec l={d(I18N.seats)} v={`${vehicle.seatCount}`} />}
+                    {vehicle.engineModel && <Spec l={d(I18N.engine)} v={vehicle.engineModel} />}
+                    {vehicle.rangeKm && <Spec l={d(I18N.range)} v={`${vehicle.rangeKm} ${kmU}`} />}
+                    {vehicle.batteryType && <Spec l={d(I18N.battery)} v={vehicle.batteryType} />}
+                    {vehicle.workingHours && <Spec l={d(I18N.hours)} v={`${vehicle.workingHours} h`} />}
+                    {vehicle.tonnage && <Spec l={d(I18N.tonnage)} v={`${vehicle.tonnage}t`} />}
+                    {vehicle.loadCapacityTons && <Spec l={d(I18N.load)} v={`${vehicle.loadCapacityTons}t`} />}
                   </div>
                 </div>
 
@@ -108,10 +170,10 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
 
                 <div className="mt-6 space-y-3">
                   <a href={`/inquiry?slug=${encodeURIComponent(vehicle.brand + "-" + vehicle.model + "-" + vehicle.year)}`}
-                    className="block w-full text-center bg-accent text-white py-3 rounded-xl font-bold hover:bg-accent-dark transition-all">Inquire Now</a>
+                    className="block w-full text-center bg-accent text-white py-3 rounded-xl font-bold hover:bg-accent-dark transition-all">{d(I18N.inquire)}</a>
                   <a href={`https://wa.me/861234567890?text=${encodeURIComponent("Hi, I am interested in " + vehicle.brand + " " + vehicle.model + " " + vehicle.year)}`}
                     target="_blank"
-                    className="block w-full text-center bg-green-500 text-white py-3 rounded-xl font-bold hover:bg-green-600 transition-all">Contact via WhatsApp</a>
+                    className="block w-full text-center bg-green-500 text-white py-3 rounded-xl font-bold hover:bg-green-600 transition-all">{d(I18N.waContact)}</a>
                 </div>
               </div>
             </div>
