@@ -23,7 +23,22 @@ export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userAvatar, setUserAvatar] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("hlj_token");
+    if (token) {
+      setIsLoggedIn(true);
+      fetch("/api/auth/me", { headers: { Authorization: `Bearer ${token}` } })
+        .then(r => r.json())
+        .then(data => {
+          if (data.user?.avatar) setUserAvatar(data.user.avatar);
+        })
+        .catch(() => {});
+    }
+  }, []);
 
   const NAV_LINKS = [
     { href: "/", label: t(T.header.home) },
@@ -158,21 +173,39 @@ export function Header() {
               )}
             </div>
 
-            {/* 登录/注册 */}
+            {/* 登录/注册 — 已登录则显示头像 */}
             <div className="hidden sm:flex items-center gap-1 ml-2">
-              <a
-                href="/login"
-                className="text-sm text-gray-400 hover:text-white px-3 py-2 rounded-lg hover:bg-white/5 transition-all"
-              >
-                {t(T.header.login)}
-              </a>
-              <span className="text-gray-600">/</span>
-              <a
-                href="/register"
-                className="text-sm text-gray-400 hover:text-white px-3 py-2 rounded-lg hover:bg-white/5 transition-all"
-              >
-                {t(T.header.register)}
-              </a>
+              {isLoggedIn ? (
+                <a href="/account" className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-white/10 transition-all">
+                  <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-600">
+                    {userAvatar ? (
+                      <img src={userAvatar} alt="avatar" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-sm text-gray-300">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                      </div>
+                    )}
+                  </div>
+                </a>
+              ) : (
+                <>
+                  <a
+                    href="/login"
+                    className="text-sm text-gray-400 hover:text-white px-3 py-2 rounded-lg hover:bg-white/5 transition-all"
+                  >
+                    {t(T.header.login)}
+                  </a>
+                  <span className="text-gray-600">/</span>
+                  <a
+                    href="/register"
+                    className="text-sm text-gray-400 hover:text-white px-3 py-2 rounded-lg hover:bg-white/5 transition-all"
+                  >
+                    {t(T.header.register)}
+                  </a>
+                </>
+              )}
             </div>
 
             {/* 管理后台 */}
@@ -260,12 +293,27 @@ export function Header() {
                 );
               })}
               <div className="flex gap-2 mt-3 px-4">
-                <a href="/login" onClick={() => setMobileOpen(false)} className="flex-1 text-center text-sm font-medium text-gray-300 border border-gray-700 py-2.5 rounded-lg hover:bg-white/5 transition-colors">
-                  {t(T.header.login)}
-                </a>
-                <a href="/register" onClick={() => setMobileOpen(false)} className="flex-1 text-center text-sm font-medium bg-primary text-white py-2.5 rounded-lg hover:bg-primary-dark transition-colors">
-                  {t(T.header.register)}
-                </a>
+                {isLoggedIn ? (
+                  <a href="/account" onClick={() => setMobileOpen(false)} className="flex-1 flex items-center justify-center gap-2 text-sm font-medium text-gray-300 border border-gray-700 py-2.5 rounded-lg hover:bg-white/5 transition-colors">
+                    {userAvatar ? (
+                      <img src={userAvatar} alt="avatar" className="w-5 h-5 rounded-full object-cover" />
+                    ) : (
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    )}
+                    账号
+                  </a>
+                ) : (
+                  <>
+                    <a href="/login" onClick={() => setMobileOpen(false)} className="flex-1 text-center text-sm font-medium text-gray-300 border border-gray-700 py-2.5 rounded-lg hover:bg-white/5 transition-colors">
+                      {t(T.header.login)}
+                    </a>
+                    <a href="/register" onClick={() => setMobileOpen(false)} className="flex-1 text-center text-sm font-medium bg-primary text-white py-2.5 rounded-lg hover:bg-primary-dark transition-colors">
+                      {t(T.header.register)}
+                    </a>
+                  </>
+                )}
               </div>
             </nav>
           </div>
