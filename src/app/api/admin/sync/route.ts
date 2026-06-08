@@ -75,9 +75,15 @@ export async function POST(req: NextRequest) {
   if (vehicles.length === 0 && process.env.DOMESTIC_DB_URL) {
     try {
       const { neon } = await import("@neondatabase/serverless");
-      const cleanUrl = process.env.DOMESTIC_DB_URL.replace(/^"|"$/g, "").replace(
-        /[?&]channel_binding=require/g, ""
-      );
+      const u = new URL(process.env.DOMESTIC_DB_URL.replace(/^"|"$/g, ""));
+      u.searchParams.delete("channel_binding");
+      u.searchParams.delete("sslmode");
+      u.searchParams.set("sslmode", "require");
+      const cleanUrl = u.toString().replace(/%[0-9A-Fa-f]{2}/g, (m) => {
+        // Decode URL-encoded chars that break @neondatabase/serverless
+        const c = String.fromCharCode(parseInt(m.slice(1), 16));
+        return /[a-zA-Z0-9._~-]/.test(c) ? c : m;
+      });
       const sql = neon(cleanUrl);
       const QUERY = "SELECT v.*, COALESCE(" +
         "(SELECT json_agg(json_build_object('url', vi.url)) " +
