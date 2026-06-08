@@ -51,6 +51,21 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // 去重：检查是否已存在相同 brand + model + year 的车辆
+  const existing = await prisma.vehicle.findFirst({
+    where: {
+      brand: data.brand,
+      model: data.model,
+      year: Number(data.year),
+    },
+  });
+  if (existing) {
+    return NextResponse.json(
+      { error: `车辆已存���: ${data.brand} ${data.model} (${data.year})，请通过编辑更新而非重复添加`, existingId: existing.id },
+      { status: 409 }
+    );
+  }
+
   const slug = `${data.brand}-${data.model}-${data.year}-${Date.now()}`.toLowerCase().replace(/\s+/g, "-");
 
   const vehicle = await prisma.vehicle.create({
