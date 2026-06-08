@@ -64,8 +64,44 @@ model Vehicle {
   status      String   @default("available")
   soldAt      DateTime?
   soldTo      String?
+  series        String?  // 车系
+  engineNo      String?  // 发动机号后6位
+  keyCount      Int?     // 钥匙数量
+  // ─── 多品类扩展字段 ───
+  bodyStyle     String?  // 车身类型：SEDAN/SUV/MPV/HATCHBACK/WAGON/COUPE/PICKUP
+  exteriorColor String?  // 外观颜色
+  interiorColor String?  // 内饰颜色
+  fuelType      String?  // 燃油类型：PETROL/DIESEL/HYBRID/ELECTRIC/PLUGIN_HYBRID/CNG/LPG
+  displacement  Float?   // 排量(L)
+  // ─── 新能源 ───
+  batteryType   String?  // 电池类型
+  rangeKm       Int?     // 续航里程(km)
+  motorPowerKw  Float?   // 电机功率(kW)
+  // ─── 卡车/客车 ───
+  loadCapacityTons Float? // 载重(吨)
+  seatCount        Int?   // 座位数
+  vehicleLengthM   Float? // 车身长度(米)
+  // ─── 工程机械 ───
+  equipmentType  String? // 设备子类型
+  workingHours   Int?    // 工作小时数
+  tonnage        Float?  // 吨位
+  engineModel    String? // 发动机型号
+  // ─── 摩托车 ───
+  displacementCc Int?    // 排量(cc)
+  motorcycleType String? // 类型：街车/越野/踏板/三轮
+  // ─── 汽车配件 ───
+  partCategory   String? // 配件类别
+  partCondition  String? // 成色：NEW/USED/REFURBISHED
+  compatibleModels String? // 适用车型
+  quantity       Int?    // 数量
+  // ─── 源数据追溯 ───
   dealerId    String?
   dealer      User?    @relation(fields: [dealerId], references: [id])
+  sourceId       String? // 国内站车辆ID（用于同步追踪）
+  sourceSite     String? // 来源：domestic 等
+  specsJson      String? // 完整规格JSON（从xlsx匹配的详细参数）
+  originalPrice  Float?  // 原始RMB价格（用于追溯）
+  uploadedAt     DateTime @default(now())
   published   Boolean  @default(true)
   featured    Boolean  @default(false)
   description String?
