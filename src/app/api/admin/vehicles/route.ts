@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/adminAuth";
+import { calcPrice } from "@/lib/pricing";
 
 /** 校验 Blob URL 格式 */
 function isValidBlobUrl(url: string): boolean {
@@ -67,10 +68,10 @@ export async function POST(req: NextRequest) {
       supplier: data.supplier,
       location: data.location || "China",
       images,
-      basePrice: Number(data.basePrice) || 0,
-      markup: Number(data.markup) || 0,
-      salePrice: (Number(data.basePrice) || 0) + (Number(data.markup) || 0),
-      profit: Number(data.markup) || 0,
+      ...(() => {
+        const p = calcPrice(Number(data.basePrice) || 0);
+        return { basePrice: p.basePrice, markup: p.markup, salePrice: p.salePrice, profit: p.profit };
+      })(),
       description: data.description,
       published: data.published !== false,
       featured: data.featured || false,
@@ -99,16 +100,12 @@ export async function PATCH(req: NextRequest) {
     }
   }
 
-  if (data.basePrice !== undefined || data.markup !== undefined) {
-    const current = await prisma.vehicle.findUnique({ where: { id } });
-    if (current) {
-      const basePrice = data.basePrice !== undefined ? Number(data.basePrice) : current.basePrice;
-      const markup = data.markup !== undefined ? Number(data.markup) : current.markup;
-      update.basePrice = basePrice;
-      update.markup = markup;
-      update.salePrice = basePrice + markup;
-      update.profit = markup;
-    }
+  if (data.basePrice !== undefined) {
+    const p = calcPrice(Number(data.basePrice) || 0);
+    update.basePrice = p.basePrice;
+    update.markup = p.markup;
+    update.salePrice = p.salePrice;
+    update.profit = p.profit;
   }
   const vehicle = await prisma.vehicle.update({ where: { id }, data: update });
   return NextResponse.json({ vehicle });

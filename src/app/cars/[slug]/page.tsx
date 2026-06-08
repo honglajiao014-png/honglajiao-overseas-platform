@@ -232,7 +232,7 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
                   <span className="text-3xl font-extrabold text-danger">${vehicle.price.toLocaleString()}</span>
                   <span className="text-xs text-gray-400">FOB</span>
                 </div>
-                <p className="text-[11px] text-gray-400 mb-6">Price excludes shipping &amp; destination charges</p>
+                <p className="text-[11px] text-gray-400 mb-6">裸车价 · Base vehicle price only · Excludes shipping, insurance &amp; duties</p>
 
                 {/* Quick Info Grid */}
                 <div className="bg-gray-50 rounded-xl p-4 mb-6">

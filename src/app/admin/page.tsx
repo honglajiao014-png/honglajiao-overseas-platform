@@ -716,8 +716,18 @@ export default function AdminDashboard() {
           <div><label className="text-xs text-gray-500">车型</label><input value={form.model} onChange={e => setForm(f => ({ ...f, model: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
           <div><label className="text-xs text-gray-500">年份</label><input type="number" value={form.year} onChange={e => setForm(f => ({ ...f, year: +e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
           <div><label className="text-xs text-gray-500">里程</label><input value={form.mileage ?? ""} onChange={e => setForm(f => ({ ...f, mileage: +e.target.value || null }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
-          <div><label className="text-xs text-gray-500">底价</label><input type="number" value={form.basePrice} onChange={e => setForm(f => ({ ...f, basePrice: +e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
-          <div><label className="text-xs text-gray-500">利润(Markup)</label><input type="number" value={form.markup} onChange={e => setForm(f => ({ ...f, markup: +e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
+          <div><label className="text-xs text-gray-500">底价 $</label><input type="number" value={form.basePrice} onChange={e => setForm(f => ({ ...f, basePrice: +e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
+          <div>
+            <label className="text-xs text-gray-500">预计售价（自动计算）</label>
+            <div className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1 bg-gray-50 text-accent font-bold">
+              ${(() => {
+                const bp = form.basePrice || 0;
+                const rate = bp <= 5000 ? 0.45 : bp <= 10000 ? 0.35 : bp <= 20000 ? 0.28 : bp <= 50000 ? 0.22 : bp <= 100000 ? 0.18 : 0.15;
+                const sale = bp + Math.round(bp * rate);
+                return `${sale.toLocaleString()} USD`;
+              })()}
+            </div>
+          </div>
           <div><label className="text-xs text-gray-500">变速箱</label><input value={form.transmission ?? ""} onChange={e => setForm(f => ({ ...f, transmission: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
           <div><label className="text-xs text-gray-500">燃料类型</label><input value={form.fuel ?? ""} onChange={e => setForm(f => ({ ...f, fuel: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
           <div className="col-span-2"><label className="text-xs text-gray-500">描述</label><textarea value={form.description ?? ""} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={3} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
@@ -733,7 +743,7 @@ export default function AdminDashboard() {
   // ===== New Vehicle Modal =====
   const NewVehicleModal = () => {
     if (!showNewVehicle) return null;
-    const [form, setForm] = useState({ brand: "", model: "", year: 2024, type: "Used Passenger Car", mileage: 0, transmission: "Automatic", fuel: "Petrol", basePrice: 0, markup: 0, description: "" });
+    const [form, setForm] = useState({ brand: "", model: "", year: 2024, type: "Used Passenger Car", mileage: 0, transmission: "Automatic", fuel: "Petrol", basePrice: 0, description: "" });
     const [saving, setSaving] = useState(false);
 
     const create = async () => {
@@ -765,8 +775,18 @@ export default function AdminDashboard() {
             <select value={form.fuel} onChange={e => setForm(f => ({ ...f, fuel: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1">
               <option>Petrol</option><option>Diesel</option><option>Electric</option><option>Hybrid</option>
             </select></div>
-          <div><label className="text-xs text-gray-500">底价 *</label><input type="number" value={form.basePrice} onChange={e => setForm(f => ({ ...f, basePrice: +e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
-          <div><label className="text-xs text-gray-500">利润</label><input type="number" value={form.markup} onChange={e => setForm(f => ({ ...f, markup: +e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
+          <div><label className="text-xs text-gray-500">底价 $ *</label><input type="number" value={form.basePrice} onChange={e => setForm(f => ({ ...f, basePrice: +e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
+          <div>
+            <label className="text-xs text-gray-500">预计售价（自动计算）</label>
+            <div className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1 bg-green-50 text-accent font-bold">
+              ${(() => {
+                const bp = form.basePrice || 0;
+                const rate = bp <= 5000 ? 0.45 : bp <= 10000 ? 0.35 : bp <= 20000 ? 0.28 : bp <= 50000 ? 0.22 : bp <= 100000 ? 0.18 : 0.15;
+                const sale = bp + Math.round(bp * rate);
+                return `${sale.toLocaleString()} USD`;
+              })()}
+            </div>
+          </div>
           <div className="col-span-2"><label className="text-xs text-gray-500">描述</label><textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={3} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
         </div>
         <div className="flex justify-end gap-3 mt-6">

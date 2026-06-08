@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/adminAuth";
+import { calcPrice } from "@/lib/pricing";
 
 // GET /api/admin/specs?brand=奥迪&model=Q3 — auto-match vehicle spec
 export async function GET(req: NextRequest) {
@@ -62,7 +63,7 @@ export async function POST(req: NextRequest) {
 
   const slug = `${brand}-${model}-${year}-${Date.now()}`.toLowerCase().replace(/\s+/g, "-");
   const bp = Number(basePrice) || 0;
-  const mk = Number(markup) || 0;
+  const p = calcPrice(bp);
 
   const vehicle = await prisma.vehicle.create({
     data: {
@@ -79,10 +80,10 @@ export async function POST(req: NextRequest) {
       supplier: rest.supplier || null,
       location: rest.location || "China",
       images: rest.images || [],
-      basePrice: bp,
-      markup: mk,
-      salePrice: bp + mk,
-      profit: mk,
+      basePrice: p.basePrice,
+      markup: p.markup,
+      salePrice: p.salePrice,
+      profit: p.profit,
       description: rest.description || null,
       published: true,
       featured: rest.featured || false,
