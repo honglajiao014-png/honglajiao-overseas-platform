@@ -9,8 +9,20 @@ import { T } from "@/i18n/translations";
 
 export const dynamic = "force-dynamic";
 
+// 服务端读取语言
+async function getLang(): Promise<"en" | "fr" | "es" | "zh"> {
+  try {
+    const ck = await cookies();
+    const v = ck.get("hlj-lang");
+    if (v && ["en", "fr", "es", "zh"].includes(v.value)) return v.value as "en" | "fr" | "es" | "zh";
+  } catch {}
+  return "en";
+}
+
 export default async function CarDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const lang = await getLang();
+  const t = tServer(lang);
 
   const vehicle = await prisma.vehicle.findUnique({
     where: { slug },
@@ -52,12 +64,7 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
     notFound();
   }
 
-  // 读取语言 cookie
-  const cookieStore = await cookies();
-  const lang = (cookieStore.get("hlj-lang")?.value || "en") as "en" | "fr" | "es" | "zh";
-  const t = tServer(lang);
-
-  // 品类标签（翻译）
+  // 品类标签
   const categoryLabel = vehicle.equipmentType
     ? `${t(T.details.machinery)} - ${vehicle.equipmentType}`
     : vehicle.motorcycleType
@@ -70,26 +77,19 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
     ? t(T.details.newEnergy)
     : t(T.details.usedPassengerCar);
 
-  // 格式化里程
   const formatMileage = (km: number | null) => {
     if (!km) return "-";
-    if (lang === "zh") {
-      return km >= 10000 ? `${(km / 10000).toFixed(1)}万${t(T.details.km)}` : `${km.toLocaleString()}${t(T.details.km)}`;
-    }
+    if (lang === "zh") return km >= 10000 ? `${(km / 10000).toFixed(1)}万${t(T.details.km)}` : `${km.toLocaleString()}${t(T.details.km)}`;
     return `${km.toLocaleString()} ${t(T.details.km)}`;
   };
 
-  // 确定转向翻译
-  const steeringLabel = vehicle.steering?.toUpperCase() === "RHD"
-    ? t(T.details.rhd)
-    : t(T.details.lhd);
+  const steeringLabel = vehicle.steering?.toUpperCase() === "RHD" ? t(T.details.rhd) : t(T.details.lhd);
 
   return (
     <>
       <Header />
       <main className="bg-gray-50 min-h-screen">
         <div className="max-w-[1200px] mx-auto px-4 py-6">
-          {/* 面包屑 */}
           <div className="text-xs text-gray-400 mb-6">
             <Link href="/" className="hover:text-primary">{t(T.details.breadcrumbHome)}</Link>
             <span className="mx-2">›</span>
@@ -99,7 +99,6 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* 图片区 */}
             <div className="lg:col-span-7">
               <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
                 {vehicle.images && vehicle.images.length > 0 ? (
@@ -117,7 +116,6 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
               </div>
             </div>
 
-            {/* 信息区 */}
             <div className="lg:col-span-5">
               <div className="bg-white rounded-2xl border border-gray-200 p-6">
                 <span className="text-xs font-semibold text-accent bg-accent/10 px-3 py-1 rounded-full">
@@ -127,7 +125,6 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
                   {vehicle.brand} {vehicle.model} {vehicle.year}
                 </h1>
 
-                {/* 价格 */}
                 <div className="mt-6">
                   <div className="text-4xl font-extrabold text-danger">
                     ${vehicle.salePrice.toLocaleString()}
@@ -138,7 +135,6 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
                   </div>
                 </div>
 
-                {/* 规格表格 */}
                 <div className="mt-6 space-y-3">
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     <Spec label={t(T.details.specYear)} value={String(vehicle.year)} />
@@ -159,14 +155,12 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
                   </div>
                 </div>
 
-                {/* 描述 */}
                 {vehicle.description && (
                   <div className="mt-6 p-4 bg-gray-50 rounded-xl text-sm text-gray-600 whitespace-pre-wrap">
                     {vehicle.description}
                   </div>
                 )}
 
-                {/* CTA */}
                 <div className="mt-6 space-y-3">
                   <a
                     href={`/inquiry?slug=${vehicle.brand}-${vehicle.model}-${vehicle.year}`}
