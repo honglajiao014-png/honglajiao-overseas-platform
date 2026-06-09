@@ -13,7 +13,7 @@ import { openAsBlob } from "fs";
 import { prisma } from "@/lib/prisma";
 
 // 缓存 xlsx 数据到内存
-const XLSX_PATH = process.env.XLSX_PATH || "/Users/mj/Desktop/全部车型数据.xlsx";
+const XLSX_PATH = process.env.XLSX_PATH || "/Users/mj/Desktop/全部车型数据_AI增强版.xlsx";
 
 // ─── 数据库规格匹配（优先） ───
 
@@ -57,10 +57,15 @@ export function clearDbSpecCache() {
  * 从 VehicleSpec 表匹配规格
  * 匹配策略：品牌精确匹配 + 车型精确匹配（忽略空格和大小写）
  * 返回 { specsJson, specId } 或 null
+ *
+ * 新增 fallback：DB 没找到 → 调 matchSpecs(brand, null, null) 去 XLSX 匹配
+ *   → 匹配到了 �� prisma.vehicleSpec.create({ brand, model, specs }) → 返回
+ *   → 没匹配到 → 记录 UnmatchedSpec 表 → 返回 null
  */
 export async function matchSpecsFromDb(
   brand: string,
   model: string,
+  vehicleId?: string,
 ): Promise<{ specsJson: string; specId: string } | null> {
   const cache = await loadDbSpecs();
   const b = brand.trim().toLowerCase();
@@ -119,6 +124,41 @@ export async function matchSpecsFromDb(
   if (match) {
     return { specsJson: match.specs, specId: match.specId };
   }
+
+  // ─── DB 没找到 → fallback 到 XLSX 匹配 ───
+  try {
+    const xlsxSpecs = await matchSpecs(brand, null, null);
+    if (xlsxSpecs) {
+      // 匹配到了 → 自动写入 VehicleSpec 表
+      const specsJson = JSON.stringify(xlsxSpecs);
+      const created = await prisma.vehicleSpec.create({
+        data: {
+          brand: brand.trim(),
+          model: model.trim(),
+          specs: specsJson,
+        },
+      });
+      // 清除缓存让下次查询能命中
+      clearDbSpecCache();
+      console.log(`[SpecMatcher] XLSX 匹配成功并写入 DB: ${brand} ${model} → specId=${created.id}`);
+      return { specsJson, specId: created.id };
+    }
+
+    // XLSX 也没匹配到 → 记录 UnmatchedSpec
+    if (vehicleId || brand) {
+      await prisma.unmatchedSpec.create({
+        data: {
+          brand: brand.trim(),
+          model: model.trim(),
+          vehicleId: vehicleId || null,
+        },
+      });
+      console.log(`[SpecMatcher] 未匹配规格已记录: ${brand} ${model}`);
+    }
+  } catch (e: any) {
+    console.error(`[SpecMatcher] fallback 匹配异常: ${brand} ${model} — ${e?.message}`);
+  }
+
   return null;
 }
 
@@ -139,7 +179,7 @@ export async function loadXlsxSpecs(): Promise<SpecRow[]> {
   const startTime = Date.now();
 
   // Dynamic import of xlsx library
-  const XLSX = await import("xlsx");
+  const XLSX = (await import("xlsx")).default || (await import("xlsx"));
   const workbook = XLSX.readFile(XLSX_PATH);
   const sheet = workbook.Sheets[workbook.SheetNames[0]];
   const data = XLSX.utils.sheet_to_json<Record<string, string>>(sheet, { defval: "" });
