@@ -224,7 +224,7 @@ Orientez le client pour qu'il partage le port de destination et les détails de 
     },
   },
 
-  // ======================== 不满情绪 → escalate ========================
+  // ======================== 不满情绪 / 转人工 → escalate ========================
   {
     keywords: [
       "not helpful", "waste time", "waste of time", "useless",
@@ -233,31 +233,20 @@ Orientez le client pour qu'il partage le port de destination et les détails de 
       "manager", "supervisor", "complaint", "frustrated",
       "this is automated", "bot", "robot", "ai",
       "call me", "phone number", "phone call",
+      "agent", "talk to someone", "i want to speak", "connect me",
     ],
-    category: "dissatisfaction",
+    category: "escalation",
     reply: {
-      en: `I understand your frustration, and I'm sorry the automated assistant couldn't fully address your needs. Let me connect you with a real person.
+      en: `I'm connecting you to our team. Please leave your email or WhatsApp below, and we'll get back to you within 2 hours. Or email us directly: 511972546@qq.com
 
-Please leave your email address below, and our sales manager will personally reach out to you within 24 hours. You can also contact us directly:
+We take every inquiry seriously and a real person will handle your case personally. Thank you for your patience.`,
+      fr: `Je vous mets en relation avec notre équipe. Veuillez laisser votre e-mail ou WhatsApp ci-dessous, et nous vous répondrons dans les 2 heures. Ou écrivez-nous directement : 511972546@qq.com
 
-${CONTACT}
+Nous prenons chaque demande au sérieux et une personne réelle traitera votre dossier personnellement. Merci de votre patience.`,
+      ar: `سأقوم بتوصيلك بفريقنا. يرجى ترك بريدك الإلكتروني أو واتساب أدناه، وسنرد عليك في غضون ساعتين. أو راسلنا مباشرة على: 511972546@qq.com
 
-We take every inquiry seriously and will make sure you get the help you need. Thank you for your patience.`,
-      fr: `Je comprends votre frustration, et je suis désolé que l'assistant automatisé n'ait pas pu répondre pleinement à vos besoins. Laissez-moi vous mettre en relation avec une personne réelle.
-
-Veuillez laisser votre adresse e-mail ci-dessous, et notre responsable commercial vous contactera personnellement dans les 24 heures. Vous pouvez également nous contacter directement :
-
-${CONTACT}
-
-Nous prenons chaque demande au sérieux et nous assurerons que vous obteniez l'aide dont vous avez besoin. Merci de votre patience.`,
-      ar: `أتفهم إحباطك، وأنا آسف لأن المساعد الآلي لم يتمكن من تلبية احتياجاتك بالكامل. دعني أوصلك بشخص حقيقي.
-
-يرجى ترك عنوان بريدك الإلكتروني أدناه، وسيتواصل معك مدير المبيعات لدينا شخصيًا خلال 24 ساعة. يمكنك أيضًا التواصل معنا مباشرة:
-
-${CONTACT}
-
-نحن نأخذ كل استفسار على محمل الجد وسنتأكد من حصولك على المساعدة التي تحتاجها. شكرًا لصبرك.`,
-      zh: `我理解您的不满，很抱歉自动助手没能完全解决您的问题。请留下您的邮箱，我们的销售经理会在24小时内亲自联系您。您也可以直接联系我们：${CONTACT}。我们重视每一个询盘，一定会确保您得到需要的帮助。感谢您的耐心。`,
+نحن نأخذ كل استفسار على محمل الجد وسيتولى شخص حقيقي متابعة حالتك شخصيًا. شكرًا لصبرك.`,
+      zh: `正在为您转接团队。请留下您的邮箱或WhatsApp，我们会在2小时内回复您。或直接发邮件至：511972546@qq.com。我们重视每一个询盘，真人客服将亲自处理您的需求。感谢您的耐心。`,
     },
     action: "escalate",
   },

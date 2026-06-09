@@ -137,11 +137,52 @@ export async function POST(req: NextRequest) {
       keywordContext += ctx + "\n\n";
     }
 
-    // 如果触发 escalate，直接返回模板回复
+    // 如果触发 escalate，创建 lead + 发邮件 + 返回模板回复
     if (escalateReply) {
       await prisma.chatMessage.create({
         data: { sessionId: session.id, role: "bot", content: escalateReply },
       });
+
+      // 自动创建/更新 CustomerLead
+      const chatSummary = history.slice(-6).map(m => `${m.role === "user" ? "客户" : "客服"}: ${m.content.substring(0, 150)}`).join("\n");
+      const profileParts: string[] = [];
+      if (session.country) profileParts.push(`Country: ${session.country}`);
+      if (session.vehicleReq) profileParts.push(`Vehicle: ${session.vehicleReq}`);
+      if (session.budget) profileParts.push(`Budget: ${session.budget}`);
+      if (session.quantity != null) profileParts.push(`Quantity: ${session.quantity}`);
+      const profileSummary = profileParts.length > 0 ? profileParts.join(" | ") : "No profile data";
+
+      // 尝试从对话中提取邮箱
+      const escalateEmailMatch = allText.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+      const escalateEmail = escalateEmailMatch ? escalateEmailMatch[0] : null;
+
+      if (escalateEmail) {
+        const existingLead = await prisma.customerLead.findFirst({ where: { email: escalateEmail } });
+        if (!existingLead) {
+          await prisma.customerLead.create({
+            data: {
+              email: escalateEmail,
+              source: "chat_escalation",
+              intentLevel: Math.max(session.intentLevel ?? 0, 3),
+              country: session.country,
+              vehicleReq: session.vehicleReq,
+              budget: session.budget,
+              quantity: session.quantity,
+              notes: `Escalation from chat session: ${sessionId}\nProfile: ${profileSummary}\n\nChat:\n${chatSummary}`,
+            },
+          });
+        }
+      }
+
+      // 发邮件通知（不管有没有邮箱都发，至少通知团队有人要转人工）
+      sendLeadNotification({
+        email: escalateEmail || "unknown",
+        intentLevel: Math.max(session.intentLevel ?? 0, 3),
+        country: session.country || undefined,
+        vehicleReq: session.vehicleReq || undefined,
+        chatSummary: `[ESCALATION] 客户要求转人工\n\n客户画像: ${profileSummary}\n\n对话摘要:\n${chatSummary}`,
+      });
+
       return NextResponse.json({ reply: escalateReply });
     }
 
@@ -174,6 +215,50 @@ export async function POST(req: NextRequest) {
 
     if (!reply) {
       reply = CHAT_TEMPLATES.emptyReply.en;
+    }
+
+    // ======================== 自动 escalate 检测 ========================
+    // 1. 千问连续 3 轮回复为空或过短（<20字符）
+    const recentBotMsgs = session.ChatMessage.filter(m => m.role === "bot").slice(-2); // 前2轮 bot 回复
+    const shortCount = recentBotMsgs.filter(m => m.content.length < 20).length + (reply.length < 20 ? 1 : 0);
+    if (shortCount >= 3) {
+      // 触发自动 escalate
+      const escalateMsg = (lang === "fr" || lang === "ar" || lang === "zh")
+        ? (CHAT_TEMPLATES.escalationAuto?.[lang as "en"|"fr"|"ar"|"zh"] || CHAT_TEMPLATES.escalationAuto?.en)
+        : CHAT_TEMPLATES.escalationAuto?.en;
+      if (escalateMsg) {
+        reply = escalateMsg;
+        // 发邮件通知
+        const chatSummary = history.slice(-6).map(m => `${m.role === "user" ? "客户" : "客服"}: ${m.content.substring(0, 150)}`).join("\n");
+        sendLeadNotification({
+          email: "auto-escalate@internal",
+          intentLevel: Math.max(session.intentLevel ?? 0, 2),
+          country: session.country || undefined,
+          vehicleReq: session.vehicleReq || undefined,
+          chatSummary: `[AUTO-ESCALATE] 千问连续 ${shortCount} 轮回复过短\n\n对话摘要:\n${chatSummary}`,
+        });
+      }
+    }
+
+    // 2. 客户连续 2 次表达不满 → 自动 escalate
+    const dissatisfactionKeywords = ["not helpful", "waste time", "useless", "stupid", "bad", "terrible", "rubbish", "garbage", "i want to speak", "connect me", "real person", "human"];
+    const userMsgs = history.filter(m => m.role === "user");
+    const recentDissatisfied = userMsgs.slice(-2).filter(m => dissatisfactionKeywords.some(kw => m.content.toLowerCase().includes(kw)));
+    if (recentDissatisfied.length >= 2 && !escalateReply) {
+      const escalateMsg2 = (lang === "fr" || lang === "ar" || lang === "zh")
+        ? (CHAT_TEMPLATES.escalationAuto?.[lang as "en"|"fr"|"ar"|"zh"] || CHAT_TEMPLATES.escalationAuto?.en)
+        : CHAT_TEMPLATES.escalationAuto?.en;
+      if (escalateMsg2) {
+        reply = escalateMsg2;
+        const chatSummary = history.slice(-6).map(m => `${m.role === "user" ? "客户" : "客服"}: ${m.content.substring(0, 150)}`).join("\n");
+        sendLeadNotification({
+          email: "auto-escalate@internal",
+          intentLevel: Math.max(session.intentLevel ?? 0, 3),
+          country: session.country || undefined,
+          vehicleReq: session.vehicleReq || undefined,
+          chatSummary: `[AUTO-ESCALATE] 客户连续表达不满\n\n对话摘要:\n${chatSummary}`,
+        });
+      }
     }
 
     // 保存 AI 回复

@@ -8,6 +8,7 @@ export interface ChatTemplate {
   en: string;
   fr: string;
   ar: string;
+  zh?: string;
 }
 
 export const CHAT_TEMPLATES: Record<string, ChatTemplate> = {
@@ -273,6 +274,20 @@ Bonne journée !`,
     fr: `Désolé, notre assistant IA est temporairement indisponible. Veuillez nous contacter directement :\n${CONTACT}\n\nNous vous répondrons dans les 24 heures.`,
 
     ar: `عذرًا، مساعدنا الذكي غير متاح مؤقتًا. يرجى التواصل معنا مباشرة:\n${CONTACT}\n\nسنرد عليك خلال 24 ساعة.`,
+  },
+
+  // ======================== 自动转人工兜底 ========================
+  escalationAuto: {
+    en: `I'm transferring you to our team for better assistance. Please leave your email or WhatsApp below, and we'll get back to you within 2 hours. Or email us directly: 511972546@qq.com
+
+A real person will review your conversation and follow up personally. Thank you for your patience.`,
+    fr: `Je vous transfère à notre équipe pour une meilleure assistance. Veuillez laisser votre e-mail ou WhatsApp ci-dessous, et nous vous répondrons dans les 2 heures. Ou écrivez-nous directement : 511972546@qq.com
+
+Une personne réelle examinera votre conversation et vous répondra personnellement. Merci de votre patience.`,
+    ar: `سأقوم بتحويلك إلى فريقنا للحصول على مساعدة أفضل. يرجى ترك بريدك الإلكتروني أو واتساب أدناه، وسنرد عليك في غضون ساعتين. أو راسلنا مباشرة على: 511972546@qq.com
+
+سيقوم شخص حقيقي بمراجعة محادثتك والمتابعة شخصيًا. شكرًا لصبرك.`,
+    zh: `正在为您转接团队以获得更好的帮助。请留下您的邮箱或WhatsApp，我们会在2小时内回复您。或直接发邮件至：511972546@qq.com。真人客服将查看您的对话记录并亲自跟进。感谢您的耐心。`,
   },
 
   // ======================== 空回复兜底 ========================
