@@ -86,6 +86,7 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
   const { slug: rawSlug } = await params;
   // Next.js 对含中文的 URL 可能不解码 params，手动 decode
   const slug = decodeURIComponent(rawSlug);
+  console.log("[CarDetailPage] rawSlug:", rawSlug, "decoded:", slug);
   const lang = await detectLang();
   const d = (k: Trans) => tr(k, lang);
 
