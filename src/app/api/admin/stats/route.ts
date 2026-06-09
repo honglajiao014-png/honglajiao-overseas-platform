@@ -37,10 +37,10 @@ export async function GET(req: NextRequest) {
         _count: { id: true },
       }),
       prisma.customerLead.count({ where: { emailSent: true } }),
-      prisma.vehicle.count({ where: { status: "SUBMITTED" } }),
-      prisma.vehicle.count({ where: { status: { in: ["APPROVED", "PUBLISHED"] } } }),
+      prisma.vehicle.count({ where: { status: "SUBMITTED", deleted: false } }),
+      prisma.vehicle.count({ where: { status: { in: ["APPROVED", "PUBLISHED"] }, deleted: false } }),
       prisma.user.count({ where: { role: "DEALER" } }),
-      prisma.vehicle.count({ where: { createdAt: { gte: todayStart, lt: todayEnd } } }),
+      prisma.vehicle.count({ where: { createdAt: { gte: todayStart, lt: todayEnd }, deleted: false } }),
     ]);
 
     const leadsByIntent: Record<number, number> = {};

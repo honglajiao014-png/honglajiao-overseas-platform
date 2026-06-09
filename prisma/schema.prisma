@@ -136,6 +136,7 @@ model Vehicle {
   dealerId         String?
   published        Boolean      @default(true)
   featured         Boolean      @default(false)
+  deleted          Boolean      @default(false)
   description      String?
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt

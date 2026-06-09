@@ -22,6 +22,7 @@ export async function GET(req: NextRequest) {
   const admin = requireAdmin(req);
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const vehicles = await prisma.vehicle.findMany({
+    where: { deleted: false },
     orderBy: { createdAt: "desc" },
     include: { User: { select: { name: true, company: true } } },
   });
@@ -52,12 +53,13 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // 去重：检查是否已存在相同 brand + model + year 的车辆
+  // 去重：检查是否已存在相同 brand + model + year 且未删除的车辆
   const existing = await prisma.vehicle.findFirst({
     where: {
       brand: data.brand,
       model: data.model,
       year: Number(data.year),
+      deleted: false,
     },
   });
   if (existing) {
@@ -180,7 +182,7 @@ export async function PATCH(req: NextRequest) {
   return NextResponse.json({ vehicle });
 }
 
-// 删除车辆（级联删除关联数据）
+// 软删除车辆（标记删除，不真删数据，防止 sync 复活）
 export async function DELETE(req: NextRequest) {
   const admin = requireAdmin(req);
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -196,12 +198,17 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ error: "车辆不存在" }, { status: 404 });
   }
 
-  // 级联删除：先删关联的询价和订单，再删车辆
+  // 级联删除关联的询价和订单（这些是真删）
   const deletedInquiries = await prisma.inquiry.deleteMany({ where: { vehicleId: id } });
   const deletedOrders = await prisma.order.deleteMany({ where: { vehicleId: id } });
-  await prisma.vehicle.delete({ where: { id } });
 
-  console.log(`[admin/vehicles] 删除车辆 ${vehicle.brand} ${vehicle.model} (${vehicle.year})，级联删除 ${deletedInquiries.count} 条询价、${deletedOrders.count} 条订单`);
+  // 软删除：标记 deleted=true + 下架
+  await prisma.vehicle.update({
+    where: { id },
+    data: { deleted: true, published: false },
+  });
+
+  console.log(`[admin/vehicles] 软删除车辆 ${vehicle.brand} ${vehicle.model} (${vehicle.year})，级联删除 ${deletedInquiries.count} 条询价、${deletedOrders.count} 条订单`);
 
   return NextResponse.json({
     success: true,
@@ -209,6 +216,7 @@ export async function DELETE(req: NextRequest) {
       vehicle: `${vehicle.brand} ${vehicle.model} (${vehicle.year})`,
       deletedInquiries: deletedInquiries.count,
       deletedOrders: deletedOrders.count,
+      message: "已标记删除，sync 不会再复活此车辆",
     },
   });
 }

@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   const offset = Number(searchParams.get("offset")) || 0;
   const sort = searchParams.get("sort") || "newest";
 
-  const where: any = { published: true };
+  const where: any = { published: true, deleted: false };
 
   if (brand) {
     where.brand = { contains: brand, mode: "insensitive" };

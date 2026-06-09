@@ -94,7 +94,7 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
   };
 
   const vehicle = await prisma.vehicle.findUnique({
-    where: { slug },
+    where: { slug, deleted: false },
     select: {
       brand: true, model: true, year: true, type: true, dealerId: true,
       mileage: true, transmission: true, fuel: true,
@@ -123,6 +123,7 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
           slug: { not: slug },
           status: { in: ["available", "APPROVED", "PUBLISHED"] },
           published: true,
+          deleted: false,
         },
         select: {
           slug: true, brand: true, model: true, year: true,

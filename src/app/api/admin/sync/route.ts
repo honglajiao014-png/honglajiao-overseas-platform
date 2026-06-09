@@ -165,6 +165,11 @@ export async function POST(req: NextRequest) {
       if (v.sourceId) {
         const existing = await prisma.vehicle.findFirst({ where: { sourceId: v.sourceId } });
         if (existing) {
+          // 已标记删除的车辆跳过，不更新（防止手动删除后被 sync 复活）
+          if (existing.deleted) {
+            results.push({ success: true, slug: existing.slug, brand: v.brand, model: v.model });
+            continue;
+          }
           // 更新已有车辆
           await prisma.vehicle.update({
             where: { id: existing.id },
