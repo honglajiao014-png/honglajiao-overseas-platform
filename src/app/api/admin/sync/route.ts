@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { calcPrice } from "@/lib/pricing";
+import { matchSpecsFromDb } from "@/lib/specMatcher";
 import { requireAdmin } from "@/lib/adminAuth";
 
 // ─── 国内站 VehicleStatus 映射 ───
@@ -141,6 +142,18 @@ export async function POST(req: NextRequest) {
       const basePriceUSD = Math.round((v.originalRmbPrice || 0) / rate);
       const pricing = calcPrice(basePriceUSD);
 
+      // 1.5 规格匹配
+      let specsJson: string | null = v.specsJson || null;
+      if (!specsJson) {
+        const specMatch = await matchSpecsFromDb(v.brand, v.model);
+        if (specMatch) {
+          specsJson = specMatch.specsJson;
+          console.log(`[Sync] 规格匹配成功: ${v.brand} ${v.model} → specId=${specMatch.specId}`);
+        } else {
+          console.log(`[Sync] 规格未匹配: ${v.brand} ${v.model}`);
+        }
+      }
+
       // 2. 生成 slug（中文转拼音近似）
       const slugBrand = v.brand
         .replace(/奥迪/g, "audi").replace(/宝马/g, "bmw").replace(/奔驰/g, "mercedes")
@@ -210,7 +223,7 @@ export async function POST(req: NextRequest) {
               compatibleModels: v.compatibleModels || null,
               quantity: v.quantity || null,
               displacement: v.displacement || null,
-              specsJson: v.specsJson || null,
+              specsJson: specsJson,
               originalPrice: v.originalRmbPrice || 0,
               description: v.description || null,
               published: true,
@@ -261,7 +274,7 @@ export async function POST(req: NextRequest) {
           compatibleModels: v.compatibleModels || null,
           quantity: v.quantity || null,
           displacement: v.displacement || null,
-          specsJson: v.specsJson || null,
+          specsJson: specsJson,
           originalPrice: v.originalRmbPrice || 0,
           description: v.description || null,
           sourceId: v.sourceId || null,
