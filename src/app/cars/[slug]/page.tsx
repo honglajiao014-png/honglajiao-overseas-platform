@@ -97,6 +97,7 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
     return `${km.toLocaleString()} ${kmU}`;
   };
 
+  // 先单独查 vehicle，不带 VehicleSpec 关联（避免 PrismaNeon adapter 兼容问题）
   const vehicle = await prisma.vehicle.findUnique({
     where: { slug, deleted: false },
     select: {
@@ -115,13 +116,22 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
       maxTorqueNm: true, wheelbase: true, curbWeight: true,
       fuelConsumption: true, fuelTankCapacity: true, fuelGrade: true,
       specId: true,
-      VehicleSpec: { select: { specs: true } },
     },
   });
 
   console.log("[CarDetailPage] vehicle found:", !!vehicle);
 
   if (!vehicle) notFound();
+
+  // 单独查 VehicleSpec（避免关联查询在 PrismaNeon adapter 下返回 null）
+  let vehicleSpec: { specs: any } | null = null;
+  if (vehicle.specId) {
+    vehicleSpec = await prisma.vehicleSpec.findUnique({
+      where: { id: vehicle.specId },
+      select: { specs: true },
+    });
+    console.log("[CarDetailPage] vehicleSpec found:", !!vehicleSpec);
+  }
 
   // 同车商其他车辆
   const dealerVehicles = vehicle.dealerId
@@ -156,7 +166,7 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
   // 解析 specsJson 获取 features 和详细参数
   // 优先用 VehicleSpec.specs（结构化 JSON），fallback 到 vehicle.specsJson（原始 XLSX 行数据）
   let specsData: any = null;
-  const rawSpecs = vehicle.VehicleSpec?.specs || vehicle.specsJson;
+  const rawSpecs = vehicleSpec?.specs || vehicle.specsJson;
   if (rawSpecs) {
     try { specsData = typeof rawSpecs === "string" ? JSON.parse(rawSpecs) : rawSpecs; } catch {}
   }
