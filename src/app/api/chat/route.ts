@@ -12,8 +12,22 @@ function getSystemPrompt(lang: string): string {
   return CHAT_TEMPLATES.systemRole[templateLang as "en" | "fr" | "ar"] + "\n\nCurrent conversation:";
 }
 
-function buildPrompt(history: { role: string; content: string }[], lang: string): string {
-  const system = getSystemPrompt(lang);
+function buildPrompt(
+  history: { role: string; content: string }[],
+  lang: string,
+  profile?: { country?: string | null; vehicleReq?: string | null; budget?: string | null; quantity?: number | null },
+): string {
+  // 注入客户画像到 system prompt
+  let system = getSystemPrompt(lang);
+  const profileParts: string[] = [];
+  if (profile?.country) profileParts.push(`Country=${profile.country}`);
+  if (profile?.vehicleReq) profileParts.push(`Vehicle=${profile.vehicleReq}`);
+  if (profile?.budget) profileParts.push(`Budget=${profile.budget}`);
+  if (profile?.quantity != null) profileParts.push(`Quantity=${profile.quantity}`);
+  if (profileParts.length > 0) {
+    system = `Customer profile: ${profileParts.join(", ")}\n\n` + system;
+  }
+
   const messages = [{ role: "system", content: system }];
   for (const m of history.slice(-10)) {
     if (m.role === "system") continue;
@@ -132,7 +146,12 @@ export async function POST(req: NextRequest) {
     }
 
     // 把关键词上下文注入系统提示
-    const prompt = buildPrompt(history, lang) + (keywordContext ? "\n\n" + keywordContext : "");
+    const prompt = buildPrompt(history, lang, {
+      country: session.country,
+      vehicleReq: session.vehicleReq,
+      budget: session.budget,
+      quantity: session.quantity,
+    }) + (keywordContext ? "\n\n" + keywordContext : "");
 
     // 调用本地千问
     let reply = "";
@@ -166,18 +185,19 @@ export async function POST(req: NextRequest) {
     const intentResult = detectIntent([...session.ChatMessage.map(m => ({ role: m.role, content: m.content })), { role: "user", content: message }, { role: "bot", content: reply }]);
     const newLevel = intentResult.level;
 
-    // 提取客户字段
+    // 提取客户字段（从完整对话文本中提取，含 AI 回复）
     const sessionUpdate: Record<string, unknown> = {};
     if (newLevel > (session?.intentLevel ?? 0)) {
       sessionUpdate.intentLevel = newLevel;
     }
-    const country = extractCountry(allText);
+    const extractText = allText + " " + reply.toLowerCase();
+    const country = extractCountry(extractText);
     if (country && !session.country) sessionUpdate.country = country;
-    const vehicle = extractVehicle(allText);
+    const vehicle = extractVehicle(extractText);
     if (vehicle && !session.vehicleReq) sessionUpdate.vehicleReq = vehicle;
-    const budget = extractBudget(allText);
+    const budget = extractBudget(extractText);
     if (budget && !session.budget) sessionUpdate.budget = budget;
-    const quantity = extractQuantity(allText);
+    const quantity = extractQuantity(extractText);
     if (quantity && !session.quantity) sessionUpdate.quantity = quantity;
 
     if (Object.keys(sessionUpdate).length > 0) {
