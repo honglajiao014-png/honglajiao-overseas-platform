@@ -94,6 +94,9 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
     return `${km.toLocaleString()} ${kmU}`;
   };
 
+  // DEBUG: 临时调试日志
+  console.log("[CarDetailPage] slug from params:", JSON.stringify(slug));
+
   const vehicle = await prisma.vehicle.findUnique({
     where: { slug, deleted: false },
     select: {
@@ -115,6 +118,8 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
       VehicleSpec: { select: { specs: true } },
     },
   });
+
+  console.log("[CarDetailPage] vehicle found:", !!vehicle);
 
   if (!vehicle) notFound();
 
