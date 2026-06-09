@@ -198,6 +198,8 @@ model VehicleSpec {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   Vehicle      Vehicle[]
+
+  @@unique([brand, model])
 }
 
 model VerificationCode {

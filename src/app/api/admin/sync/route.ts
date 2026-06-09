@@ -167,6 +167,7 @@ export async function POST(req: NextRequest) {
         if (existing) {
           // 已标记删除的车辆跳过，不更新（防止手动删除后被 sync 复活）
           if (existing.deleted) {
+            console.log(`[Sync] 跳过已删除: ${v.sourceId} (slug=${existing.slug})`);
             results.push({ success: true, slug: existing.slug, brand: v.brand, model: v.model });
             continue;
           }
