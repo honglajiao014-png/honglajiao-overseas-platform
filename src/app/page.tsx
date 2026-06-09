@@ -9,8 +9,6 @@ import { useT, T } from "@/i18n/useT";
 import { useLang } from "@/i18n/LangContext";
 import { BRANDS, PRICE_RANGES, CAR_LEVELS, AGE_RANGES, SORT_OPTIONS } from "@/data/brands";
 
-const BRAND_SHOW_COUNT = 20;
-
 export default function Home() {
   const t = useT();
   const { lang } = useLang();
@@ -36,7 +34,6 @@ export default function Home() {
 
   // 筛选状态
   const [brandFilter, setBrandFilter] = useState<string>("");
-  const [brandShowAll, setBrandShowAll] = useState(false);
   const [priceRange, setPriceRange] = useState<number>(-1);
   const [levelFilter, setLevelFilter] = useState<string>("");
   const [ageRange, setAgeRange] = useState<number>(-1);
@@ -158,36 +155,77 @@ export default function Home() {
             </div>
           </div>
         </div>
+        {/* Hero 数据条 — 三个统计卡片 */}
+        <div className="bg-gray-100 border-b border-gray-200">
+          <div className="max-w-[1400px] mx-auto px-4 py-5">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
+              <div className="flex items-center gap-3 justify-center bg-white rounded-xl px-5 py-4 shadow-sm">
+                <span className="text-2xl">🚗</span>
+                <div>
+                  <div className="text-lg font-bold text-gray-900">
+                    {loading ? "..." : allVehicles.length.toLocaleString()}
+                  </div>
+                  <div className="text-sm text-gray-500">Verified Vehicles</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 justify-center bg-white rounded-xl px-5 py-4 shadow-sm">
+                <span className="text-2xl">🌍</span>
+                <div>
+                  <div className="text-lg font-bold text-gray-900">30+</div>
+                  <div className="text-sm text-gray-500">Countries Served</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 justify-center bg-white rounded-xl px-5 py-4 shadow-sm">
+                <span className="text-2xl">✅</span>
+                <div>
+                  <div className="text-lg font-bold text-gray-900">Verified</div>
+                  <div className="text-sm text-gray-500">Supplier Status</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* 筛选条件区域 */}
         <div className="bg-white border-b border-gray-200">
           <div className="max-w-[1400px] mx-auto px-4 py-6">
             <div className="mb-6">
-              {/* 品牌Logo网格 — 带收起/展开 */}
-              <div className="flex flex-wrap gap-1.5">
-                {(brandShowAll ? BRANDS : BRANDS.slice(0, BRAND_SHOW_COUNT)).map(b => (
-                  <button
-                    key={b.name}
-                    onClick={() => setBrandFilter(b.name)}
-                    className={`flex flex-col items-center gap-1 px-2.5 py-2 rounded-lg text-sm font-medium transition-all ${
-                      brandFilter === b.name
-                        ? "bg-white text-primary ring-2 ring-primary shadow-md scale-105"
-                        : "bg-gray-50 text-gray-600 hover:bg-gray-100 hover:shadow-sm"
-                    }`}
-                  >
-                    <BrandLogo brand={b} size={44} />
-                    <span className={brandFilter === b.name ? "font-bold text-center" : "text-center"}>{lang === "zh" ? b.name : b.nameEn}</span>
-                  </button>
-                ))}
-                {BRANDS.length > BRAND_SHOW_COUNT && (
-                  <button
-                    onClick={() => setBrandShowAll(!brandShowAll)}
-                    className="flex flex-col items-center justify-center gap-1 px-2.5 py-2 rounded-lg text-sm font-medium transition-all bg-gray-50 text-gray-400 hover:text-gray-600 hover:bg-gray-100"
-                    style={{ minWidth: 52, minHeight: 64 }}
-                  >
-                    <span className="text-xl">{brandShowAll ? "▲" : "▼"}</span>
-                    <span className="text-xs">{brandShowAll ? (lang === "zh" ? "收起" : "Less") : (lang === "zh" ? "全部" : "All")}</span>
-                  </button>
-                )}
+              {/* 品牌Logo自动轮播 — 纯CSS无限滚动 */}
+              <style jsx>{`
+                @keyframes brandScroll {
+                  0% { transform: translateX(0); }
+                  100% { transform: translateX(-50%); }
+                }
+                .brand-scroll-track {
+                  display: flex;
+                  gap: 0.375rem;
+                  width: max-content;
+                  animation: brandScroll 40s linear infinite;
+                }
+                .brand-scroll-track:hover {
+                  animation-play-state: paused;
+                }
+                .brand-scroll-wrapper {
+                  overflow: hidden;
+                }
+              `}</style>
+              <div className="brand-scroll-wrapper">
+                <div className="brand-scroll-track">
+                  {[...BRANDS, ...BRANDS].map((b, i) => (
+                    <button
+                      key={`${b.name}-${i}`}
+                      onClick={() => setBrandFilter(b.name)}
+                      className={`flex flex-col items-center gap-1 px-2.5 py-2 rounded-lg text-sm font-medium transition-all shrink-0 ${
+                        brandFilter === b.name
+                          ? "bg-white text-primary ring-2 ring-primary shadow-md scale-105"
+                          : "bg-gray-50 text-gray-600 hover:bg-gray-100 hover:shadow-sm"
+                      }`}
+                    >
+                      <BrandLogo brand={b} size={44} />
+                      <span className={brandFilter === b.name ? "font-bold text-center" : "text-center"}>{lang === "zh" ? b.name : b.nameEn}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
