@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import "./globals.css";
 import { ChatWidget } from "@/components/ChatWidget";
-import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { LangProvider } from "@/i18n/LangContext";
 
 // 强制动态渲染 — 确保 cookies() 在请求时执行，而非 build 时
@@ -116,7 +115,6 @@ export default async function RootLayout({
           <div style={{ animation: "fadeIn 0.2s ease-in" }}>
             {children}
             <ChatWidget />
-            <WhatsAppButton />
           </div>
         </LangProvider>
         {/* Organization 结构化数据 — JSON-LD Schema（body 底部，搜索引擎可解析） */}
