@@ -38,7 +38,7 @@ export default function MachineryPage() {
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mb-12">
             {MACHINERY_TYPES.map((m) => {
-              const label = t((T.machinery as Record<string, {en:string;fr:string;es:string;zh:string;ar:string;sw:string;pt:string}>)[m.key]);
+              const label = t((T.machinery as Record<string, {en:string;fr:string;ar:string;zh:string}>)[m.key]);
               return (
                 <div key={m.key} className="bg-dark-soft rounded-xl p-5 text-center border border-gray-800 hover:border-gold/30 transition-all group">
                   <span className="text-3xl block mb-2">{m.icon}</span>

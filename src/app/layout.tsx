@@ -8,7 +8,7 @@ import { LangProvider } from "@/i18n/LangContext";
 export const dynamic = "force-dynamic";
 
 // 本地常量，不引用 client module，避免 RSC 序列化成 client reference
-const LANGS = ["en", "fr", "es", "zh", "ar", "sw", "pt"] as const;
+const LANGS = ["en", "fr", "ar", "zh"] as const;
 const DEFAULT_LANG = "en";
 const RTL_LANGS = new Set(["ar"]);
 type Lang = (typeof LANGS)[number];
@@ -71,7 +71,7 @@ export const metadata: Metadata = {
     ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "ChinaCarExport | Used Car & Vehicle Export Sourcing from China",
     description:
       "Source used cars, commercial trucks, EVs and construction machinery from China.",
@@ -97,6 +97,30 @@ export default async function RootLayout({
 
   return (
     <html lang={initialLang} dir={RTL_LANGS.has(initialLang) ? "rtl" : "ltr"}>
+      <head>
+        {/* Hreflang 标签 — 告诉搜索引擎多语言页面关系 */}
+        <link rel="alternate" hrefLang="en" href="https://honglajiao1688.com" />
+        <link rel="alternate" hrefLang="fr" href="https://honglajiao1688.com/fr" />
+        <link rel="alternate" hrefLang="ar" href="https://honglajiao1688.com/ar" />
+        <link rel="alternate" hrefLang="zh" href="https://honglajiao1688.com/zh" />
+        <link rel="alternate" hrefLang="x-default" href="https://honglajiao1688.com" />
+        {/* Organization 结构化数据 — JSON-LD Schema */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "ChinaCarExport",
+              url: "https://honglajiao1688.com",
+              logo: "https://honglajiao1688.com/logo.png",
+              description:
+                "Source used cars, commercial trucks, EVs and construction machinery from China. Supplier verification, real photo inspection and export coordination support. Serving Central Asia, Africa and worldwide markets.",
+              sameAs: [],
+            }),
+          }}
+        />
+      </head>
       <body className="min-h-screen flex flex-col">
         <LangProvider initialLang={initialLang}>
           {children}

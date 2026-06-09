@@ -39,8 +39,7 @@ function detectLang(): Lang {
   if (navLang === "zh") return "zh";
   if (navLang === "fr") return "fr";
   if (navLang === "ar") return "ar";
-  if (navLang === "sw") return "sw";
-  if (navLang === "pt") return "pt";
+  // ja/ko not yet supported, fall through to default
   // 3. Default
   return DEFAULT_LANG;
 }

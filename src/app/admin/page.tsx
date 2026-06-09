@@ -93,6 +93,7 @@ export default function AdminDashboard() {
   const [vehFilter, setVehFilter] = useState("");
   const [deleteTarget, setDeleteTarget] = useState<Vehicle | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [publishedFilter, setPublishedFilter] = useState<"published" | "unpublished" | "all">("published");
 
   const PER_PAGE = 20;
 
@@ -300,7 +301,9 @@ export default function AdminDashboard() {
 
   // ===== Vehicles Tab =====
   const VehiclesTab = () => {
-    const filtered = vehicles.filter(v => !vehFilter || v.brand.includes(vehFilter) || v.model.includes(vehFilter));
+    const filtered = vehicles
+      .filter(v => !vehFilter || v.brand.includes(vehFilter) || v.model.includes(vehFilter))
+      .filter(v => publishedFilter === "all" ? true : publishedFilter === "published" ? v.published : !v.published);
     const paged = filtered.slice(vehPage * PER_PAGE, (vehPage + 1) * PER_PAGE);
     const totalPages = Math.ceil(filtered.length / PER_PAGE);
 
@@ -321,8 +324,20 @@ export default function AdminDashboard() {
           <Btn onClick={() => setShowNewVehicle(true)}>+ 新增车辆</Btn>
         </div>
 
-        <input placeholder="搜索品牌/车型..." value={vehFilter} onChange={e => { setVehFilter(e.target.value); setVehPage(0); }}
-          className="w-full md:w-72 border border-gray-200 rounded-lg px-4 py-2 text-sm mb-4 focus:outline-none focus:border-accent" />
+        <div className="flex items-center gap-4 mb-4">
+          <input placeholder="搜索品牌/车型..." value={vehFilter} onChange={e => { setVehFilter(e.target.value); setVehPage(0); }}
+            className="w-full md:w-72 border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-accent" />
+          <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+            {(["published", "unpublished", "all"] as const).map(opt => (
+              <button key={opt} onClick={() => { setPublishedFilter(opt); setVehPage(0); }}
+                className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
+                  publishedFilter === opt ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
+                }`}>
+                {opt === "published" ? "已上架" : opt === "unpublished" ? "已下架" : "全部"}
+              </button>
+            ))}
+          </div>
+        </div>
 
         <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto">
@@ -336,12 +351,13 @@ export default function AdminDashboard() {
                   <th className="px-4 py-3 font-semibold">售价</th>
                   <th className="px-4 py-3 font-semibold">利润</th>
                   <th className="px-4 py-3 font-semibold">状态</th>
+                  <th className="px-4 py-3 font-semibold">上架</th>
                   <th className="px-4 py-3 font-semibold">公开</th>
                   <th className="px-4 py-3 font-semibold"></th>
                 </tr>
               </thead>
               <tbody>
-                {paged.length === 0 ? <tr><td colSpan={9}><Empty /></td></tr> :
+                {paged.length === 0 ? <tr><td colSpan={10}><Empty /></td></tr> :
                   paged.map(v => (
                     <tr key={v.id} className="border-t border-gray-200 hover:bg-gray-50">
                       <td className="px-4 py-3">
@@ -365,6 +381,11 @@ export default function AdminDashboard() {
                           <option value="sold">Sold</option>
                           <option value="pending">Pending</option>
                         </select>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`text-xs font-semibold px-2 py-1 rounded-full ${v.published ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
+                          {v.published ? "已上架" : "已下架"}
+                        </span>
                       </td>
                       <td className="px-4 py-3">
                         <button onClick={() => togglePublish(v.id, !v.published)}
@@ -1075,11 +1096,13 @@ export default function AdminDashboard() {
               <h3 className="text-lg font-bold text-red-600">⚠️ 确认删除</h3>
             </div>
             <div className="p-6">
+              <p className="text-base font-bold text-gray-900 mb-4">
+                确定删除 {deleteTarget.brand} {deleteTarget.model}？
+              </p>
               <div className="mb-4 p-4 bg-red-50 rounded-xl text-sm text-red-800">
-                <p className="font-bold text-base mb-2">{deleteTarget.brand} {deleteTarget.model} ({deleteTarget.year})</p>
+                <p className="mb-1">年份: <strong>{deleteTarget.year}</strong></p>
                 <p className="mb-1">底价: <strong>${deleteTarget.basePrice.toLocaleString()}</strong></p>
                 <p className="mb-1">售价: <strong>${deleteTarget.salePrice.toLocaleString()}</strong></p>
-                <p className="mb-1">状态: <strong>{deleteTarget.status === "available" ? "可售" : deleteTarget.status === "sold" ? "已售" : "待定"}</strong></p>
                 {deleteTarget.published && <p className="text-orange-700 mt-2">⚠ 该车辆当前已公开显示在前台</p>}
               </div>
               <p className="text-sm text-gray-600 mb-2">删除此车辆将<strong className="text-red-600">同时删除</strong>其关联的：</p>

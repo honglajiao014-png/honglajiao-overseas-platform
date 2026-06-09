@@ -9,60 +9,60 @@ import { headers } from "next/headers";
 export const dynamic = "force-dynamic";
 
 // ⚠️ 此处使用内联翻译，不导入 @/i18n/useT（避免"use client"污染服务端组件）
-type Lang = "en" | "fr" | "es" | "zh";
+type Lang = "en" | "fr" | "ar" | "zh";
 type Trans = Record<string, string>;
-const T = (en: string, fr: string, es: string, zh: string): Trans => ({ en, fr, es, zh });
+const T = (en: string, fr: string, ar: string, zh: string): Trans => ({ en, fr, ar, zh });
 
 const I18N = {
-  home: T("Home","Accueil","Inicio","首页"),
-  allCars: T("Cars","Véhicules","Vehículos","车辆列表"),
-  usedPassenger: T("Used Passenger Car","Voiture d'occasion","Auto usado","二手乘用车"),
-  newEnergy: T("New Energy Vehicle","Véhicule électrique","Vehículo eléctrico","新能源车"),
-  truck: T("Truck","Camion","Camión","卡车"),
-  machinery: T("Construction Machinery","Engins","Maquinaria","工程机械"),
-  motorcycle: T("Motorcycle","Moto","Motocicleta","摩托车"),
-  parts: T("Auto Parts","Pièces auto","Repuestos","汽车配件"),
-  basePrice: T("Base Price","Prix de base","Precio base","底价"),
-  priceNote: T("* Base vehicle price only. Excludes shipping, insurance & duties.","* Prix de base hors expédition, assurance et droits.","* Precio base solamente. Excluye envío, seguro e impuestos.","* 仅裸车价格。不含运费、保险和关税。"),
-  inquire: T("Inquire Now","Demander","Consultar ahora","立即询价"),
+  home: T("Home", "Accueil", "الرئيسية", "首页"),
+  allCars: T("Cars", "Véhicules", "سيارات", "车辆列表"),
+  usedPassenger: T("Used Passenger Car", "Voiture d'occasion", "سيارة مستعملة", "二手乘用车"),
+  newEnergy: T("New Energy Vehicle", "Véhicule électrique", "سيارة كهربائية", "新能源车"),
+  truck: T("Truck", "Camion", "شاحنة", "卡车"),
+  machinery: T("Construction Machinery", "Engins", "آليات بناء", "工程机械"),
+  motorcycle: T("Motorcycle", "Moto", "دراجة نارية", "摩托车"),
+  parts: T("Auto Parts", "Pièces auto", "قطع غيار", "汽车配件"),
+  basePrice: T("Base Price", "Prix de base", "السعر الأساسي", "底价"),
+  priceNote: T("* Base vehicle price only. Excludes shipping, insurance & duties.", "* Prix de base hors expédition, assurance et droits.", "* السعر الأساسي فقط. باستثناء الشحن والتأمين والرسوم.", "* 仅裸车价格。不含运费、保险和关税。"),
+  inquire: T("Inquire Now", "Demander", "استفسر الآن", "立即询价"),
 
-  year: T("Year","Année","Año","年份"),
-  mileage: T("Mileage","Kilométrage","Kilometraje","里程"),
-  trans: T("Transmission","Transmission","Transmisión","变速箱"),
-  fuel: T("Fuel","Carburant","Combustible","燃料"),
-  steering: T("Steering","Direction","Dirección","方向盘"),
-  color: T("Color","Couleur","Color","颜色"),
-  displacement: T("Displacement","Cylindrée","Cilindrada","排量"),
-  bodyStyle: T("Body Style","Carrosserie","Carrocería","车身类型"),
-  seats: T("Seats","Places","Asientos","座位"),
-  engine: T("Engine","Moteur","Motor","发动机"),
-  range: T("Range","Autonomie","Autonomía","续航"),
-  battery: T("Battery","Batterie","Batería","电池"),
-  hours: T("Hours","Heures","Horas","工作时长"),
-  tonnage: T("Tonnage","Tonnage","Tonelaje","吨位"),
-  load: T("Load","Charge","Carga","载重"),
-  power: T("Power","Puissance","Potencia","功率"),
-  length: T("Length","Longueur","Longitud","车长"),
-  driveType: T("Drive","Traction","Tracción","驱动"),
-  features: T("Features","Équipements","Características","配置"),
-  specs: T("Specifications","Spécifications","Especificaciones","详细参数"),
-  lhd: T("LHD","Conduite à gauche","Volante izquierdo","左舵"),
-  rhd: T("RHD","Conduite à droite","Volante derecho","右舵"),
-  km: T("km","km","km","公里"),
-  doors: T("Doors","Portes","Puertas","车门"),
-  wheelbase: T("Wheelbase","Empattement","Distancia entre ejes","轴距"),
-  curbWeight: T("Curb Weight","Poids à vide","Peso en vacío","整备质量"),
-  fuelConsumption: T("Fuel Consumption","Consommation","Consumo","油耗"),
-  maxTorque: T("Max Torque","Couple max","Par máximo","最大扭矩"),
-  maxHp: T("Max HP","Ch max","CV máx","最大马力"),
-  fuelTank: T("Fuel Tank","Réservoir","Depósito","油箱"),
-  fuelGrade: T("Fuel Grade","Indice d'octane","Octanaje","燃油标号"),
-  mm: T("mm","mm","mm","毫米"),
-  kg: T("kg","kg","kg","公斤"),
-  lPer100km: T("L/100km","L/100km","L/100km","升/百公里"),
-  nm: T("N·m","N·m","N·m","牛·米"),
-  ps: T("Ps","Ch","CV","匹"),
-  l: T("L","L","L","升"),
+  year: T("Year", "Année", "السنة", "年份"),
+  mileage: T("Mileage", "Kilométrage", "Kilometraje", "里程"),
+  trans: T("Transmission", "Transmission", "ناقل الحركة", "变速箱"),
+  fuel: T("Fuel", "Carburant", "الوقود", "燃料"),
+  steering: T("Steering", "Direction", "المقود", "方向盘"),
+  color: T("Color", "Couleur", "اللون", "颜色"),
+  displacement: T("Displacement", "Cylindrée", "سعة المحرك", "排量"),
+  bodyStyle: T("Body Style", "Carrosserie", "نوع الهيكل", "车身类型"),
+  seats: T("Seats", "Places", "المقاعد", "座位"),
+  engine: T("Engine", "Moteur", "المحرك", "发动机"),
+  range: T("Range", "Autonomie", "المدى", "续航"),
+  battery: T("Battery", "Batterie", "البطارية", "电池"),
+  hours: T("Hours", "Heures", "ساعات العمل", "工作时长"),
+  tonnage: T("Tonnage", "Tonnage", "الحمولة", "吨位"),
+  load: T("Load", "Charge", "الحمولة", "载重"),
+  power: T("Power", "Puissance", "القوة", "功率"),
+  length: T("Length", "Longueur", "الطول", "车长"),
+  driveType: T("Drive", "Traction", "نظام الدفع", "驱动"),
+  features: T("Features", "Équipements", "المميزات", "配置"),
+  specs: T("Specifications", "Spécifications", "المواصفات", "详细参数"),
+  lhd: T("LHD", "Conduite à gauche", "مقود يسار", "左舵"),
+  rhd: T("RHD", "Conduite à droite", "مقود يمين", "右舵"),
+  km: T("km", "km", "km", "公里"),
+  doors: T("Doors", "Portes", "أبواب", "车门"),
+  wheelbase: T("Wheelbase", "Empattement", "قاعدة العجلات", "轴距"),
+  curbWeight: T("Curb Weight", "Poids à vide", "الوزن فارغ", "整备质量"),
+  fuelConsumption: T("Fuel Consumption", "Consommation", "استهلاك الوقود", "油耗"),
+  maxTorque: T("Max Torque", "Couple max", "عزم الدوران", "最大扭矩"),
+  maxHp: T("Max HP", "Ch max", "قوة حصان", "最大马力"),
+  fuelTank: T("Fuel Tank", "Réservoir", "خزان الوقود", "油箱"),
+  fuelGrade: T("Fuel Grade", "Indice d'octane", "درجة الوقود", "燃油标号"),
+  mm: T("mm", "mm", "mm", "毫米"),
+  kg: T("kg", "kg", "kg", "公斤"),
+  lPer100km: T("L/100km", "L/100km", "L/100km", "升/百公里"),
+  nm: T("N·m", "N·m", "N·m", "牛·米"),
+  ps: T("Ps", "Ch", "حصان", "匹"),
+  l: T("L", "L", "L", "升"),
 };
 
 function tr(key: Trans, lang: Lang): string {
@@ -75,7 +75,7 @@ async function detectLang(): Promise<Lang> {
     const c = hdrs.get("cookie") || "";
     const m = c.match(/hlj-lang=([^;]+)/);
     const v = m?.[1];
-    if (v && ["en","fr","es","zh"].includes(v)) return v as Lang;
+    if (v && ["en","fr","ar","zh"].includes(v)) return v as Lang;
   } catch {}
   return "en";
 }
