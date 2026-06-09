@@ -197,7 +197,6 @@ export async function POST(req: NextRequest) {
               transmission: v.transmission || null,
               fuel: v.fuel || null,
               fuelType: v.fuel || null,
-              steering: v.steering || null,
               exteriorColor: v.exteriorColor || null,
               interiorColor: v.interiorColor || null,
               condition: v.condition || "Excellent",
