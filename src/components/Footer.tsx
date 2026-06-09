@@ -3,7 +3,7 @@
 import { useT, T } from "@/i18n/useT";
 import { useLang } from "@/i18n/LangContext";
 
-const WHATSAPP_NUMBER = "+1 310-290-1842"; // TODO: 替换为实际 WhatsApp 号码
+const WHATSAPP_NUMBER = "+1 310-290-1842";
 const EMAIL = "info@honglajiao1688.com";
 
 export function Footer() {
