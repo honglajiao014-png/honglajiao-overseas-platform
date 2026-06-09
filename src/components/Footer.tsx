@@ -115,15 +115,10 @@ export function Footer() {
             <span>📧</span>
             <span>{EMAIL}</span>
           </a>
-          <a
-            href={`https://wa.me/${WHATSAPP_NUMBER}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 text-sm text-gray-400 hover:text-green-400 transition-colors"
-          >
+          <span className="flex items-center gap-2 text-sm text-gray-400">
             <span>💬</span>
-            <span>WhatsApp: +{WHATSAPP_NUMBER}</span>
-          </a>
+            <span>WhatsApp: {WHATSAPP_NUMBER}</span>
+          </span>
         </div>
       </div>
 
