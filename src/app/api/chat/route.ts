@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { sendLeadNotification, shouldNotifyLead } from "@/lib/leadNotify";
 import { CHAT_TEMPLATES } from "@/data/chat-templates";
+import { KEYWORD_ROUTES } from "@/data/chat-keywords";
 
 // ======================== Prompt 模版 ========================
 function getSystemPrompt(lang: string): string {
@@ -41,6 +42,26 @@ function detectIntent(history: { role: string; content: string }[]): number {
   return maxLevel;
 }
 
+// ======================== 关键词路由匹配 ========================
+interface KeywordMatch {
+  route: typeof KEYWORD_ROUTES[number];
+  matchedKeyword: string;
+}
+
+function matchKeywords(text: string): KeywordMatch[] {
+  const lower = text.toLowerCase();
+  const matches: KeywordMatch[] = [];
+  for (const route of KEYWORD_ROUTES) {
+    for (const kw of route.keywords) {
+      if (lower.includes(kw.toLowerCase())) {
+        matches.push({ route, matchedKeyword: kw });
+        break; // 每个 route 只匹配一次
+      }
+    }
+  }
+  return matches;
+}
+
 // ======================== POST Handler ========================
 export async function POST(req: NextRequest) {
   try {
@@ -60,7 +81,41 @@ export async function POST(req: NextRequest) {
 
     // 构建对话历史
     const history = [...session.ChatMessage.map(m => ({ role: m.role, content: m.content })), { role: "user", content: message }];
-    const prompt = buildPrompt(history, lang);
+
+    // ======================== 关键词路由匹配（千问之前） ========================
+    const allText = history.map(m => m.content).join(" ");
+    const keywordMatches = matchKeywords(allText);
+
+    let escalateReply: string | null = null;
+    let keywordContext = "";
+
+    for (const match of keywordMatches) {
+      if (match.route.action === "escalate") {
+        // 不满情绪 → 直接返回模板回复，不调千问
+        const templateLang = (lang === "fr" || lang === "ar" || lang === "zh") ? lang : "en";
+        escalateReply = (match.route.reply as Record<string, string>)[templateLang] || match.route.reply.en;
+        break; // escalate 优先级最高，直接跳出
+      }
+      if (match.route.action === "mark_urgent") {
+        // 急单 → 提升 intentLevel 到 4
+        await prisma.chatSession.update({ where: { id: session.id }, data: { intentLevel: 4 } });
+      }
+      // 收集匹配到的上下文（en fallback）
+      const ctxLang = (lang === "fr" || lang === "ar" || lang === "zh") ? lang : "en";
+      const ctx = (match.route.reply as Record<string, string>)[ctxLang] || match.route.reply.en;
+      keywordContext += ctx + "\n\n";
+    }
+
+    // 如果触发 escalate，直接返回模板回复
+    if (escalateReply) {
+      await prisma.chatMessage.create({
+        data: { sessionId: session.id, role: "bot", content: escalateReply },
+      });
+      return NextResponse.json({ reply: escalateReply });
+    }
+
+    // 把关键词上下文注入系统提示
+    const prompt = buildPrompt(history, lang) + (keywordContext ? "\n\n" + keywordContext : "");
 
     // 调用本地千问
     let reply = "";
@@ -97,8 +152,8 @@ export async function POST(req: NextRequest) {
     }
 
     // 检测到客户留了联系方式，记入 lead
-    const allText = history.map(m => m.content.toLowerCase()).concat(reply.toLowerCase()).join(" ");
-    const emailMatch = allText.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+    const leadText = history.map(m => m.content.toLowerCase()).concat(reply.toLowerCase()).join(" ");
+    const emailMatch = leadText.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
     if (emailMatch && newLevel >= 3) {
       const email = emailMatch[0];
       // Try to find or create a customer lead
