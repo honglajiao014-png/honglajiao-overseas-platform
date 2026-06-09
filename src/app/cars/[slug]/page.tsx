@@ -1,3 +1,4 @@
+import React from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CarGallery } from "@/components/CarGallery";
@@ -110,6 +111,8 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
       doorCount: true, driveType: true, maxHorsepower: true,
       maxTorqueNm: true, wheelbase: true, curbWeight: true,
       fuelConsumption: true, fuelTankCapacity: true, fuelGrade: true,
+      specId: true,
+      VehicleSpec: { select: { specs: true } },
     },
   });
 
@@ -146,9 +149,11 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
   const steer = vehicle.steering?.toUpperCase() === "RHD" ? d(I18N.rhd) : d(I18N.lhd);
 
   // 解析 specsJson 获取 features 和详细参数
+  // 优先用 VehicleSpec.specs（结构化 JSON），fallback 到 vehicle.specsJson（原始 XLSX 行数据）
   let specsData: any = null;
-  if (vehicle.specsJson) {
-    try { specsData = JSON.parse(vehicle.specsJson); } catch {}
+  const rawSpecs = vehicle.VehicleSpec?.specs || vehicle.specsJson;
+  if (rawSpecs) {
+    try { specsData = typeof rawSpecs === "string" ? JSON.parse(rawSpecs) : rawSpecs; } catch {}
   }
 
   return (
@@ -239,40 +244,8 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
                   </div>
                 )}
 
-                {/* 详细参数 Specifications */}
-                {specsData && (
-                  <div className="mt-6">
-                    <h3 className="text-sm font-bold text-gray-800 mb-3">{d(I18N.specs)}</h3>
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
-                      {specsData.fullName && <SpecRow l="Model" v={specsData.fullName} />}
-                      {specsData.manufacturer && <SpecRow l="Manufacturer" v={specsData.manufacturer} />}
-                      {specsData.energyType && <SpecRow l="Energy" v={specsData.energyType} />}
-                      {specsData.engineModel && <SpecRow l="Engine Model" v={specsData.engineModel} />}
-                      {specsData.intakeType && <SpecRow l="Intake" v={specsData.intakeType} />}
-                      {specsData.frontSuspension && <SpecRow l="Front Suspension" v={String(specsData.frontSuspension).replace(/:●/g, '')} />}
-                      {specsData.rearSuspension && <SpecRow l="Rear Suspension" v={String(specsData.rearSuspension).replace(/:●/g, '')} />}
-                      {specsData.frontBrake && <SpecRow l="Front Brake" v={String(specsData.frontBrake).replace(/:●/g, '')} />}
-                      {specsData.rearBrake && <SpecRow l="Rear Brake" v={String(specsData.rearBrake).replace(/:●/g, '')} />}
-                      {specsData.steeringAssist && <SpecRow l="Steering Assist" v={String(specsData.steeringAssist).replace(/:●/g, '')} />}
-                      {specsData.bodyStructure && <SpecRow l="Body Structure" v={specsData.bodyStructure} />}
-                      {specsData.frontTireSpec && <SpecRow l="Front Tire" v={String(specsData.frontTireSpec).replace(/:●/g, '')} />}
-                      {specsData.rearTireSpec && <SpecRow l="Rear Tire" v={String(specsData.rearTireSpec).replace(/:●/g, '')} />}
-                      {specsData.warranty && specsData.warranty !== '-' && <SpecRow l="Warranty" v={String(specsData.warranty).replace(/:●/g, '')} />}
-                      {specsData.batteryType && <SpecRow l="Battery Type" v={specsData.batteryType} />}
-                      {specsData.rangeKm && <SpecRow l="Range" v={`${specsData.rangeKm} km`} />}
-                      {specsData.engineOptions && <SpecRow l="Engine Options" v={specsData.engineOptions.map((e: any) => e.type).join(' / ')} />}
-                      {specsData.towingCapacity && <SpecRow l="Towing" v={specsData.towingCapacity} />}
-                      {specsData.payloadCapacity && <SpecRow l="Payload" v={specsData.payloadCapacity} />}
-                      {specsData.groundClearance && <SpecRow l="Ground Clearance" v={specsData.groundClearance} />}
-                      {specsData.operatingWeight && <SpecRow l="Operating Weight" v={specsData.operatingWeight} />}
-                      {specsData.bucketCapacity && <SpecRow l="Bucket Capacity" v={specsData.bucketCapacity} />}
-                      {specsData.maxDiggingDepth && <SpecRow l="Max Digging Depth" v={specsData.maxDiggingDepth} />}
-                      {specsData.compressionRatio && <SpecRow l="Compression Ratio" v={specsData.compressionRatio} />}
-                      {specsData.seatHeight && <SpecRow l="Seat Height" v={specsData.seatHeight} />}
-                      {specsData.curbWeight && !vehicle.curbWeight && <SpecRow l="Curb Weight" v={String(specsData.curbWeight)} />}
-                    </div>
-                  </div>
-                )}
+                {/* 规格参数分组折叠卡片 */}
+                {specsData && <SpecsGroups specs={specsData} />}
 
                 <div className="mt-6">
                   <a href={`/inquiry?slug=${encodeURIComponent(vehicle.brand + "-" + vehicle.model + "-" + vehicle.year)}`}
@@ -299,18 +272,31 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
       </main>
       <Footer />
 
-      {/* Structured Data — Product + Vehicle JSON-LD */}
+      {/* Structured Data — Vehicle JSON-LD */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
-            "@type": ["Product", "Vehicle"],
+            "@type": "Vehicle",
             name: `${vehicle.brand} ${vehicle.model} ${vehicle.year}`,
             brand: { "@type": "Brand", name: vehicle.brand },
             model: vehicle.model,
-            productionDate: String(vehicle.year),
-            vehicleConfiguration: vehicle.bodyStyle || undefined,
+            vehicleModelDate: String(vehicle.year),
+            mileageFromOdometer: vehicle.mileage
+              ? { "@type": "QuantitativeValue", value: vehicle.mileage, unitCode: "KMT" }
+              : undefined,
+            fuelType: vehicle.fuel || undefined,
+            vehicleTransmission: vehicle.transmission || undefined,
+            vehicleConfiguration: (() => {
+              const parts: string[] = [];
+              if (vehicle.displacement) parts.push(`${vehicle.displacement}L`);
+              if (vehicle.motorPowerKw) parts.push(`${vehicle.motorPowerKw}kW`);
+              if (vehicle.transmission) parts.push(vehicle.transmission);
+              if (vehicle.steering) parts.push(vehicle.steering.toUpperCase());
+              if (vehicle.bodyStyle) parts.push(vehicle.bodyStyle);
+              return parts.length > 0 ? parts.join(", ") : undefined;
+            })(),
             offers: {
               "@type": "Offer",
               price: vehicle.salePrice,
@@ -319,10 +305,6 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
               url: `https://honglajiao1688.com/cars/${slug}`,
             },
             image: vehicle.images?.length ? vehicle.images : undefined,
-            mileageFromOdometer: vehicle.mileage
-              ? { "@type": "QuantitativeValue", value: vehicle.mileage, unitCode: "KMT" }
-              : undefined,
-            fuelType: vehicle.fuel || undefined,
             ...(vehicle.description ? { description: vehicle.description.slice(0, 5000) } : {}),
           }),
         }}
@@ -346,5 +328,248 @@ function SpecRow({ l, v }: { l: string; v: string }) {
       <span className="text-gray-400">{l}</span>
       <span className="text-gray-700 truncate">{v}</span>
     </>
+  );
+}
+
+// ===== 规格参数分组展示 =====
+
+/** VehicleSpec.specs 子对象 → fieldMapping group 映射 */
+const SPECS_KEY_TO_GROUP: Record<string, string> = {
+  engine: "engine",
+  transmission: "drivetrain",
+  body: "body",
+  chassis: "chassis",
+  safety: "safety",
+  exterior: "exterior",
+  interior: "interior",
+  seats: "interior",
+  media: "interior",
+  lights: "light",
+  mirrors: "exterior",
+  wipers: "exterior",
+  ac: "comfort",
+};
+
+/** 分组显示信息 */
+const GROUP_META: Record<string, { label: string; icon: string }> = {
+  basic: { label: "基本信息", icon: "📋" },
+  engine: { label: "发动机/动力", icon: "⚡" },
+  drivetrain: { label: "变速箱/驱动", icon: "🔧" },
+  body: { label: "车身尺寸", icon: "📐" },
+  chassis: { label: "底盘/悬架", icon: "🛞" },
+  safety: { label: "安全配置", icon: "🛡️" },
+  comfort: { label: "舒适配置", icon: "🛋️" },
+  interior: { label: "内饰/座舱", icon: "🎮" },
+  exterior: { label: "外部配置", icon: "🚗" },
+  light: { label: "灯光配置", icon: "💡" },
+};
+
+/** 分组排序 */
+const GROUP_ORDER = ["engine", "drivetrain", "body", "chassis", "safety", "comfort", "interior", "exterior", "light"];
+
+/** specs 子对象 key → 显示标签 */
+const SPECS_KEY_LABEL: Record<string, string> = {
+  // engine
+  model: "发动机型号", type: "动力类型", intake: "进气形式", displacement: "排量",
+  layout: "气缸排列", cylinders: "气缸数", valvesPerCylinder: "每缸气门数",
+  valveTrain: "配气机构", maxPowerKw: "最大功率(kW)", maxPowerPs: "最大马力(Ps)",
+  maxPowerRpm: "最大功率转速", maxTorque: "最大扭矩(N·m)", maxTorqueRpm: "最大扭矩转速",
+  fuelGrade: "燃油标号", fuelSupply: "供油方式", headMaterial: "缸盖材料",
+  blockMaterial: "缸体材料", fuelEconomy: "油耗(L/100km)",
+  motorPower: "电机功率(kW)", motorTorque: "电机扭矩(N·m)",
+  batteryCapacity: "电池容量", batteryType: "电池类型", range: "续航里程",
+  acceleration: "0-100加速", topSpeed: "最高时速", charging: "充电",
+  energyConsumption: "能耗", rangeExtender: "增程器", mildHybrid: "轻混系统",
+  // transmission
+  description: "变速箱描述", gears: "挡位数",
+  // body
+  form: "车身形式", doors: "车门数", seats: "座位数", wheelbase: "轴距(mm)",
+  length: "车长(mm)", width: "车宽(mm)", height: "车高(mm)",
+  fuelTank: "油箱容积(L)", curbWeight: "整备质量(kg)", trunk: "行李厢(L)",
+  frunk: "前���厢(L)", totalCargo: "总载货空间(L)", cargoBox: "货箱尺寸",
+  payload: "载重(kg)", towCapacity: "牵引能力",
+  // chassis
+  drive: "驱动方式", frontSuspension: "前悬架", rearSuspension: "后悬架",
+  frontBrake: "前制动器", rearBrake: "后制动器", steeringAssist: "转向助力",
+  structure: "车体结构", parkingBrake: "驻车制动", frontTire: "前轮胎",
+  rearTire: "后轮胎", spareTire: "备胎", warranty: "质保",
+  lowRangeGear: "低速四驱", diffLock: "差速锁", airSuspension: "空气悬架",
+  cdc: "CDC减震", pasm: "PASM", pdcc: "PDCC", rearAxleSteering: "后轮转向",
+  kdss: "KDSS", gvc: "GVC", brembo: "Brembo刹车",
+  // safety
+  driverAirbag: "主驾安全气囊", frontSideAirbags: "前排侧气囊",
+  headCurtainAirbags: "头部气帘", kneeAirbag: "膝部气囊",
+  rearSideAirbags: "后排侧气囊", centerAirbag: "中央气囊",
+  seatbeltReminder: "安全带未系提示", abs: "ABS防抱死",
+  brakeAssist: "刹车辅助(EBA)", tractionControl: "牵引力控制(TCS)",
+  stabilityControl: "车身稳定控制(ESP)", cruiseControl: "定速巡航",
+  adaptiveCruise: "自适应巡航(ACC)", laneKeeping: "车道保持",
+  laneDepartureWarning: "车道偏离预警", autonomousBraking: "主动刹车(AEB)",
+  blindSpot: "并线辅助", frontRadar: "前雷达", rearRadar: "后雷达",
+  panoramicCamera: "全景影像", hillAssist: "上坡辅助",
+  hillDescent: "陡坡缓降", autoHold: "自动驻车", autoPark: "自动泊车",
+  tpms: "胎压监测", runFlatTires: "防爆胎", vsc: "车身稳定(VSC)",
+  rearCrossTraffic: "后方穿行预警", preSafe: "PRE-SAFE",
+  attentionAssist: "注意力辅助", nightVision: "夜视系统",
+  sentryMode: "哨兵模式", fsd: "FSD", offroadModes: "越野模式",
+  // exterior
+  sunroof: "天窗", panoramicRoof: "全景天窗", glassRoof: "玻璃车顶",
+  wheels: "轮毂", roofRails: "车顶行李架", sideSteps: "脚踏板",
+  engineImmobilizer: "发动机电子防盗", centralLocking: "车内中控锁",
+  remoteKey: "遥控钥匙", powerLiftgate: "电动尾门",
+  flushDoorHandles: "隐藏式门把手", framelessWindows: "无框车门",
+  softCloseDoors: "电吸门", slidingDoors: "电动滑门",
+  hiddenDoorHandles: "隐藏式门把手", activeRearSpoiler: "主动尾翼",
+  poweredChargePort: "电动充电口", activeGrillShutters: "主动进气格栅",
+  snorkel: "涉水喉", rollBar: "防滚架", bedLiner: "货箱宝",
+  mSportPackage: "M运动套件", mSportBodykit: "M运动包围",
+  sportDesignPackage: "Sport Design套件", amgBodykit: "AMG包围",
+  adaptiveLed: "自适应LED", multibeamLed: "多光束LED",
+  // interior
+  multiFunctionSteering: "多功能方向盘", steeringHeating: "方向盘加热",
+  gearShifter: "换挡形式", tripComputer: "行车电脑",
+  fullLCDCluster: "全液晶仪表盘", hud: "HUD抬头显示",
+  ambientLight: "氛围灯", wirelessCharging: "无线充电",
+  analogClock: "模拟时钟", powerRearSunshade: "后风挡遮阳帘",
+  refrigerator: "车载冰箱", rotatingScreen: "旋转屏",
+  iDrive: "iDrive", mbux: "MBUX", touchpad: "触摸板",
+  gestureControl: "手势控制", crystalShifter: "水晶挡把",
+  nomi: "NOMI", campMode: "露营模式", dogMode: "宠物模式",
+  bioDefenseMode: "生化防御模式", heatedSteering: "方向盘加热",
+  // seats
+  material: "座椅材质", heating: "座椅加热", ventilation: "座椅通风",
+  massage: "座椅按摩", memory: "座椅记忆", driverElectric: "主驾电动调节",
+  driverManual: "主驾手动调节", driverMemory: "驾驶座记忆",
+  passengerElectric: "副驾电动调节", frontHeating: "前排加热",
+  rearHeating: "后排加热", frontVentilation: "前排通风",
+  rearCupHolder: "后排杯架", seatConfig: "座椅布局",
+  thirdRowSeats: "第三排座椅", thirdRowFold: "第三排放倒",
+  secondRowCaptain: "二排独立座椅", rearFoldRatio: "后排放倒比例",
+  zeroGravitySeat: "零重力座椅", queenSeat: "女王副驾",
+  bossSeatButton: "老板键", sportSeats: "运动座椅",
+  foldFlat: "纯平放倒", rearSunshade: "后排遮阳帘",
+  // media
+  screen: "中控屏", bluetooth: "蓝牙", speakers: "扬声器",
+  carplay: "CarPlay", androidAuto: "Android Auto",
+  otaUpgrade: "OTA升级", voiceControl: "语音控制",
+  rearEntertainment: "后排娱乐", passengerScreen: "副驾屏",
+  netflix: "Netflix", youtube: "YouTube", steam: "Steam",
+  karaoke: "K歌", dlinkSystem: "DiLink", nioOS: "NIO OS",
+  xmartOS: "Xmart OS", hongmengOS: "鸿蒙OS",
+  hondaConnect: "Honda Connect", hondaSensing: "Honda Sensing",
+  nissanConnect: "Nissan Connect", mazdaConnect: "Mazda Connect",
+  lexusRemoteTouch: "Remote Touch", lexusSafetySystem: "LSS+",
+  sync: "SYNC", sync4: "SYNC 4", internetCar: "互联网汽车",
+  dualChip: "芯片", maglink: "MagLink", arGlass: "AR眼镜",
+  dannaMusicSeats: "丹拿音乐座椅",
+  // lights
+  ledHeadlights: "LED大灯", xenonHeadlights: "氙气大灯",
+  halogenHeadlights: "卤素大灯", matrixLed: "矩阵LED",
+  laserHeadlights: "激光大灯", autoHeadlights: "自动头灯",
+  daytimeRunning: "日间行车灯", headlightAdjustable: "大灯高度可调",
+  headlightWasher: "大灯清洗", adaptiveHighBeam: "自适应远光",
+  adaptiveHeadlights: "自适应大灯", afs: "AFS随动转向",
+  fogLights: "雾灯", welcomeLight: "迎宾灯",
+  welcomeLightCarpet: "迎宾光毯", logoProjection: "徽标投影",
+  // mirrors (use prefix to avoid duplicate keys with seats)
+  mirror_adjustment: "后视镜调节", mirror_heating: "后视镜加热",
+  mirror_folding: "后视镜折叠", mirror_memory: "后视镜记忆",
+  mirror_autoDimming: "自动防眩目", sportDesignMirrors: "运动后视镜",
+  // wipers
+  rainSensing: "感应雨刷",
+  // ac
+  rearVents: "后座出风口", zoneControl: "温度分区控制",
+  pm25Filter: "PM2.5过滤", ionizer: "负离子发生器",
+  aromaDiffuser: "香氛系统", fragrance: "香氛",
+  nanoeX: "nanoe X", heatPump: "热泵空调",
+  rearAcControl: "后排独立空调", rearScreen: "后排屏幕",
+  // 顶层字段
+  vehicleType: "车型级别", releaseDate: "上市时间",
+  yearRange: "年款范围", manufacturer: "厂商",
+  energyType: "能源类型",
+};
+
+/** 判断值是否为空 */
+function isEmpty(v: any): boolean {
+  if (v === null || v === undefined) return true;
+  if (typeof v === "string") return v === "" || v === "-" || v === "0";
+  if (typeof v === "number") return v === 0;
+  if (typeof v === "boolean") return false;
+  return false;
+}
+
+/** 格式化值 */
+function fmtSpecVal(v: any): string {
+  if (typeof v === "boolean") return v ? "●" : "-";
+  return String(v);
+}
+
+function SpecsGroups({ specs }: { specs: any }) {
+  // 按 group 收集字段
+  const groups: Record<string, { key: string; label: string; value: string }[]> = {};
+
+  // 1. 处理顶层字段（vehicleType, manufacturer, energyType, releaseDate, yearRange）
+  const topFields: { key: string; label: string; value: string }[] = [];
+  for (const k of ["vehicleType", "manufacturer", "energyType", "releaseDate", "yearRange"]) {
+    if (specs[k] && !isEmpty(specs[k])) {
+      topFields.push({ key: k, label: SPECS_KEY_LABEL[k] || k, value: fmtSpecVal(specs[k]) });
+    }
+  }
+  if (topFields.length > 0) {
+    groups["basic"] = topFields;
+  }
+
+  // 2. 处理子对象（engine, transmission, body, chassis, safety, ...）
+  for (const [sectionKey, sectionVal] of Object.entries(specs)) {
+    if (typeof sectionVal !== "object" || sectionVal === null || Array.isArray(sectionVal)) continue;
+    const groupKey = SPECS_KEY_TO_GROUP[sectionKey];
+    if (!groupKey) continue;
+
+    const fields: { key: string; label: string; value: string }[] = [];
+    for (const [k, v] of Object.entries(sectionVal as Record<string, any>)) {
+      if (isEmpty(v)) continue;
+      // mirrors 子对象的 key 加前缀避免与 seats 重复
+      const lookupKey = sectionKey === "mirrors" ? `mirror_${k}` : k;
+      const label = SPECS_KEY_LABEL[lookupKey] || SPECS_KEY_LABEL[k] || k;
+      fields.push({ key: k, label, value: fmtSpecVal(v) });
+    }
+
+    if (fields.length > 0) {
+      if (!groups[groupKey]) groups[groupKey] = [];
+      groups[groupKey].push(...fields);
+    }
+  }
+
+  // 3. 按 GROUP_ORDER 排序
+  const orderedGroups = GROUP_ORDER.filter(g => groups[g] && groups[g].length > 0);
+
+  if (orderedGroups.length === 0) return null;
+
+  return (
+    <div className="mt-6">
+      <h3 className="text-sm font-bold text-gray-800 mb-3">📊 详细参数</h3>
+      <div className="space-y-2">
+        {orderedGroups.map((gKey, idx) => {
+          const meta = GROUP_META[gKey] || { label: gKey, icon: "📋" };
+          const fields = groups[gKey];
+          return (
+            <details key={gKey} className="bg-gray-50 rounded-xl border border-gray-100" open={idx < 3}>
+              <summary className="px-4 py-2.5 cursor-pointer text-sm font-semibold text-gray-700 hover:text-gray-900 select-none">
+                {meta.icon} {meta.label}
+                <span className="text-xs text-gray-400 ml-2">({fields.length})</span>
+              </summary>
+              <div className="px-4 pb-3 grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
+                {fields.map(f => (
+                  <React.Fragment key={f.key}>
+                    <span className="text-gray-400">{f.label}</span>
+                    <span className="text-gray-700 truncate">{f.value}</span>
+                  </React.Fragment>
+                ))}
+              </div>
+            </details>
+          );
+        })}
+      </div>
+    </div>
   );
 }
