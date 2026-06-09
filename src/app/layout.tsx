@@ -40,7 +40,16 @@ export const metadata: Metadata = {
   robots: "index, follow",
   category: "automotive",
   formatDetection: { telephone: false, address: false, email: false },
-  alternates: { canonical: "https://honglajiao1688.com" },
+  alternates: {
+    canonical: "https://honglajiao1688.com",
+    languages: {
+      en: "https://honglajiao1688.com",
+      fr: "https://honglajiao1688.com/fr",
+      ar: "https://honglajiao1688.com/ar",
+      zh: "https://honglajiao1688.com/zh",
+      "x-default": "https://honglajiao1688.com",
+    },
+  },
   icons: {
     icon: [
       { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
@@ -97,14 +106,12 @@ export default async function RootLayout({
 
   return (
     <html lang={initialLang} dir={RTL_LANGS.has(initialLang) ? "rtl" : "ltr"}>
-      <head>
-        {/* Hreflang 标签 — 告诉搜索引擎多语言页面关系 */}
-        <link rel="alternate" hrefLang="en" href="https://honglajiao1688.com" />
-        <link rel="alternate" hrefLang="fr" href="https://honglajiao1688.com/fr" />
-        <link rel="alternate" hrefLang="ar" href="https://honglajiao1688.com/ar" />
-        <link rel="alternate" hrefLang="zh" href="https://honglajiao1688.com/zh" />
-        <link rel="alternate" hrefLang="x-default" href="https://honglajiao1688.com" />
-        {/* Organization 结构化数据 — JSON-LD Schema */}
+      <body className="min-h-screen flex flex-col">
+        <LangProvider initialLang={initialLang}>
+          {children}
+          <ChatWidget />
+        </LangProvider>
+        {/* Organization 结构化数据 — JSON-LD Schema（body 底部，搜索引擎可解析） */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -120,12 +127,6 @@ export default async function RootLayout({
             }),
           }}
         />
-      </head>
-      <body className="min-h-screen flex flex-col">
-        <LangProvider initialLang={initialLang}>
-          {children}
-          <ChatWidget />
-        </LangProvider>
       </body>
     </html>
   );
