@@ -105,6 +105,11 @@ html {
 }
 
 /* ===== Animations ===== */
+@keyframes fadeIn {
+  from { opacity: 0 }
+  to { opacity: 1 }
+}
+
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
@@ -166,6 +171,11 @@ html {
     padding-left: 2rem;
     padding-right: 2rem;
   }
+}
+
+/* ===== Page Transition ===== */
+main {
+  animation: fadeIn 0.3s ease-in;
 }
 
 /* ===== Section Spacing ===== */

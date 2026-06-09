@@ -263,6 +263,35 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
         </div>
       </main>
       <Footer />
+
+      {/* Structured Data — Product + Vehicle JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": ["Product", "Vehicle"],
+            name: `${vehicle.brand} ${vehicle.model} ${vehicle.year}`,
+            brand: { "@type": "Brand", name: vehicle.brand },
+            model: vehicle.model,
+            productionDate: String(vehicle.year),
+            vehicleConfiguration: vehicle.bodyStyle || undefined,
+            offers: {
+              "@type": "Offer",
+              price: vehicle.salePrice,
+              priceCurrency: "USD",
+              availability: "https://schema.org/InStock",
+              url: `https://honglajiao1688.com/cars/${slug}`,
+            },
+            image: vehicle.images?.length ? vehicle.images : undefined,
+            mileageFromOdometer: vehicle.mileage
+              ? { "@type": "QuantitativeValue", value: vehicle.mileage, unitCode: "KMT" }
+              : undefined,
+            fuelType: vehicle.fuel || undefined,
+            ...(vehicle.description ? { description: vehicle.description.slice(0, 5000) } : {}),
+          }),
+        }}
+      />
     </>
   );
 }

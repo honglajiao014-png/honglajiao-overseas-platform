@@ -430,7 +430,7 @@ export default function Home() {
                 <a
                   key={v.slug}
                   href={`/cars/${v.slug}`}
-                  className="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg hover:border-gray-200 transition-all duration-300 flex flex-col"
+                  className="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-200 flex flex-col"
                 >
                   {/* 图片 */}
                   <div className="aspect-[4/3] bg-gray-100 relative overflow-hidden">

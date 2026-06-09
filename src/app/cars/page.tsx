@@ -273,7 +273,7 @@ export default function CarsPage() {
                     <a
                       key={v.slug}
                       href={`/cars/${v.slug}`}
-                      className="flex bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg hover:border-gray-200 transition-all group"
+                      className="flex bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-200 group"
                     >
                       {/* 缩略图 */}
                       <div className="w-48 h-36 bg-gray-100 shrink-0 flex items-center justify-center overflow-hidden">

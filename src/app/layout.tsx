@@ -107,6 +107,10 @@ export default async function RootLayout({
 
   return (
     <html lang={initialLang} dir={RTL_LANGS.has(initialLang) ? "rtl" : "ltr"}>
+      <head>
+        <link rel="manifest" href="/manifest.webmanifest" />
+        <meta name="theme-color" content="#0ea5e9" />
+      </head>
       <body className="min-h-screen flex flex-col">
         <LangProvider initialLang={initialLang}>
           {children}
