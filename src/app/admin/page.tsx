@@ -10,7 +10,7 @@ interface Stats {
   totalProfit: number; totalSpecs: number;
 }
 
-interface Vehicle { id: string; slug: string; brand: string; model: string; year: number; type: string; mileage: number | null; transmission: string | null; fuel: string | null; steering: string | null; color: string | null; condition: string; supplier: string | null; location: string | null; images: string[]; basePrice: number; markup: number; salePrice: number; profit: number; status: string; published: boolean; featured: boolean; description: string | null; dealer?: { name: string; company: string } | null; specId: string | null; createdAt: string; }
+interface Vehicle { id: string; slug: string; brand: string; model: string; year: number; type: string; mileage: number | null; transmission: string | null; fuel: string | null; steering: string | null; color: string | null; condition: string; supplier: string | null; location: string | null; images: string[]; basePrice: number; markup: number; salePrice: number; profit: number; status: string; published: boolean; featured: boolean; description: string | null; User?: { name: string; company: string } | null; specId: string | null; createdAt: string; }
 
 interface VehicleSpec { id: string; brand: string; model: string; yearRange: string; vehicleType: string | null; energyType: string | null; specs: string; }
 

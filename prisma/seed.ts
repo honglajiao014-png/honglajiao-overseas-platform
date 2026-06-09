@@ -1955,14 +1955,14 @@ async function main() {
   await prisma.user.upsert({
     where: { email: adminEmail },
     update: {},
-    create: { email: adminEmail, password: adminPw, name: "Admin", role: "admin", phone: "+8613800000000", company: "ChinaCarExport", country: "China" },
+    create: { id: "user-admin-001", email: adminEmail, password: adminPw, name: "Admin", role: "admin", phone: "+8613800000000", company: "ChinaCarExport", country: "China", updatedAt: new Date() },
   });
   console.log("✅ Admin account seeded: admin@honglajiao1688.com / Admin@1688#hj");
 
   await prisma.user.upsert({
     where: { email: "dealer@honglajiao1688.com" },
     update: {},
-    create: { email: "dealer@honglajiao1688.com", password: bcrypt.hashSync("Dealer@1688#hj", 12), name: "Demo Dealer", role: "dealer", company: "Africa Auto Trading Co.", country: "Nigeria" },
+    create: { id: "user-dealer-001", email: "dealer@honglajiao1688.com", password: bcrypt.hashSync("Dealer@1688#hj", 12), name: "Demo Dealer", role: "dealer", company: "Africa Auto Trading Co.", country: "Nigeria", updatedAt: new Date() },
   });
   console.log("✅ Dealer account seeded: dealer@honglajiao1688.com / Dealer@1688#hj");
 
@@ -1979,17 +1979,19 @@ async function main() {
     await prisma.vehicleSpec.upsert({
       where: { id },
       update: {
-        specsJson: JSON.stringify(mergedSpecs),
+        specs: JSON.stringify(mergedSpecs),
         manufacturer: spec.manufacturer,
         energyType: spec.energyType,
       },
       create: {
         id,
         brand: spec.brand,
-        series: spec.model, // schema uses `series` for model/series name
+        model: spec.model,
+        yearRange: spec.yearRange,
         manufacturer: spec.manufacturer,
         energyType: spec.energyType,
-        specsJson: JSON.stringify(mergedSpecs),
+        specs: JSON.stringify(mergedSpecs),
+        updatedAt: new Date(),
       },
     });
   }

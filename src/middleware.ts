@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-const LANGS = ["en", "fr", "zh"];
+const LANGS = ["en", "fr", "es", "zh", "ar", "sw", "pt"];
 const COOKIE_NAME = "hlj-lang";
 const DEFAULT_LANG = "en";
 

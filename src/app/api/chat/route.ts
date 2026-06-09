@@ -79,9 +79,9 @@ export async function POST(req: NextRequest) {
     if (!message) return NextResponse.json({ error: "Message required" }, { status: 400 });
 
     // 获取/创建 session
-    let session = await prisma.chatSession.findUnique({ where: { id: sessionId }, include: { messages: { orderBy: { createdAt: "asc" } } } });
+    let session = await prisma.chatSession.findUnique({ where: { id: sessionId }, include: { ChatMessage: { orderBy: { createdAt: "asc" } } } });
     if (!session) {
-      session = await prisma.chatSession.create({ data: { id: sessionId }, include: { messages: { orderBy: { createdAt: "asc" } } } });
+      session = await prisma.chatSession.create({ data: { id: sessionId }, include: { ChatMessage: { orderBy: { createdAt: "asc" } } } });
     }
 
     // 保存用户消息
@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
     });
 
     // 构建对话历史
-    const history = [...session.messages.map(m => ({ role: m.role, content: m.content })), { role: "user", content: message }];
+    const history = [...session.ChatMessage.map(m => ({ role: m.role, content: m.content })), { role: "user", content: message }];
     const prompt = buildPrompt(history, lang);
 
     // 调用本地千问
@@ -122,7 +122,7 @@ export async function POST(req: NextRequest) {
     });
 
     // 更新 intent level（只升不降）
-    const newLevel = detectIntent([...session.messages.map(m => ({ role: m.role, content: m.content })), { role: "user", content: message }, { role: "bot", content: reply }]);
+    const newLevel = detectIntent([...session.ChatMessage.map(m => ({ role: m.role, content: m.content })), { role: "user", content: message }, { role: "bot", content: reply }]);
     if (newLevel > (session?.intentLevel ?? 0)) {
       await prisma.chatSession.update({ where: { id: session.id }, data: { intentLevel: newLevel } });
     }

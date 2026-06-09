@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const orders = await prisma.order.findMany({
     orderBy: { createdAt: "desc" },
-    include: { vehicle: { select: { brand: true, model: true, year: true, basePrice: true } } },
+    include: { Vehicle: { select: { brand: true, model: true, year: true, basePrice: true } } },
   });
   return NextResponse.json({ orders });
 }

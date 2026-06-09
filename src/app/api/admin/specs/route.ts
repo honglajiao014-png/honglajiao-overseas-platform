@@ -14,9 +14,9 @@ export async function GET(req: NextRequest) {
 
   if (!brand || !model) return NextResponse.json({ error: "brand and model required" }, { status: 400 });
 
-  // Try exact match first (VehicleSpec uses `series` for model/series name)
+  // Try exact match first
   let spec = await prisma.vehicleSpec.findFirst({
-    where: { brand, series: model },
+    where: { brand, model },
   });
 
   // Try fuzzy match
@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
     spec = await prisma.vehicleSpec.findFirst({
       where: {
         brand: { contains: brand },
-        series: { contains: model },
+        model: { contains: model },
       },
     });
   }
@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
     specId: spec.id,
     manufacturer: spec.manufacturer,
     energyType: spec.energyType,
-    specs: JSON.parse(spec.specsJson),
+    specs: JSON.parse(spec.specs),
   });
 }
 
@@ -49,12 +49,12 @@ export async function POST(req: NextRequest) {
   const data = await req.json();
   const { brand, model, year, basePrice, markup, ...rest } = data;
 
-  // Auto-match spec (VehicleSpec uses `series` for model/series name)
+  // Auto-match spec
   let specId: string | null = null;
   const spec = await prisma.vehicleSpec.findFirst({
     where: {
       brand: { contains: brand },
-      series: { contains: model },
+      model: { contains: model },
     },
   });
   if (spec) specId = spec.id;
@@ -65,6 +65,7 @@ export async function POST(req: NextRequest) {
 
   const vehicle = await prisma.vehicle.create({
     data: {
+      id: `v-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       slug,
       brand,
       model,
@@ -86,6 +87,7 @@ export async function POST(req: NextRequest) {
       published: true,
       featured: rest.featured || false,
       specId,
+      updatedAt: new Date(),
     },
   });
 

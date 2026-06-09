@@ -4,119 +4,61 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
-model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  name      String
-  role      String   @default("dealer")
-  phone     String?
-  company   String?
-  country   String?
-  avatar    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  vehicles  Vehicle[]
-  inquiries Inquiry[]
-  orders    Order[]
-  chatMessages ChatMessage[]
-  chatSessions ChatSession[]
+model ChatMessage {
+  id          String      @id @default(cuid())
+  sessionId   String
+  role        String
+  content     String
+  userId      String?
+  createdAt   DateTime    @default(now())
+  ChatSession ChatSession @relation(fields: [sessionId], references: [id])
+  User        User?       @relation(fields: [userId], references: [id])
+
+  @@index([sessionId])
 }
 
-model VehicleSpec {
-  id          String   @id @default(cuid())
-  brand       String   // 品牌（中文，如"标致"）
-  series      String   // 车系（如"标致408"）
-  fullName    String?  // 车款全称（如"标致408 2020款 360THP 十周年质臻版"）
-  year        Int?     // 上市年份（如 2020）
-  manufacturer String? // 厂商
-  energyType  String?  // 能源形式
-  displacement Float?  // 排量(L)
-  transmission String? // 变速箱类型
-  bodyStyle    String? // 车身形式
-  seatCount    Int?    // 座位数
-  specsJson    String  @default("{}") // 完整125项配置JSON
-  vehicles     Vehicle[]
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+model ChatSession {
+  id               String        @id @default(cuid())
+  userId           String?
+  visitorId        String?
+  intentLevel      Int           @default(0)
+  country          String?
+  vehicleReq       String?
+  budget           String?
+  quantity         Int?
+  contactCollected Boolean       @default(false)
+  formFilled       Boolean       @default(false)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  ChatMessage      ChatMessage[]
+  User             User?         @relation(fields: [userId], references: [id])
 
-  @@index([brand, series])
-  @@index([brand, series, year])
+  @@index([intentLevel])
+  @@index([userId])
 }
 
-model Vehicle {
-  id          String   @id @default(cuid())
-  slug        String   @unique
-  brand       String
-  model       String
-  year        Int
-  type        String   @default("Used Passenger Car")
-  mileage     Int?
-  transmission String?
-  fuel        String?
-  steering    String?
-  color       String?
-  condition   String   @default("Excellent")
-  supplier    String?
-  location    String   @default("China")
-  images      String[] @default([])
-  basePrice   Float    @default(0)
-  markup      Float    @default(0)
-  salePrice   Float    @default(0)
-  profit      Float    @default(0)
-  status      String   @default("available")
-  soldAt      DateTime?
-  soldTo      String?
-  series        String?  // 车系
-  engineNo      String?  // 发动机号后6位
-  keyCount      Int?     // 钥匙数量
-  // ─── 多品类扩展字段 ───
-  bodyStyle     String?  // 车身类型：SEDAN/SUV/MPV/HATCHBACK/WAGON/COUPE/PICKUP
-  exteriorColor String?  // 外观颜色
-  interiorColor String?  // 内饰颜色
-  fuelType      String?  // 燃油类型：PETROL/DIESEL/HYBRID/ELECTRIC/PLUGIN_HYBRID/CNG/LPG
-  displacement  Float?   // 排量(L)
-  // ─── 新能源 ───
-  batteryType   String?  // 电池类型
-  rangeKm       Int?     // 续航里程(km)
-  motorPowerKw  Float?   // 电机功率(kW)
-  // ─── 卡车/客车 ───
-  loadCapacityTons Float? // 载重(吨)
-  seatCount        Int?   // 座位数
-  vehicleLengthM   Float? // 车身长度(米)
-  // ─── 工程机械 ───
-  equipmentType  String? // 设备子类型
-  workingHours   Int?    // 工作小时数
-  tonnage        Float?  // 吨位
-  engineModel    String? // 发动机型号
-  // ─── 摩托车 ───
-  displacementCc Int?    // 排量(cc)
-  motorcycleType String? // 类型：街车/越野/踏板/三轮
-  // ─── 汽车配件 ───
-  partCategory   String? // 配件类别
-  partCondition  String? // 成色：NEW/USED/REFURBISHED
-  compatibleModels String? // 适用车型
-  quantity       Int?    // 数量
-  // ─── 源数据追溯 ───
-  dealerId    String?
-  dealer      User?    @relation(fields: [dealerId], references: [id])
-  sourceId       String? // 国内站车辆ID（用于同步追踪）
-  sourceSite     String? // 来源：domestic 等
-  specsJson      String? // 完整规格JSON（从xlsx匹配的详细参数）
-  originalPrice  Float?  // 原始RMB价格（用于追溯）
-  uploadedAt     DateTime @default(now())
-  published   Boolean  @default(true)
-  featured    Boolean  @default(false)
-  description String?
-  specId      String?
-  spec        VehicleSpec? @relation(fields: [specId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  inquiries   Inquiry[]
-  orders      Order[]
+model CustomerLead {
+  id          String    @id @default(cuid())
+  name        String?
+  email       String?
+  phone       String?
+  country     String?
+  vehicleReq  String?
+  budget      String?
+  quantity    Int?
+  source      String?
+  intentLevel Int       @default(0)
+  emailSent   Boolean   @default(false)
+  emailSentAt DateTime?
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([emailSent])
+  @@index([email])
+  @@index([intentLevel])
 }
 
 model Inquiry {
@@ -127,82 +69,134 @@ model Inquiry {
   vehicleType String?
   message     String
   vehicleId   String?
-  vehicle     Vehicle? @relation(fields: [vehicleId], references: [id])
   userId      String?
-  user        User?    @relation(fields: [userId], references: [id])
   status      String   @default("new")
   createdAt   DateTime @default(now())
+  User        User?    @relation(fields: [userId], references: [id])
+  Vehicle     Vehicle? @relation(fields: [vehicleId], references: [id])
 }
 
 model Order {
-  id          String   @id @default(cuid())
-  vehicleId   String
-  vehicle     Vehicle  @relation(fields: [vehicleId], references: [id])
-  buyerName   String
+  id           String   @id @default(cuid())
+  vehicleId    String
+  buyerName    String
   buyerContact String
-  salePrice   Float
-  profit      Float
-  userId      String?
-  user        User?    @relation(fields: [userId], references: [id])
-  status      String   @default("pending")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  salePrice    Float
+  profit       Float
+  userId       String?
+  status       String   @default("pending")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  User         User?    @relation(fields: [userId], references: [id])
+  Vehicle      Vehicle  @relation(fields: [vehicleId], references: [id])
 }
 
-model ChatMessage {
-  id        String   @id @default(cuid())
-  sessionId String
-  role      String
-  content   String
-  userId    String?
-  user      User?    @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-
-  session   ChatSession @relation(fields: [sessionId], references: [id])
-
-  @@index([sessionId])
-}
-
-model ChatSession {
-  id          String   @id @default(cuid())
-  userId      String?
-  user        User?    @relation(fields: [userId], references: [id])
-  visitorId   String?
-  intentLevel Int      @default(0)  // 0=L0, 1=L1, 2=L2, 3=L3, 4=L4
+model User {
+  id          String        @id @default(cuid())
+  email       String        @unique
+  password    String
+  name        String
+  role        String        @default("dealer")
+  phone       String?
+  company     String?
   country     String?
-  vehicleReq  String?
-  budget      String?
-  quantity    Int?
-  contactCollected Boolean @default(false)
-  formFilled       Boolean @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  messages    ChatMessage[]
-
-  @@index([userId])
-  @@index([intentLevel])
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  avatar      String?
+  ChatMessage ChatMessage[]
+  ChatSession ChatSession[]
+  Inquiry     Inquiry[]
+  Order       Order[]
+  Vehicle     Vehicle[]
 }
 
-model CustomerLead {
-  id             String   @id @default(cuid())
-  name           String?
-  email          String?
-  phone          String?
-  country        String?
-  vehicleReq     String?
-  budget         String?
-  quantity       Int?
-  source         String?  // chat / register / inquiry
-  intentLevel    Int      @default(0)
-  emailSent      Boolean  @default(false)
-  emailSentAt    DateTime?
-  notes          String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+model Vehicle {
+  id               String       @id @default(cuid())
+  slug             String       @unique
+  brand            String
+  model            String
+  year             Int
+  type             String       @default("Used Passenger Car")
+  mileage          Int?
+  transmission     String?
+  fuel             String?
+  steering         String?
+  color            String?
+  condition        String       @default("Excellent")
+  supplier         String?
+  location         String       @default("China")
+  images           String[]     @default([])
+  basePrice        Float        @default(0)
+  markup           Float        @default(0)
+  salePrice        Float        @default(0)
+  profit           Float        @default(0)
+  status           String       @default("available")
+  soldAt           DateTime?
+  soldTo           String?
+  dealerId         String?
+  published        Boolean      @default(true)
+  featured         Boolean      @default(false)
+  description      String?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  specId           String?
+  batteryType      String?
+  bodyStyle        String?
+  compatibleModels String?
+  displacement     Float?
+  displacementCc   Int?
+  engineModel      String?
+  engineNo         String?
+  equipmentType    String?
+  exteriorColor    String?
+  fuelType         String?
+  interiorColor    String?
+  keyCount         Int?
+  loadCapacityTons Float?
+  motorPowerKw     Float?
+  motorcycleType   String?
+  originalPrice    Float?
+  partCategory     String?
+  partCondition    String?
+  quantity         Int?
+  rangeKm          Int?
+  seatCount        Int?
+  series           String?
+  sourceId         String?
+  sourceSite       String?
+  specsJson        String?
+  tonnage          Float?
+  uploadedAt       DateTime     @default(now())
+  vehicleLengthM   Float?
+  workingHours     Int?
+  driveType        String?
+  doorCount        Int?
+  wheelbase        Int?
+  curbWeight       Int?
+  fuelConsumption  Float?
+  maxTorqueNm      Int?
+  maxHorsepower    Int?
+  fuelTankCapacity Int?
+  fuelGrade        String?
+  Inquiry          Inquiry[]
+  Order            Order[]
+  User             User?        @relation(fields: [dealerId], references: [id])
+  VehicleSpec      VehicleSpec? @relation(fields: [specId], references: [id])
+}
 
-  @@index([email])
-  @@index([intentLevel])
-  @@index([emailSent])
+model VehicleSpec {
+  id           String    @id @default(cuid())
+  brand        String
+  model        String
+  yearRange    String    @default("2016-2026")
+  manufacturer String?
+  vehicleType  String?
+  releaseDate  String?
+  energyType   String?
+  specs        String    @default("{}")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  Vehicle      Vehicle[]
 }
 
 model VerificationCode {

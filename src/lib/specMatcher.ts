@@ -18,10 +18,10 @@ const XLSX_PATH = process.env.XLSX_PATH || "/Users/mj/Desktop/全部车型数据
 // ─── 数据库规格匹配（优先） ───
 
 interface DbSpecMatch {
-  specsJson: string;
+  specs: string;
   specId: string;
   brand: string;
-  series: string;
+  model: string;
 }
 
 let dbSpecCache: DbSpecMatch[] | null = null;
@@ -34,13 +34,13 @@ async function loadDbSpecs(): Promise<DbSpecMatch[]> {
   if (dbSpecCache && now - dbSpecCacheTime < DB_SPEC_CACHE_TTL) return dbSpecCache;
 
   const specs = await prisma.vehicleSpec.findMany({
-    select: { id: true, brand: true, series: true, specsJson: true },
+    select: { id: true, brand: true, model: true, specs: true },
   });
   dbSpecCache = specs.map(s => ({
-    specsJson: s.specsJson,
+    specs: s.specs,
     specId: s.id,
     brand: s.brand,
-    series: s.series,
+    model: s.model,
   }));
   dbSpecCacheTime = now;
   console.log(`[SpecMatcher] DB规格缓存刷新: ${dbSpecCache.length} 条`);
@@ -66,8 +66,8 @@ export async function matchSpecsFromDb(
   const b = brand.trim().toLowerCase();
   const m = model.trim().toLowerCase();
 
-  // 精确匹配（VehicleSpec 用 series 字段存车系/车型）
-  let match = cache.find(s => s.brand.toLowerCase() === b && s.series.toLowerCase() === m);
+  // 精确匹配（VehicleSpec 用 model 字段存车系/车型）
+  let match = cache.find(s => s.brand.toLowerCase() === b && s.model.toLowerCase() === m);
 
   // 品牌模糊匹配（中文品牌名 vs 英文品牌名）
   if (!match) {
@@ -92,13 +92,13 @@ export async function matchSpecsFromDb(
 
     const enBrands = brandMap[b] || [];
     if (enBrands.length > 0) {
-      match = cache.find(s => enBrands.includes(s.brand.toLowerCase()) && s.series.toLowerCase() === m);
+      match = cache.find(s => enBrands.includes(s.brand.toLowerCase()) && s.model.toLowerCase() === m);
     }
     // 反向：数据库中文品牌 vs 输入英文品牌
     if (!match) {
       for (const [cn, ens] of Object.entries(brandMap)) {
         if (ens.includes(b)) {
-          match = cache.find(s => s.brand === cn && s.series.toLowerCase() === m);
+          match = cache.find(s => s.brand === cn && s.model.toLowerCase() === m);
           if (match) break;
         }
       }
@@ -108,7 +108,7 @@ export async function matchSpecsFromDb(
   // 车型模糊匹配（处理国内外命名差异，如 Corolla→卡罗拉, RAV4→RAV4荣放）
   if (!match) {
     match = cache.find(s => {
-      const sm = s.series.toLowerCase();
+      const sm = s.model.toLowerCase();
       return s.brand.toLowerCase() === b && (
         sm.includes(m) || m.includes(sm) ||
         sm.replace(/\s+/g, '') === m.replace(/\s+/g, '')
@@ -117,7 +117,7 @@ export async function matchSpecsFromDb(
   }
 
   if (match) {
-    return { specsJson: match.specsJson, specId: match.specId };
+    return { specsJson: match.specs, specId: match.specId };
   }
   return null;
 }

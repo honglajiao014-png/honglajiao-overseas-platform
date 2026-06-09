@@ -8,8 +8,9 @@ import { LangProvider } from "@/i18n/LangContext";
 export const dynamic = "force-dynamic";
 
 // 本地常量，不引用 client module，避免 RSC 序列化成 client reference
-const LANGS = ["en", "fr", "zh"] as const;
+const LANGS = ["en", "fr", "es", "zh", "ar", "sw", "pt"] as const;
 const DEFAULT_LANG = "en";
+const RTL_LANGS = new Set(["ar"]);
 type Lang = (typeof LANGS)[number];
 
 // 元数据兜底 — 固定英文（SEO 需要稳定）
@@ -95,7 +96,7 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang={initialLang}>
+    <html lang={initialLang} dir={RTL_LANGS.has(initialLang) ? "rtl" : "ltr"}>
       <body className="min-h-screen flex flex-col">
         <LangProvider initialLang={initialLang}>
           {children}

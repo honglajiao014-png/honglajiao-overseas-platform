@@ -277,3 +277,23 @@ html {
   color: var(--color-gray-400);
   font-size: 0.875rem;
 }
+
+/* ===== RTL Support (Arabic) ===== */
+[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+}
+
+[dir="rtl"] .ltr-only {
+  direction: ltr;
+}
+
+/* RTL-aware spacing: swap left/right margins and paddings */
+[dir="rtl"] .ml-auto { margin-left: unset; margin-right: auto; }
+[dir="rtl"] .mr-auto { margin-right: unset; margin-left: auto; }
+[dir="rtl"] .ml-2 { margin-left: unset; margin-right: 0.5rem; }
+[dir="rtl"] .mr-2 { margin-right: unset; margin-left: 0.5rem; }
+[dir="rtl"] .ml-4 { margin-left: unset; margin-right: 1rem; }
+[dir="rtl"] .mr-4 { margin-right: unset; margin-left: 1rem; }
+[dir="rtl"] .pr-4 { padding-right: unset; padding-left: 1rem; }
+[dir="rtl"] .pl-4 { padding-left: unset; padding-right: 1rem; }

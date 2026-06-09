@@ -218,6 +218,7 @@ export async function POST(req: NextRequest) {
       // 4. 新建
       await prisma.vehicle.create({
         data: {
+          id: `v-sync-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
           slug,
           brand: v.brand,
           model: v.model,
@@ -260,6 +261,7 @@ export async function POST(req: NextRequest) {
           sourceId: v.sourceId || null,
           sourceSite: v.sourceSite || "domestic",
           published: true,
+          updatedAt: new Date(),
         },
       });
       results.push({ success: true, slug, brand: v.brand, model: v.model });

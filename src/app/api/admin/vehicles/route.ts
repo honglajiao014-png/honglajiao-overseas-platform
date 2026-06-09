@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const vehicles = await prisma.vehicle.findMany({
     orderBy: { createdAt: "desc" },
-    include: { dealer: { select: { name: true, company: true } } },
+    include: { User: { select: { name: true, company: true } } },
   });
   return NextResponse.json({ vehicles });
 }

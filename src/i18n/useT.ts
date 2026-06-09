@@ -8,7 +8,7 @@ type TransEntry = Record<Lang, string>;
 
 /**
  * 客户端 useT hook — 带三级兜底：
- *   key[lang] → key.en → "(missing)" with console.warn
+ *   key[lang]（非空） → key.en → "(missing)" with console.warn
  */
 export function useT() {
   const { lang } = useLang();

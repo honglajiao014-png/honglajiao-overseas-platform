@@ -11,6 +11,9 @@ const FLAGS: Record<Lang, string> = {
   zh: "🇨🇳",
   fr: "🇫🇷",
   es: "🇪🇸",
+  ar: "🇸🇦",
+  sw: "🇹🇿",
+  pt: "🇧🇷",
 };
 
 export function Header() {

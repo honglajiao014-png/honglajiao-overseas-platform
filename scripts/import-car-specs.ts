@@ -118,18 +118,24 @@ async function main() {
       }
     }
 
-    batch.push({
-      brand,
-      series,
+    // 将结构化字段合并到 specsJson 中
+    const mergedSpecs = {
+      ...specsObj,
       fullName,
       year,
-      manufacturer,
-      energyType,
       displacement,
       transmission,
       bodyStyle,
       seatCount,
-      specsJson: JSON.stringify(specsObj),
+    };
+
+    batch.push({
+      brand,
+      model: series, // schema 用 model 字段
+      yearRange: year ? String(year) : "2016-2026",
+      manufacturer,
+      energyType,
+      specs: JSON.stringify(mergedSpecs),
     });
 
     if (batch.length >= BATCH_SIZE) {
@@ -156,12 +162,12 @@ async function main() {
   // 测试匹配
   console.log("\n🔍 测试匹配: 标致 标致408 2020");
   const match = await prisma.vehicleSpec.findMany({
-    where: { brand: "标致", series: "标致408", year: 2020 },
-    select: { fullName: true, displacement: true, transmission: true, seatCount: true },
+    where: { brand: "标致", model: "标致408" },
+    select: { brand: true, model: true, yearRange: true, specs: true },
   });
   console.log(`  命中 ${match.length} 个车款:`);
   for (const m of match) {
-    console.log(`    - ${m.fullName} | ${m.displacement}L | ${m.transmission} | ${m.seatCount}座`);
+    console.log(`    - ${m.brand} ${m.model} | ${m.yearRange} | ${m.specs?.substring(0, 80)}...`);
   }
 }
 
