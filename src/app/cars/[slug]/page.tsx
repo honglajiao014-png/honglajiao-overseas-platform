@@ -83,7 +83,9 @@ async function detectLang(): Promise<Lang> {
 }
 
 export default async function CarDetailPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  // Next.js 对含中文的 URL 可能不解码 params，手动 decode
+  const slug = decodeURIComponent(rawSlug);
   const lang = await detectLang();
   const d = (k: Trans) => tr(k, lang);
 
@@ -93,9 +95,6 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
     if (lang === "zh") return km >= 10000 ? `${(km / 10000).toFixed(1)}万${kmU}` : `${km.toLocaleString()}${kmU}`;
     return `${km.toLocaleString()} ${kmU}`;
   };
-
-  // DEBUG: 临时调试日志
-  console.log("[CarDetailPage] slug from params:", JSON.stringify(slug));
 
   const vehicle = await prisma.vehicle.findUnique({
     where: { slug, deleted: false },
