@@ -23,6 +23,10 @@ export async function GET(req: NextRequest) {
       activeChatSessions,
       leadStats,
       emailSent,
+      pendingVehicles,
+      publishedVehicles,
+      dealerCount,
+      todayVehicles,
     ] = await Promise.all([
       prisma.user.count({ where: { createdAt: { gte: todayStart, lt: todayEnd } } }),
       prisma.user.count(),
@@ -33,6 +37,10 @@ export async function GET(req: NextRequest) {
         _count: { id: true },
       }),
       prisma.customerLead.count({ where: { emailSent: true } }),
+      prisma.vehicle.count({ where: { status: "pending" } }),
+      prisma.vehicle.count({ where: { published: true } }),
+      prisma.user.count({ where: { role: "dealer" } }),
+      prisma.vehicle.count({ where: { createdAt: { gte: todayStart, lt: todayEnd } } }),
     ]);
 
     const leadsByIntent: Record<number, number> = {};
@@ -48,6 +56,10 @@ export async function GET(req: NextRequest) {
       leadsByIntent,
       totalLeads: leadStats.reduce((s, r) => s + r._count.id, 0),
       emailSent,
+      pendingVehicles,
+      publishedVehicles,
+      dealerCount,
+      todayVehicles,
     });
   } catch (e) {
     console.error("Stats API error:", e);

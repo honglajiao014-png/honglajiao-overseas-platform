@@ -5,6 +5,7 @@ import { useState, useMemo, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { BrandLogo } from "@/components/BrandLogo";
+import { CarCard } from "@/components/CarCard";
 import { useT, T } from "@/i18n/useT";
 import { useLang } from "@/i18n/LangContext";
 import { BRANDS, PRICE_RANGES, AGE_RANGES, MILEAGE_RANGES, TRANSMISSION_OPTIONS, FUEL_OPTIONS, BODY_TYPES, SORT_OPTIONS } from "@/data/brands";
@@ -270,43 +271,7 @@ export default function CarsPage() {
               ) : (
                 <div className="space-y-4">
                   {filtered.map(v => (
-                    <a
-                      key={v.slug}
-                      href={`/cars/${v.slug}`}
-                      className="flex bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-200 group"
-                    >
-                      {/* 缩略图 */}
-                      <div className="w-48 h-36 bg-gray-100 shrink-0 flex items-center justify-center overflow-hidden">
-                        {v.images && v.images[0] ? (
-                          <img src={v.images[0]} alt={v.model} className="w-full h-full object-cover" />
-                        ) : (
-                          <div className="text-5xl">🚘</div>
-                        )}
-                      </div>
-                      {/* 信息 */}
-                      <div className="flex-1 p-5 flex flex-col justify-between">
-                        <div>
-                          <h3 className="text-base font-bold text-gray-900 group-hover:text-primary transition-colors line-clamp-1">
-                            {v.brand} {v.model}{v.year ? ` ${v.year}` : ""}
-                          </h3>
-                          <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs text-gray-500">
-                            <span>{v.year}年</span>
-                            <span>{v.mileage ? `${v.mileage.toLocaleString()}km` : "-"}</span>
-                            <span>{v.location || "China"}</span>
-                            <span>{v.transmission || "-"}</span>
-                            <span>{v.fuel || "-"}</span>
-                          </div>
-                        </div>
-                        <div className="flex items-end justify-between mt-3">
-                          <span className="text-xl font-extrabold text-red-500">
-                            ${v.salePrice.toLocaleString()} <span className="text-xs font-normal text-gray-400">USD</span>
-                          </span>
-                          <span className="text-xs text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                            {t(T.carsFilter.viewDetail)}
-                          </span>
-                        </div>
-                      </div>
-                    </a>
+                    <CarCard key={v.slug} {...v} />
                   ))}
                 </div>
               )}

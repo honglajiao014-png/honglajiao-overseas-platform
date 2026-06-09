@@ -8,6 +8,8 @@ interface Stats {
   totalVehicles: number; soldVehicles: number; availableVehicles: number;
   totalUsers: number; newInquiries: number; completedOrders: number;
   totalProfit: number; totalSpecs: number;
+  pendingVehicles?: number; publishedVehicles?: number;
+  dealerCount?: number; todayVehicles?: number;
 }
 
 interface Vehicle { id: string; slug: string; brand: string; model: string; year: number; type: string; mileage: number | null; transmission: string | null; fuel: string | null; steering: string | null; color: string | null; condition: string; supplier: string | null; location: string | null; images: string[]; basePrice: number; markup: number; salePrice: number; profit: number; status: string; published: boolean; featured: boolean; description: string | null; User?: { name: string; company: string } | null; specId: string | null; createdAt: string; }
@@ -252,6 +254,14 @@ export default function AdminDashboard() {
   // ===== Dashboard Tab =====
   const DashboardTab = () => (
     <div>
+      {/* 核心数据卡片 */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <StatCard label="待审核车辆" value={stats?.pendingVehicles ?? "-"} color="bg-yellow-50 border-0 text-yellow-700" />
+        <StatCard label="已上架车辆" value={stats?.publishedVehicles ?? "-"} color="bg-green-50 border-0 text-green-700" />
+        <StatCard label="车商数" value={stats?.dealerCount ?? "-"} color="bg-blue-50 border-0 text-blue-700" />
+        <StatCard label="今日新增" value={stats?.todayVehicles ?? "-"} color="bg-purple-50 border-0 text-purple-700" />
+      </div>
+
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <StatCard label="车辆总数" value={stats?.totalVehicles ?? "-"} color="bg-blue-50 border-0 text-blue-700" />
         <StatCard label="可售车辆" value={stats?.availableVehicles ?? "-"} color="bg-green-50 border-0 text-green-700" />

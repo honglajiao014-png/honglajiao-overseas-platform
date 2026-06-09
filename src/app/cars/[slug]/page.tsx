@@ -1,6 +1,7 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CarGallery } from "@/components/CarGallery";
+import { CarCard } from "@/components/CarCard";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
@@ -95,7 +96,7 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
   const vehicle = await prisma.vehicle.findUnique({
     where: { slug },
     select: {
-      brand: true, model: true, year: true, type: true,
+      brand: true, model: true, year: true, type: true, dealerId: true,
       mileage: true, transmission: true, fuel: true,
       steering: true, exteriorColor: true, interiorColor: true,
       condition: true, basePrice: true, salePrice: true,
@@ -113,6 +114,25 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
   });
 
   if (!vehicle) notFound();
+
+  // 同车商其他车辆
+  const dealerVehicles = vehicle.dealerId
+    ? await prisma.vehicle.findMany({
+        where: {
+          dealerId: vehicle.dealerId,
+          slug: { not: slug },
+          status: { in: ["available", "APPROVED", "PUBLISHED"] },
+          published: true,
+        },
+        select: {
+          slug: true, brand: true, model: true, year: true,
+          mileage: true, location: true, transmission: true,
+          fuel: true, salePrice: true, images: true,
+        },
+        orderBy: { createdAt: "desc" },
+        take: 4,
+      })
+    : [];
 
   // 品类标签（翻译）
   const catLabel = vehicle.equipmentType ? `${d(I18N.machinery)} - ${vehicle.equipmentType}`
@@ -261,6 +281,20 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
             </div>
           </div>
         </div>
+
+        {/* 该车商其他车辆 */}
+        {dealerVehicles.length > 0 && (
+          <div className="max-w-[1200px] mx-auto px-4 pb-12">
+            <h2 className="text-xl font-extrabold text-gray-900 mb-6">
+              {lang === "zh" ? "该车商其他车辆" : lang === "fr" ? "Autres véhicules de ce vendeur" : lang === "ar" ? "مركبات أخرى من هذا البائع" : "More from this dealer"}
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {dealerVehicles.map(v => (
+                <CarCard key={v.slug} variant="vertical" {...v} />
+              ))}
+            </div>
+          </div>
+        )}
       </main>
       <Footer />
 
