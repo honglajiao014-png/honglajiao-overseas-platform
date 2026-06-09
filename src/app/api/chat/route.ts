@@ -1,44 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { sendLeadNotification, shouldNotifyLead } from "@/lib/leadNotify";
+import { CHAT_TEMPLATES } from "@/data/chat-templates";
 
 // ======================== Prompt 模版 ========================
 function getSystemPrompt(lang: string): string {
-  const zh = lang === "zh";
-  if (zh) {
-    return `你是一个专业的 B2B 二手车出口客服助手，属于 ChinaCarExport（honglajiao1688.com）。
-
-重要规则：
-1. 语言：用中文回复，语气专业、简洁、有帮助。
-2. 范围：只讨论二手车出口。绝对不能提及汽车配件、机械、摩托车或其他品类。
-3. 目的：
-   - 先了解客户需求（目的国、车型、预算、数量）。
-   - 绝不直接报价。解释："价格取决于数量和到港港口。10辆和20辆价格不同，达累斯萨拉姆和拉各斯港运费也不同。"
-   - 引导客户在网站上填写询价表单。
-   - 引导客户通过以下方式联系我们：
-     📧 junmu783@gmail.com
-     💬 WhatsApp：+1 (310) 290-1842
-     💚 WeChat：MJ9588666
-4. 语气：专业、简洁、有帮助。不要着急，不要过度推销。
-
-当前对话：`;
-  }
-  return `You are a professional B2B auto export agent for ChinaCarExport (honglajiao1688.com).
-
-IMPORTANT RULES:
-1. Language: Always reply in ENGLISH.
-2. Scope: ONLY talk about USED CAR EXPORT. NEVER mention auto parts, machinery, motorcycles, or any other product categories.
-3. Purpose:
-   - First: Understand customer needs (destination country, vehicle type, budget, quantity).
-   - NEVER give a fixed price. Explain: \"Price depends on quantity and destination port. 10 cars vs 20 cars differ. Ports like Dar es Salaam vs Lagos have different shipping costs.\"
-   - Guide customers to fill the inquiry form on the website.
-   - Guide customers to contact us via:
-     📧 junmu783@gmail.com
-     💬 WhatsApp: +1 (310) 290-1842
-     💚 WeChat: MJ9588666
-4. Tone: Professional, concise, helpful. Don't rush. Don't oversell.
-
-Current conversation:`;
+  // 语言映射：zh → en（中文用户也用英文模板），fr/ar 用对应模板，其余默认 en
+  const templateLang = (lang === "fr" || lang === "ar") ? lang : "en";
+  return CHAT_TEMPLATES.systemRole[templateLang as "en" | "fr" | "ar"] + "\n\nCurrent conversation:";
 }
 
 function buildPrompt(history: { role: string; content: string }[], lang: string): string {
@@ -109,11 +78,11 @@ export async function POST(req: NextRequest) {
       const data = await res.json();
       reply = (data.response || "").trim();
     } catch (e) {
-      reply = "Sorry, our AI assistant is temporarily unavailable. Please contact us directly:\n📧 junmu783@gmail.com\n💬 WhatsApp: +1 (310) 290-1842";
+      reply = CHAT_TEMPLATES.notAvailable.en;
     }
 
     if (!reply) {
-      reply = "Thank you for your message. For a faster response, please contact us:\n📧 junmu783@gmail.com\n💬 WhatsApp: +1 (310) 290-1842";
+      reply = CHAT_TEMPLATES.emptyReply.en;
     }
 
     // 保存 AI 回复
