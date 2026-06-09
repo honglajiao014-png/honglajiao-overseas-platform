@@ -53,12 +53,34 @@ export async function GET() {
 
     const count = await prisma.vehicle.count({ where: { published: true, deleted: false } });
 
+    // 测试5: 模拟 Next.js 对 URL 中中文的处理
+    // Next.js 的 [slug] 动态路由会自动 decodeURIComponent
+    const urlEncoded = "peugeot-%E6%A0%87%E8%87%B4408-2020-z11v";
+    const decoded = decodeURIComponent(urlEncoded);
+    const v5 = await prisma.vehicle.findUnique({
+      where: { slug: decoded, deleted: false },
+      select: { slug: true, brand: true, model: true },
+    });
+
+    // 测试6: 检查数据库中所有 slug 包含 "peugeot" 或 "标致" 的记录
+    const allPeugeot = await prisma.vehicle.findMany({
+      where: {
+        OR: [
+          { slug: { contains: "peugeot" } },
+          { slug: { contains: "标致" } },
+        ],
+      },
+      select: { slug: true, brand: true, model: true, deleted: false, published: true },
+    });
+
     return NextResponse.json({
       test1_withDeleted: v1,
       test2_withoutDeleted: v2,
       test3_withSpec: v3 ? { brand: v3.brand, model: v3.model, year: v3.year, hasSpec: !!v3.VehicleSpec } : null,
       test4_fullDetailQuery: v4 ? { brand: v4.brand, model: v4.model, year: v4.year, salePrice: v4.salePrice, found: true } : { found: false },
-      test5_count: count,
+      test5_urlDecoded: { decoded, found: !!v5, dbSlug: v5?.slug },
+      test6_allPeugeot: allPeugeot,
+      test7_count: count,
     });
   } catch (e: any) {
     return NextResponse.json({ error: e.message, stack: e.stack }, { status: 500 });
