@@ -1,9 +1,12 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useLang } from "@/i18n/LangContext";
+import { LEVEL_NOTICE } from "@/data/chat-levels";
 
 interface Message { role: "user" | "bot" | "system"; content: string }
+
+const L0_IDLE_SECONDS = 30;
 
 export function ChatWidget() {
   const { lang } = useLang();
@@ -13,8 +16,11 @@ export function ChatWidget() {
   const [input, setInput] = useState("");
   const [waiting, setWaiting] = useState(false);
   const [sessionId] = useState(`sid-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`);
+  const [intentLevel, setIntentLevel] = useState(0);
   const bottomRef = useRef<HTMLDivElement>(null);
   const initialized = useRef(false);
+  const lastActivityRef = useRef(Date.now());
+  const l0TimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // 初始化
   useEffect(() => {
@@ -28,6 +34,34 @@ export function ChatWidget() {
     }]);
   }, [lang]);
 
+  // L0 访客 30 秒不说话 → 自动发欢迎语
+  const sendAutoGreeting = useCallback(() => {
+    const greeting = lang === "zh"
+      ? "您好！有什么可以帮您的吗？请告诉我您需要发往哪个国家、寻找什么车型，我会为您推荐最合适的方案。"
+      : "Hello! How can I help you today? Please let me know which country you're shipping to and what vehicles you're looking for — I'll recommend the best options for you.";
+    setMessages(m => [...m, { role: "bot", content: greeting }]);
+  }, [lang]);
+
+  useEffect(() => {
+    if (!open) return;
+    // 重置活动时间
+    lastActivityRef.current = Date.now();
+    // 启动 L0 检测定时器
+    l0TimerRef.current = setInterval(() => {
+      const idle = Date.now() - lastActivityRef.current;
+      // 只有当前是 L0（无用户消息或只有系统消息）且空闲超过 30 秒才触发
+      if (idle >= L0_IDLE_SECONDS * 1000 && intentLevel === 0) {
+        const userMsgCount = messages.filter(m => m.role === "user").length;
+        if (userMsgCount === 0) {
+          sendAutoGreeting();
+          // 重置计时器防止重复触发
+          lastActivityRef.current = Date.now();
+        }
+      }
+    }, 5000);
+    return () => { if (l0TimerRef.current) clearInterval(l0TimerRef.current); };
+  }, [open, intentLevel, messages, sendAutoGreeting]);
+
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
   useEffect(() => {
     if (!open) return;
@@ -39,6 +73,7 @@ export function ChatWidget() {
   const sendMessage = async (text?: string) => {
     const msg = (text || input).trim();
     if (!msg) return;
+    lastActivityRef.current = Date.now();
     setMessages(m => [...m, { role: "user" as const, content: msg }]);
     setInput("");
     setWaiting(true);
@@ -49,7 +84,19 @@ export function ChatWidget() {
         body: JSON.stringify({ message: msg, sessionId, lang }),
       });
       const data = await res.json();
-      setMessages(m => [...m, { role: "bot" as const, content: data.reply || "Thank you! Please contact us directly:\n📧 junmu783@gmail.com\n💬 WhatsApp: +1 (310) 290-1842" }]);
+      const reply = data.reply || "Thank you! Please contact us directly:\n📧 junmu783@gmail.com\n💬 WhatsApp: +1 (310) 290-1842";
+      setMessages(m => [...m, { role: "bot" as const, content: reply }]);
+
+      // L3/L4 级别显示系统提示
+      const newLevel = data.intentLevel || 0;
+      setIntentLevel(prev => Math.max(prev, newLevel));
+      if (newLevel >= 3) {
+        const noticeLang = (lang === "fr" || lang === "ar" || lang === "zh") ? lang : "en";
+        const notice = (LEVEL_NOTICE[newLevel] as Record<string, string> | undefined)?.[noticeLang] || LEVEL_NOTICE[newLevel]?.en;
+        if (notice) {
+          setMessages(m => [...m, { role: "system", content: notice }]);
+        }
+      }
     } catch {
       setMessages(m => [...m, { role: "bot" as const, content: "Our AI assistant is offline. Please contact us directly:\n📧 junmu783@gmail.com\n💬 WhatsApp: +1 (310) 290-1842" }]);
     }

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { sendLeadNotification, shouldNotifyLead } from "@/lib/leadNotify";
 import { CHAT_TEMPLATES } from "@/data/chat-templates";
 import { KEYWORD_ROUTES } from "@/data/chat-keywords";
+import { extractCountry, extractVehicle, extractBudget, extractQuantity } from "@/data/chat-levels";
 
 // ======================== Prompt 模版 ========================
 function getSystemPrompt(lang: string): string {
@@ -22,24 +23,40 @@ function buildPrompt(history: { role: string; content: string }[], lang: string)
 }
 
 // ======================== 意向等级判断 ========================
+const LEVEL_LABELS: Record<number, string> = {
+  0: "访客",
+  1: "潜客",
+  2: "意向",
+  3: "高意向",
+  4: "准订单",
+};
+
 const INTENT_KEYWORDS: [number, string[]][] = [
-  [1, ["country", "destination", "ship to", "africa", "middle east", "nigeria", "kenya", "ghana", "tanzania", "ethiopia", "market"]],
+  [1, ["country", "destination", "ship to", "africa", "middle east", "nigeria", "kenya", "ghana", "tanzania", "ethiopia", "market",
+       "dubai", "uae", "saudi", "jordan", "iraq", "libya", "uganda", "rwanda", "congo", "angola", "mozambique",
+       "zambia", "zimbabwe", "senegal", "cameroon", "togo", "benin", "ivory coast"]],
   [2, ["toyota", "bmw", "mercedes", "audi", "byd", "honda", "nissan", "volkswagen", "lexus", "land rover", "porsche",
        "model", "budget", "price", "cost", "dollar", "usd", "quantity", "container", "port", "shipping cost",
-       "20", "30", "40", "50", "how many"]],
-  [3, ["email", "@", "whatsapp", "phone", "call", "contact", "add", "form", "inquiry"]],
-  [4, ["order", "deposit", "l/c", "letter of credit", "contract", "invoice", "booking", "purchase order"]],
+       "20", "30", "40", "50", "how many", "corolla", "rav4", "hilux", "camry", "civic", "accord", "cr-v", "crv",
+       "hyundai", "kia", "ford", "chevrolet", "suzuki", "mitsubishi", "tesla", "range rover"]],
+  [3, ["email", "@", "whatsapp", "phone", "call", "contact", "add", "form", "inquiry", "wechat"]],
+  [4, ["order", "deposit", "l/c", "letter of credit", "contract", "invoice", "booking", "purchase order", "urgent", "asap"]],
 ];
 
-function detectIntent(history: { role: string; content: string }[]): number {
+interface IntentResult {
+  level: number;
+  label: string;
+}
+
+function detectIntent(history: { role: string; content: string }[]): IntentResult {
   const texts = history.map(m => m.content.toLowerCase()).join(" ");
   let maxLevel = 0;
   for (const [level, keywords] of INTENT_KEYWORDS) {
     if (keywords.some(kw => texts.includes(kw))) {
-      if (maxLevel < level) maxLevel = level; // only upgrade
+      if (maxLevel < level) maxLevel = level;
     }
   }
-  return maxLevel;
+  return { level: maxLevel, label: LEVEL_LABELS[maxLevel] };
 }
 
 // ======================== 关键词路由匹配 ========================
@@ -145,10 +162,26 @@ export async function POST(req: NextRequest) {
       data: { sessionId: session.id, role: "bot", content: reply },
     });
 
-    // 更新 intent level（只升不降）
-    const newLevel = detectIntent([...session.ChatMessage.map(m => ({ role: m.role, content: m.content })), { role: "user", content: message }, { role: "bot", content: reply }]);
+    // 更新 intent level（只升不降）+ 提取客户字段
+    const intentResult = detectIntent([...session.ChatMessage.map(m => ({ role: m.role, content: m.content })), { role: "user", content: message }, { role: "bot", content: reply }]);
+    const newLevel = intentResult.level;
+
+    // 提取客户字段
+    const sessionUpdate: Record<string, unknown> = {};
     if (newLevel > (session?.intentLevel ?? 0)) {
-      await prisma.chatSession.update({ where: { id: session.id }, data: { intentLevel: newLevel } });
+      sessionUpdate.intentLevel = newLevel;
+    }
+    const country = extractCountry(allText);
+    if (country && !session.country) sessionUpdate.country = country;
+    const vehicle = extractVehicle(allText);
+    if (vehicle && !session.vehicleReq) sessionUpdate.vehicleReq = vehicle;
+    const budget = extractBudget(allText);
+    if (budget && !session.budget) sessionUpdate.budget = budget;
+    const quantity = extractQuantity(allText);
+    if (quantity && !session.quantity) sessionUpdate.quantity = quantity;
+
+    if (Object.keys(sessionUpdate).length > 0) {
+      await prisma.chatSession.update({ where: { id: session.id }, data: sessionUpdate });
     }
 
     // 检测到客户留了联系方式，记入 lead
@@ -180,7 +213,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({ reply });
+    return NextResponse.json({ reply, intentLevel: newLevel, intentLabel: intentResult.label });
   } catch (e) {
     console.error("Chat API error:", e);
     return NextResponse.json({ error: "Internal error" }, { status: 500 });
