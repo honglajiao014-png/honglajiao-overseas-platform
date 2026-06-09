@@ -17,6 +17,7 @@ interface SyncVehicleInput {
   mileage?: number | null;
   transmission?: string | null;
   fuel?: string | null;
+  fuelType?: string | null;
   steering?: string | null;
   exteriorColor?: string | null;
   interiorColor?: string | null;
@@ -195,6 +196,7 @@ export async function POST(req: NextRequest) {
               mileage: v.mileage || null,
               transmission: v.transmission || null,
               fuel: v.fuel || null,
+              fuelType: v.fuel || null,
               steering: v.steering || null,
               exteriorColor: v.exteriorColor || null,
               interiorColor: v.interiorColor || null,
@@ -246,6 +248,7 @@ export async function POST(req: NextRequest) {
           mileage: v.mileage || null,
           transmission: v.transmission || null,
           fuel: v.fuel || null,
+          fuelType: v.fuel || null,
           steering: v.steering || null,
           exteriorColor: v.exteriorColor || null,
           interiorColor: v.interiorColor || null,
