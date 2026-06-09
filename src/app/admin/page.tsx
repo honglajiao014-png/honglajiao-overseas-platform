@@ -8,7 +8,7 @@ interface Stats {
   totalVehicles: number; soldVehicles: number; availableVehicles: number;
   totalUsers: number; newInquiries: number; completedOrders: number;
   totalProfit: number; totalSpecs: number;
-  pendingVehicles?: number; publishedVehicles?: number;
+  submittedVehicles?: number; approvedPublishedVehicles?: number;
   dealerCount?: number; todayVehicles?: number;
 }
 
@@ -256,10 +256,22 @@ export default function AdminDashboard() {
     <div>
       {/* 核心数据卡片 */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <StatCard label="待审核车辆" value={stats?.pendingVehicles ?? "-"} color="bg-yellow-50 border-0 text-yellow-700" />
-        <StatCard label="已上架车辆" value={stats?.publishedVehicles ?? "-"} color="bg-green-50 border-0 text-green-700" />
-        <StatCard label="车商数" value={stats?.dealerCount ?? "-"} color="bg-blue-50 border-0 text-blue-700" />
-        <StatCard label="今日新增" value={stats?.todayVehicles ?? "-"} color="bg-purple-50 border-0 text-purple-700" />
+        <div className="bg-white rounded-2xl p-5 border border-gray-200">
+          <div className="text-3xl font-extrabold text-yellow-600">{stats?.submittedVehicles ?? "-"}</div>
+          <div className="text-sm mt-1 text-gray-500">待审核 (SUBMITTED)</div>
+        </div>
+        <div className="bg-white rounded-2xl p-5 border border-gray-200">
+          <div className="text-3xl font-extrabold text-green-600">{stats?.approvedPublishedVehicles ?? "-"}</div>
+          <div className="text-sm mt-1 text-gray-500">已上架 (APPROVED+PUBLISHED)</div>
+        </div>
+        <div className="bg-white rounded-2xl p-5 border border-gray-200">
+          <div className="text-3xl font-extrabold text-blue-600">{stats?.dealerCount ?? "-"}</div>
+          <div className="text-sm mt-1 text-gray-500">车商数 (DEALER)</div>
+        </div>
+        <div className="bg-white rounded-2xl p-5 border border-gray-200">
+          <div className="text-3xl font-extrabold text-purple-600">{stats?.todayVehicles ?? "-"}</div>
+          <div className="text-sm mt-1 text-gray-500">今日新增</div>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">

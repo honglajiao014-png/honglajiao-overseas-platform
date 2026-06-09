@@ -113,9 +113,11 @@ export default async function RootLayout({
       </head>
       <body className="min-h-screen flex flex-col">
         <LangProvider initialLang={initialLang}>
-          {children}
-          <ChatWidget />
-          <WhatsAppButton />
+          <div style={{ animation: "fadeIn 0.2s ease-in" }}>
+            {children}
+            <ChatWidget />
+            <WhatsAppButton />
+          </div>
         </LangProvider>
         {/* Organization 结构化数据 — JSON-LD Schema（body 底部，搜索引擎可解析） */}
         <script

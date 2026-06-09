@@ -23,8 +23,8 @@ export async function GET(req: NextRequest) {
       activeChatSessions,
       leadStats,
       emailSent,
-      pendingVehicles,
-      publishedVehicles,
+      submittedVehicles,
+      approvedPublishedVehicles,
       dealerCount,
       todayVehicles,
     ] = await Promise.all([
@@ -37,9 +37,9 @@ export async function GET(req: NextRequest) {
         _count: { id: true },
       }),
       prisma.customerLead.count({ where: { emailSent: true } }),
-      prisma.vehicle.count({ where: { status: "pending" } }),
-      prisma.vehicle.count({ where: { published: true } }),
-      prisma.user.count({ where: { role: "dealer" } }),
+      prisma.vehicle.count({ where: { status: "SUBMITTED" } }),
+      prisma.vehicle.count({ where: { status: { in: ["APPROVED", "PUBLISHED"] } } }),
+      prisma.user.count({ where: { role: "DEALER" } }),
       prisma.vehicle.count({ where: { createdAt: { gte: todayStart, lt: todayEnd } } }),
     ]);
 
@@ -56,8 +56,8 @@ export async function GET(req: NextRequest) {
       leadsByIntent,
       totalLeads: leadStats.reduce((s, r) => s + r._count.id, 0),
       emailSent,
-      pendingVehicles,
-      publishedVehicles,
+      submittedVehicles,
+      approvedPublishedVehicles,
       dealerCount,
       todayVehicles,
     });
