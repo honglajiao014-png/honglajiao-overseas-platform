@@ -49,6 +49,8 @@ interface SyncVehicleInput {
   compatibleModels?: string | null;
   quantity?: number | null;
   displacement?: number | null;
+  engineNo?: string | null;
+  keyCount?: number | null;
   // 源数据
   sourceId?: string | null;
   sourceSite?: string | null;
@@ -124,6 +126,8 @@ export async function POST(req: NextRequest) {
           } catch { return []; }
         })(),
         description: [v.description, v.repairrecords ? "Maintenance: " + v.repairrecords : ""].filter(Boolean).join("\n") || null,
+        engineNo: v.engineno || null,
+        keyCount: v.keycount ? parseInt(v.keycount) : null,
       }));
       console.log("[Sync] Auto-read " + vehicles.length + " vehicles from domestic DB");
     } catch (e: any) {
@@ -224,6 +228,8 @@ export async function POST(req: NextRequest) {
               compatibleModels: v.compatibleModels || null,
               quantity: v.quantity || null,
               displacement: v.displacement || null,
+              engineNo: v.engineNo || null,
+              keyCount: v.keyCount || null,
               specsJson: specsJson,
               originalPrice: v.originalRmbPrice || 0,
               description: v.description || null,
@@ -276,6 +282,8 @@ export async function POST(req: NextRequest) {
           compatibleModels: v.compatibleModels || null,
           quantity: v.quantity || null,
           displacement: v.displacement || null,
+          engineNo: v.engineNo || null,
+          keyCount: v.keyCount || null,
           specsJson: specsJson,
           originalPrice: v.originalRmbPrice || 0,
           description: v.description || null,

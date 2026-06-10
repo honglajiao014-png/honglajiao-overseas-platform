@@ -178,6 +178,65 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
           }, parsed[0])
         : parsed;
     } catch {}
+
+    // 用 vehicle 手动填写字段覆盖 XLSX 值
+    if (specsData && typeof specsData === "object" && !Array.isArray(specsData)) {
+      // 检测是否为中文扁平 JSON（XLSX 导入格式）
+      const specKeys = Object.keys(specsData);
+      const isFlat = specKeys.length > 0 && specKeys.some(k => /[一-鿿]/.test(k));
+
+      if (isFlat) {
+        // 手动字段 → XLSX 中文键名映射
+        const OVERRIDE_MAP: Record<string, string> = {
+          displacement: "排量(L)",
+          engineModel: "发动机型号",
+          transmission: "变速箱类型",
+          fuel: "能源形式",
+          bodyStyle: "车身形式",
+          seatCount: "座位数",
+          driveType: "驱动方式",
+          batteryType: "电池类型",
+          rangeKm: "续航里程(km)",
+          motorPowerKw: "电机功率(kW)",
+        };
+
+        for (const [vehKey, xlsxKey] of Object.entries(OVERRIDE_MAP)) {
+          const val = (vehicle as any)[vehKey];
+          if (val !== null && val !== undefined && val !== "" && val !== 0) {
+            specsData[xlsxKey] = typeof val === "number" ? val : String(val);
+          }
+        }
+
+        // 配置类字段值统一为 "●"（安全气囊/ABS/天窗等布尔型配置）
+        const CONFIG_KEYS = [
+          "驾驶座安全气囊", "副驾驶安全气囊", "前排侧气囊", "后排侧气囊", "头部气帘",
+          "膝部气囊", "安全带未系提示", "ABS防抱死", "制动力分配(EBD)", "刹车辅助(EBA)",
+          "牵引力控制(TCS)", "车身稳定控制(ESP)", "并线辅助", "车道偏离预警", "车道保持",
+          "主动刹车", "前雷达", "后雷达", "倒车影像", "全景影像", "定速巡航", "自适应巡航",
+          "上坡辅助", "陡坡缓降", "自动驻车", "胎压监测", "夜视系统", "疲劳驾驶提示",
+          "电动天窗", "全景天窗", "运动外观套件", "铝合金轮毂", "电动后备厢", "感应后备厢",
+          "车顶行李架", "远程启动", "无钥匙启动", "无钥匙进入", "多功能方向盘", "方向盘换挡",
+          "方向盘加热", "全液晶仪表盘", "HUD抬头显示", "手机无线充电", "座椅加热", "座椅通风",
+          "座椅按摩", "电动座椅记忆", "后排杯架", "蓝牙/车载电话", "手机互联/映射", "语音识别",
+          "车联网", "OTA升级", "车内氛围灯", "后座出风口", "温度分区控制", "PM2.5过滤",
+          "车载冰箱", "日间行车灯", "自适应远近光", "自动头灯", "转向辅助灯", "前雾灯",
+          "大灯高度可调", "大灯清洗", "LED大灯", "氙气大灯", "矩阵LED", "激光大灯",
+          "感应雨刷", "防爆胎", "空气悬架", "后轮转向", "低速四驱", "差速锁",
+        ];
+        for (const k of CONFIG_KEYS) {
+          if (specsData[k] !== undefined && specsData[k] !== null && specsData[k] !== "" && specsData[k] !== "-" && specsData[k] !== "无") {
+            specsData[k] = "●";
+          }
+        }
+
+        // 过滤掉字段名含"质保"或"保修"的
+        for (const k of specKeys) {
+          if (k.includes("质保") || k.includes("保修")) {
+            delete specsData[k];
+          }
+        }
+      }
+    }
   }
 
   return (
@@ -196,6 +255,7 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <div className="lg:col-span-7">
               <CarGallery images={vehicle.images} brand={vehicle.brand} model={vehicle.model} />
+              {specsData && <SpecsGroups specs={specsData} vehicleYear={vehicle.year} />}
             </div>
 
             <div className="lg:col-span-5">
@@ -267,9 +327,6 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
                     </div>
                   </div>
                 )}
-
-                {/* 规格参数分组折叠卡片 */}
-                {specsData && <SpecsGroups specs={specsData} vehicleYear={vehicle.year} />}
 
                 <div className="mt-6">
                   <a href={`/inquiry?slug=${encodeURIComponent(vehicle.brand + "-" + vehicle.model + "-" + vehicle.year)}`}
