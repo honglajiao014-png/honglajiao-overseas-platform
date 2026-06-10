@@ -186,7 +186,43 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
       const isFlat = specKeys.length > 0 && specKeys.some(k => /[一-鿿]/.test(k));
 
       if (isFlat) {
-        // 手动字段 → XLSX 中文键名映射
+        // 1. 黑名单过滤：先删除不需要显示的字段
+        const BLACKLIST = [
+          "数据版本号", "匹配置信度", "最后更新时间", "补充次数", "搜索关键词",
+          "生产方式", "车款全称", "整车质保",
+          "发动机电子防盗", "车内中控锁", "遥控钥匙",
+          "ABS防抱死", "安全带未系提示", "行车电脑显示屏",
+          "蓝牙/车载电话", "日间行车灯", "铝合金轮毂",
+          "制动力分配(EBD)", "刹车辅助(EBA)", "牵引力控制(TCS)", "车身稳定控制(ESP)",
+        ];
+        for (const k of specKeys) {
+          if (BLACKLIST.includes(k) || k.includes("质保") || k.includes("保修")) {
+            delete specsData[k];
+          }
+        }
+
+        // 2. 配置类字段值统一为 "●"（安全气囊/天窗等布尔型配置）
+        const CONFIG_KEYS = [
+          "驾驶座安全气囊", "副驾驶安全气囊", "前排侧气囊", "后排侧气囊", "头部气帘",
+          "膝部气囊", "并线辅助", "车道偏离预警", "车道保持",
+          "主动刹车", "前雷达", "后雷达", "倒车影像", "全景影像", "定速巡航", "自适应巡航",
+          "上坡辅助", "陡坡缓降", "自动驻车", "胎压监测", "夜视系统", "疲劳驾驶提示",
+          "电动天窗", "全景天窗", "运动外观套件", "电动后备厢", "感应后备厢",
+          "车顶行李架", "远程启动", "无钥匙启动", "无钥匙进入", "多功能方向盘", "方向盘换挡",
+          "方向盘加热", "全液晶仪表盘", "HUD抬头显示", "手机无线充电", "座椅加热", "座椅通风",
+          "座椅按摩", "电动座椅记忆", "后排杯架", "手机互联/映射", "语音识别",
+          "车联网", "OTA升级", "车内氛围灯", "后座出风口", "温度分区控制", "PM2.5过滤",
+          "车载冰箱", "自适应远近光", "自动头灯", "转向辅助灯", "前雾灯",
+          "大灯高度可调", "大灯清洗", "LED大灯", "氙气大灯", "矩阵LED", "激光大灯",
+          "感应雨刷", "防爆胎", "空气悬架", "后轮转向", "低速四驱", "差速锁",
+        ];
+        for (const k of CONFIG_KEYS) {
+          if (specsData[k] !== undefined && specsData[k] !== null && specsData[k] !== "" && specsData[k] !== "-" && specsData[k] !== "无") {
+            specsData[k] = "●";
+          }
+        }
+
+        // 3. 车辆字段覆盖规格库（最后执行，确保 vehicle 实际值优先）
         const OVERRIDE_MAP: Record<string, string> = {
           displacement: "排量(L)",
           engineModel: "发动机型号",
@@ -204,35 +240,6 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
           const val = (vehicle as any)[vehKey];
           if (val !== null && val !== undefined && val !== "" && val !== 0) {
             specsData[xlsxKey] = typeof val === "number" ? val : String(val);
-          }
-        }
-
-        // 配置类字段值统一为 "●"（安全气囊/ABS/天窗等布尔型配置）
-        const CONFIG_KEYS = [
-          "驾驶座安全气囊", "副驾驶安全气囊", "前排侧气囊", "后排侧气囊", "头部气帘",
-          "膝部气囊", "安全带未系提示", "ABS防抱死", "制动力分配(EBD)", "刹车辅助(EBA)",
-          "牵引力控制(TCS)", "车身稳定控制(ESP)", "并线辅助", "车道偏离预警", "车道保持",
-          "主动刹车", "前雷达", "后雷达", "倒车影像", "全景影像", "定速巡航", "自适应巡航",
-          "上坡辅助", "陡坡缓降", "自动驻车", "胎压监测", "夜视系统", "疲劳驾驶提示",
-          "电动天窗", "全景天窗", "运动外观套件", "铝合金轮毂", "电动后备厢", "感应后备厢",
-          "车顶行李架", "远程启动", "无钥匙启动", "无钥匙进入", "多功能方向盘", "方向盘换挡",
-          "方向盘加热", "全液晶仪表盘", "HUD抬头显示", "手机无线充电", "座椅加热", "座椅通风",
-          "座椅按摩", "电动座椅记忆", "后排杯架", "蓝牙/车载电话", "手机互联/映射", "语音识别",
-          "车联网", "OTA升级", "车内氛围灯", "后座出风口", "温度分区控制", "PM2.5过滤",
-          "车载冰箱", "日间行车灯", "自适应远近光", "自动头灯", "转向辅助灯", "前雾灯",
-          "大灯高度可调", "大灯清洗", "LED大灯", "氙气大灯", "矩阵LED", "激光大灯",
-          "感应雨刷", "防爆胎", "空气悬架", "后轮转向", "低速四驱", "差速锁",
-        ];
-        for (const k of CONFIG_KEYS) {
-          if (specsData[k] !== undefined && specsData[k] !== null && specsData[k] !== "" && specsData[k] !== "-" && specsData[k] !== "无") {
-            specsData[k] = "●";
-          }
-        }
-
-        // 过滤掉字段名含"质保"或"保修"的
-        for (const k of specKeys) {
-          if (k.includes("质保") || k.includes("保修")) {
-            delete specsData[k];
           }
         }
       }
@@ -255,7 +262,6 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <div className="lg:col-span-7">
               <CarGallery images={vehicle.images} brand={vehicle.brand} model={vehicle.model} />
-              {specsData && <SpecsGroups specs={specsData} vehicleYear={vehicle.year} />}
             </div>
 
             <div className="lg:col-span-5">
@@ -307,27 +313,6 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
                   <div className="mt-6 p-4 bg-gray-50 rounded-xl text-sm text-gray-600 whitespace-pre-wrap">{vehicle.description}</div>
                 )}
 
-                {/* 配置亮点 Features */}
-                {specsData?.features && Object.keys(specsData.features).length > 0 && (
-                  <div className="mt-6">
-                    <h3 className="text-sm font-bold text-gray-800 mb-3">{d(I18N.features)}</h3>
-                    <div className="grid grid-cols-1 gap-3">
-                      {Object.entries(specsData.features).map(([cat, items]: [string, any]) => (
-                        <div key={cat} className="bg-gray-50 rounded-xl p-3">
-                          <span className="text-xs font-semibold text-gray-700 block mb-1.5">{cat}</span>
-                          <div className="flex flex-wrap gap-1.5">
-                            {Array.isArray(items) ? items.map((item: string, i: number) => (
-                              <span key={i} className="text-xs bg-white text-gray-600 px-2 py-0.5 rounded-full border border-gray-200">{item}</span>
-                            )) : (
-                              <span className="text-xs text-gray-500">{String(items)}</span>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
                 <div className="mt-6">
                   <a href={`/inquiry?slug=${encodeURIComponent(vehicle.brand + "-" + vehicle.model + "-" + vehicle.year)}`}
                     className="block w-full text-center bg-accent text-white py-3 rounded-xl font-bold hover:bg-accent-dark transition-all">{d(I18N.inquire)}</a>
@@ -335,6 +320,9 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
               </div>
             </div>
           </div>
+
+          {/* 规格参数 — 全宽展示 */}
+          {specsData && <SpecsGroups specs={specsData} vehicleYear={vehicle.year} />}
         </div>
 
         {/* 该车商其他车辆 */}
@@ -579,6 +567,17 @@ function isEmpty(v: any): boolean {
   return false;
 }
 
+/** 判断值是否为配置型（●/○/标配/选配/有/无 等） */
+function isConfigStyle(v: any): boolean {
+  if (typeof v === "boolean") return true;
+  if (typeof v === "string") {
+    const s = v.trim();
+    if (["●", "○", "标配", "选配", "可选", "有", "无", "是", "否"].includes(s)) return true;
+    if (/^[●○]$/.test(s)) return true;
+  }
+  return false;
+}
+
 /** 格式化值（兼容中英文） */
 function fmtSpecVal(v: any): string {
   if (typeof v === "boolean") return v ? "●" : "-";
@@ -595,16 +594,29 @@ function fmtSpecVal(v: any): string {
   return String(v);
 }
 
+/** 清洗参数型值：去掉 XLSX 里的多余文字，只保留数值+单位 */
+function cleanParamVal(raw: string): string {
+  // 去掉前导 "约"、尾随说明文字（括号内容保留，但去掉 "左右" "以上" "以下" 等）
+  let s = raw.trim();
+  // 去掉前导修饰词
+  s = s.replace(/^(约|大约|大概|近|接近)\s*/i, "");
+  // 去掉尾随模糊词
+  s = s.replace(/\s*(左右|以上|以下|以内|以外|不到|出头)\s*$/g, "");
+  // 如果整个值就是 "●" 或 "○"，原样返回
+  if (s === "●" || s === "○") return s;
+  return s;
+}
+
 /** 中文扁平 JSON 的分组定义 */
 const CN_GROUPS: { name: string; icon: string; keys: string[] }[] = [
-  { name: "基本信息", icon: "📋", keys: ["品牌", "车系", "车款全称", "厂商", "生产方式", "上市时间", "能源形式", "级别", "年款", "环保标准"] },
+  { name: "基本信息", icon: "📋", keys: ["品牌", "车系", "厂商", "上市时间", "能源形式", "级别", "年款", "环保标准"] },
   { name: "发动机/动力", icon: "⚡", keys: ["进气形式", "排量(L)", "气缸排列形式", "气缸数", "每缸气门数", "配气机构", "最大马力(Ps)", "最大功率(kW)", "最大功率转速(rpm)", "最大扭矩(N·m)", "最大扭矩转速(rpm)", "燃油标号", "供油方式", "缸盖材料", "缸体材料", "工信部综合油耗(L/100km)", "电机类型", "电机功率(kW)", "电机扭矩(N·m)", "电池容量(kWh)", "电池类型", "续航里程(km)", "快充时间", "慢充时间"] },
-  { name: "变速箱/驱动", icon: "🔧", keys: ["变速箱类型", "变速箱描述", "挡位个数", "驱动方式", "前悬架类型", "后悬架类型", "转向助力类型", "车体结构", "驻车制动类型", "前制动器类型", "后制动器类型", "前轮胎规格", "后轮胎规格", "备胎规格", "整车质保"] },
+  { name: "变速箱/驱动", icon: "🔧", keys: ["变速箱类型", "变速箱描述", "挡位个数", "驱动方式", "前悬架类型", "后悬架类型", "转向助力类型", "车体结构", "驻车制动类型", "前制动器类型", "后制动器类型", "前轮胎规格", "后轮胎规格", "备胎规格"] },
   { name: "车身尺寸", icon: "📐", keys: ["车身形式", "车门数", "座位数", "轴距(mm)", "长度(mm)", "宽度(mm)", "高度(mm)", "油箱容积(L)", "整备质量(kg)", "行李厢容积(L)", "货箱尺寸"] },
-  { name: "安全配置", icon: "🛡️", keys: ["驾驶座安全气囊", "副驾驶安全气囊", "前排侧气囊", "后排侧气囊", "头部气帘", "膝部气囊", "安全带未系提示", "ABS防抱死", "制动力分配(EBD)", "刹车辅助(EBA)", "牵引力控制(TCS)", "车身稳定控制(ESP)", "并线辅助", "车道偏离预警", "车道保持", "主动刹车", "前雷达", "后雷达", "倒车影像", "全��影像", "定速巡航", "自适应巡航", "上坡辅助", "陡坡缓降", "自动驻车", "胎压监测", "夜视系统", "疲劳驾驶提示"] },
-  { name: "外部配置", icon: "🚗", keys: ["天窗类型", "电动天窗", "全景天窗", "运动外观套件", "铝合金轮毂", "电动后备厢", "感应后备厢", "车顶行李架", "远程启动", "无钥匙启动", "无钥匙进入"] },
-  { name: "内部配置", icon: "🎮", keys: ["方向盘材质", "方向盘调节", "多功能方向盘", "方向盘换挡", "方向盘加热", "全液晶仪表盘", "HUD抬头显示", "行车电脑", "手机无线充电", "座椅材质", "座椅调节", "座椅加热", "座椅通风", "座椅按摩", "电动座椅记忆", "后排座椅放倒", "前/后中央扶手", "后排杯架", "中控屏尺寸", "蓝牙/车载电话", "手机互联/映射", "语音识别", "车联网", "OTA升级", "扬声器数量", "车内氛围灯", "后座出风口", "温度分区控制", "PM2.5过滤", "车载冰箱"] },
-  { name: "灯光配置", icon: "💡", keys: ["近光灯", "远光灯", "日间行车灯", "自适应远近光", "自动头灯", "转向辅助灯", "前雾灯", "大灯高度可调", "大灯清洗", "车内氛围灯"] },
+  { name: "安全配置", icon: "🛡️", keys: ["驾驶座安全气囊", "副驾驶安全气囊", "前排侧气囊", "后排侧气囊", "头部气帘", "膝部气囊", "并线辅助", "车道偏离预警", "车道保持", "主动刹车", "前雷达", "后雷达", "倒车影像", "全��影像", "定速巡航", "自适应巡航", "上坡辅助", "陡坡缓降", "自动驻车", "胎压监测", "夜视系统", "疲劳驾驶提示"] },
+  { name: "外部配置", icon: "🚗", keys: ["天窗类型", "电动天窗", "全景天窗", "运动外观套件", "电动后备厢", "感应后备厢", "车顶行李架", "远程启动", "无钥匙启动", "无钥匙进入"] },
+  { name: "内部配置", icon: "🎮", keys: ["方向盘材质", "方向盘调节", "多功能方向盘", "方向盘换挡", "方向盘加热", "全液晶仪表盘", "HUD抬头显示", "行车电脑", "手机无线充电", "座椅材质", "座椅调节", "座椅加热", "座椅通风", "座椅按摩", "电动座椅记忆", "后排座椅放倒", "前/后中央扶手", "后排杯架", "中控屏尺寸", "手机互联/映射", "语音识别", "车联网", "OTA升级", "扬声器数量", "车内氛围灯", "后座出风口", "温度分区控制", "PM2.5过滤", "车载冰箱"] },
+  { name: "灯光配置", icon: "💡", keys: ["近光灯", "远光灯", "自适应远近光", "自动头灯", "转向辅助灯", "前雾灯", "大灯高度可调", "大灯清洗", "车内氛围灯"] },
 ];
 
 function SpecsGroups({ specs, vehicleYear }: { specs: any; vehicleYear?: number }) {
@@ -616,7 +628,13 @@ function SpecsGroups({ specs, vehicleYear }: { specs: any; vehicleYear?: number 
     // 中文扁平 JSON：按分组折叠渲染
     const fields = keys
       .filter(k => !isEmpty(specs[k]))
-      .map(k => ({ key: k, label: k, value: fmtSpecVal(specs[k]) }));
+      .map(k => {
+        const raw = specs[k];
+        const formatted = fmtSpecVal(raw);
+        // 配置型字段保留 ●/○，参数型字段清洗 XLSX 多余文字
+        const value = isConfigStyle(raw) ? formatted : cleanParamVal(formatted);
+        return { key: k, label: k, value };
+      });
 
     if (fields.length === 0) return null;
 
@@ -641,7 +659,7 @@ function SpecsGroups({ specs, vehicleYear }: { specs: any; vehicleYear?: number 
         <h3 className="text-sm font-bold text-gray-800 mb-3">📊 详细参数</h3>
         <div className="space-y-2">
           {groupEntries.map(([gName, g], idx) => (
-            <details key={gName} className="bg-gray-50 rounded-xl border border-gray-100" open={idx < 3}>
+            <details key={gName} className="bg-gray-50 rounded-xl border border-gray-100" open={idx < 1}>
               <summary className="px-4 py-2.5 cursor-pointer text-sm font-semibold text-gray-700 hover:text-gray-900 select-none">
                 {g.icon} {gName}
                 <span className="text-xs text-gray-400 ml-2">({g.fields.length})</span>
@@ -668,7 +686,9 @@ function SpecsGroups({ specs, vehicleYear }: { specs: any; vehicleYear?: number 
   const topFields: { key: string; label: string; value: string }[] = [];
   for (const k of ["vehicleType", "manufacturer", "energyType", "releaseDate", "yearRange"]) {
     if (specs[k] && !isEmpty(specs[k])) {
-      topFields.push({ key: k, label: SPECS_KEY_LABEL[k] || k, value: fmtSpecVal(specs[k]) });
+      const formatted = fmtSpecVal(specs[k]);
+      const value = isConfigStyle(specs[k]) ? formatted : cleanParamVal(formatted);
+      topFields.push({ key: k, label: SPECS_KEY_LABEL[k] || k, value });
     }
   }
   if (topFields.length > 0) {
@@ -687,7 +707,9 @@ function SpecsGroups({ specs, vehicleYear }: { specs: any; vehicleYear?: number 
       // mirrors 子对象的 key 加前缀避免与 seats 重复
       const lookupKey = sectionKey === "mirrors" ? `mirror_${k}` : k;
       const label = SPECS_KEY_LABEL[lookupKey] || SPECS_KEY_LABEL[k] || k;
-      fields.push({ key: k, label, value: fmtSpecVal(v) });
+      const formatted = fmtSpecVal(v);
+      const value = isConfigStyle(v) ? formatted : cleanParamVal(formatted);
+      fields.push({ key: k, label, value });
     }
 
     if (fields.length > 0) {
@@ -709,7 +731,7 @@ function SpecsGroups({ specs, vehicleYear }: { specs: any; vehicleYear?: number 
           const meta = GROUP_META[gKey] || { label: gKey, icon: "📋" };
           const fields = groups[gKey];
           return (
-            <details key={gKey} className="bg-gray-50 rounded-xl border border-gray-100" open={idx < 3}>
+            <details key={gKey} className="bg-gray-50 rounded-xl border border-gray-100" open={idx < 1}>
               <summary className="px-4 py-2.5 cursor-pointer text-sm font-semibold text-gray-700 hover:text-gray-900 select-none">
                 {meta.icon} {meta.label}
                 <span className="text-xs text-gray-400 ml-2">({fields.length})</span>
