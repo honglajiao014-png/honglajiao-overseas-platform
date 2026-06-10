@@ -55,6 +55,9 @@ interface SyncVehicleInput {
   sourceId?: string | null;
   sourceSite?: string | null;
   specsJson?: string | null;
+  specId?: string | null;
+  specConflict?: boolean;
+  soldAt?: string | null;
   // 汇率（可选，默认6.8）
   exchangeRate?: number;
 }
@@ -146,6 +149,10 @@ export async function POST(req: NextRequest) {
         quantity: v.quantity ? parseInt(v.quantity) : null,
         engineNo: v.engineno || null,
         keyCount: v.keycount ? parseInt(v.keycount) : null,
+        specId: v.specid || null,
+        specsJson: v.specsjson || null,
+        specConflict: v.specconflict === true,
+        soldAt: v.soldat || null,
       }));
       console.log("[Sync] Auto-read " + vehicles.length + " vehicles from domestic DB");
     } catch (e: any) {
@@ -165,16 +172,22 @@ export async function POST(req: NextRequest) {
       const basePriceUSD = Math.round((v.originalRmbPrice || 0) / rate);
       const pricing = calcPrice(basePriceUSD);
 
-      // 1.5 规格匹配
+      // 1.5 规格匹配（国内站已有 specId 则跳过）
+      let specId: string | null = v.specId || null;
       let specsJson: string | null = v.specsJson || null;
-      if (!specsJson) {
+      let specConflict: boolean = v.specConflict || false;
+      if (!specId) {
         const specMatch = await matchSpecsFromDb(v.brand, v.model);
         if (specMatch) {
+          specId = specMatch.specId;
           specsJson = specMatch.specsJson;
+          specConflict = specMatch.conflict;
           console.log(`[Sync] 规格匹配成功: ${v.brand} ${v.model} → specId=${specMatch.specId}`);
         } else {
           console.log(`[Sync] 规格未匹配: ${v.brand} ${v.model}`);
         }
+      } else {
+        console.log(`[Sync] 规格已存在跳过匹配: ${v.brand} ${v.model} specId=${specId}`);
       }
 
       // 2. 生成 slug（中文转拼音近似）
@@ -208,6 +221,7 @@ export async function POST(req: NextRequest) {
             continue;
           }
           // 更新已有车辆
+          const soldAtDate = v.soldAt ? new Date(v.soldAt) : null;
           await prisma.vehicle.update({
             where: { id: existing.id },
             data: {
@@ -249,10 +263,13 @@ export async function POST(req: NextRequest) {
               displacement: v.displacement || null,
               engineNo: v.engineNo || null,
               keyCount: v.keyCount || null,
+              specId: specId,
               specsJson: specsJson,
+              specConflict: specConflict,
+              soldAt: soldAtDate,
               originalPrice: v.originalRmbPrice || 0,
               description: v.description || null,
-              published: true,
+              published: !soldAtDate,
             },
           });
           results.push({ success: true, slug, brand: v.brand, model: v.model });
@@ -261,6 +278,7 @@ export async function POST(req: NextRequest) {
       }
 
       // 4. 新建
+      const soldAtDate = v.soldAt ? new Date(v.soldAt) : null;
       await prisma.vehicle.create({
         data: {
           id: `v-sync-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
@@ -303,12 +321,15 @@ export async function POST(req: NextRequest) {
           displacement: v.displacement || null,
           engineNo: v.engineNo || null,
           keyCount: v.keyCount || null,
+          specId: specId,
           specsJson: specsJson,
+          specConflict: specConflict,
+          soldAt: soldAtDate,
           originalPrice: v.originalRmbPrice || 0,
           description: v.description || null,
           sourceId: v.sourceId || null,
           sourceSite: v.sourceSite || "domestic",
-          published: true,
+          published: !soldAtDate,
           updatedAt: new Date(),
         },
       });

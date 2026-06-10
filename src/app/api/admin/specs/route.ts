@@ -93,3 +93,37 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ vehicle, specMatched: !!specId });
 }
+
+// PATCH — 更新规格
+export async function PATCH(req: NextRequest) {
+  const admin = requireAdmin(req);
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { id, ...data } = await req.json();
+  if (!id) return NextResponse.json({ error: "缺少规格ID" }, { status: 400 });
+
+  // 校验 specs JSON
+  if (data.specs && typeof data.specs === "string") {
+    try { JSON.parse(data.specs); } catch {
+      return NextResponse.json({ error: "specs 不是有效的 JSON" }, { status: 400 });
+    }
+  }
+
+  const spec = await prisma.vehicleSpec.update({ where: { id }, data });
+  return NextResponse.json({ spec });
+}
+
+// DELETE — 删除规格
+export async function DELETE(req: NextRequest) {
+  const admin = requireAdmin(req);
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { id } = await req.json();
+  if (!id) return NextResponse.json({ error: "缺少规格ID" }, { status: 400 });
+
+  // 先解除关联车辆的 specId
+  await prisma.vehicle.updateMany({ where: { specId: id }, data: { specId: null } });
+  await prisma.vehicleSpec.delete({ where: { id } });
+
+  return NextResponse.json({ success: true });
+}

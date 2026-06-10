@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
     sort === "oldest" ? { year: "asc" } :
     { createdAt: "desc" };
 
-  const [vehicles, total] = await Promise.all([
+  const [vehicles, total, soldCount] = await Promise.all([
     prisma.vehicle.findMany({
       where,
       orderBy,
@@ -63,11 +63,13 @@ export async function GET(req: NextRequest) {
         displacement: true,
         engineModel: true,
         specsJson: true,
+        soldAt: true,
         createdAt: true,
       },
     }),
     prisma.vehicle.count({ where }),
+    prisma.vehicle.count({ where: { published: false, soldAt: { not: null }, deleted: false } }),
   ]);
 
-  return NextResponse.json({ vehicles, total, limit, offset });
+  return NextResponse.json({ vehicles, total, soldCount, limit, offset });
 }

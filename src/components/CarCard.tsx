@@ -13,9 +13,10 @@ interface CarCardProps {
   images: string[];
   /** "horizontal" 用于列表，"vertical" 用于推荐卡片 */
   variant?: "horizontal" | "vertical";
+  soldAt?: Date | string | null;
 }
 
-export function CarCard({ slug, brand, model, year, mileage, location, transmission, fuel, salePrice, images, variant = "horizontal" }: CarCardProps) {
+export function CarCard({ slug, brand, model, year, mileage, location, transmission, fuel, salePrice, images, variant = "horizontal", soldAt }: CarCardProps) {
   if (variant === "vertical") {
     return (
       <Link
@@ -41,7 +42,11 @@ export function CarCard({ slug, brand, model, year, mileage, location, transmiss
             {fuel ? <span>{fuel}</span> : null}
           </div>
           <div className="mt-3 text-lg font-extrabold text-red-500">
-            ${salePrice.toLocaleString()}
+            {soldAt ? (
+              <span className="inline-block bg-gray-200 text-gray-500 px-3 py-0.5 rounded-full text-sm font-bold">Sold</span>
+            ) : (
+              <>${salePrice.toLocaleString()}</>
+            )}
           </div>
         </div>
       </Link>
@@ -76,7 +81,11 @@ export function CarCard({ slug, brand, model, year, mileage, location, transmiss
         </div>
         <div className="flex items-end justify-between mt-3">
           <span className="text-xl font-extrabold text-red-500">
-            ${salePrice.toLocaleString()} <span className="text-xs font-normal text-gray-400">USD</span>
+            {soldAt ? (
+              <span className="inline-block bg-gray-200 text-gray-500 px-3 py-0.5 rounded-full text-sm font-bold">Sold</span>
+            ) : (
+              <>${salePrice.toLocaleString()} <span className="text-xs font-normal text-gray-400">USD</span></>
+            )}
           </span>
           <span className="text-xs text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity">
             View Details →

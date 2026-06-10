@@ -141,6 +141,7 @@ model Vehicle {
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
   specId           String?
+  specConflict     Boolean      @default(false)
   batteryType      String?
   bodyStyle        String?
   compatibleModels String?

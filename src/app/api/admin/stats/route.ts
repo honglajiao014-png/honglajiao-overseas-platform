@@ -1,61 +1,58 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { requireAdmin } from "@/lib/adminAuth";
 
 export async function GET(req: NextRequest) {
+  const admin = requireAdmin(req);
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   try {
-    const auth = req.headers.get("authorization")?.split(" ")[1];
-    if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-    const { verifyToken } = await import("@/lib/auth");
-    const payload = verifyToken(auth);
-    if (!payload || payload.role !== "admin") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
-
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const todayEnd = new Date(todayStart.getTime() + 86400000);
 
     const [
-      todayUsers,
+      totalVehicles,
+      soldVehicles,
+      availableVehicles,
       totalUsers,
-      todayChatSessions,
-      activeChatSessions,
-      leadStats,
-      emailSent,
+      newInquiries,
+      completedOrders,
+      totalSpecs,
       submittedVehicles,
       approvedPublishedVehicles,
       dealerCount,
       todayVehicles,
     ] = await Promise.all([
-      prisma.user.count({ where: { createdAt: { gte: todayStart, lt: todayEnd } } }),
+      prisma.vehicle.count({ where: { deleted: false } }),
+      prisma.vehicle.count({ where: { status: "sold", deleted: false } }),
+      prisma.vehicle.count({ where: { status: "available", deleted: false } }),
       prisma.user.count(),
-      prisma.chatSession.count({ where: { createdAt: { gte: todayStart, lt: todayEnd } } }),
-      prisma.chatSession.count({ where: { updatedAt: { gte: new Date(Date.now() - 3600000) } } }),
-      prisma.customerLead.groupBy({
-        by: ["intentLevel"],
-        _count: { id: true },
-      }),
-      prisma.customerLead.count({ where: { emailSent: true } }),
+      prisma.inquiry.count({ where: { status: "new" } }),
+      prisma.order.count({ where: { status: "completed" } }),
+      prisma.vehicleSpec.count(),
       prisma.vehicle.count({ where: { status: "SUBMITTED", deleted: false } }),
       prisma.vehicle.count({ where: { status: { in: ["APPROVED", "PUBLISHED"] }, deleted: false } }),
       prisma.user.count({ where: { role: "DEALER" } }),
       prisma.vehicle.count({ where: { createdAt: { gte: todayStart, lt: todayEnd }, deleted: false } }),
     ]);
 
-    const leadsByIntent: Record<number, number> = {};
-    for (const row of leadStats) {
-      leadsByIntent[row.intentLevel] = row._count.id;
-    }
+    // 计算总利润
+    const profitAgg = await prisma.order.aggregate({
+      _sum: { profit: true },
+      where: { status: "completed" },
+    });
+    const totalProfit = profitAgg._sum.profit || 0;
 
     return NextResponse.json({
-      todayUsers,
+      totalVehicles,
+      soldVehicles,
+      availableVehicles,
       totalUsers,
-      todayChatSessions,
-      activeChatSessions,
-      leadsByIntent,
-      totalLeads: leadStats.reduce((s, r) => s + r._count.id, 0),
-      emailSent,
+      newInquiries,
+      completedOrders,
+      totalProfit,
+      totalSpecs,
       submittedVehicles,
       approvedPublishedVehicles,
       dealerCount,

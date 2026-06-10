@@ -1,1 +1,16 @@
-{"projectId":"prj_VRrwzHwYXyCwcDUFe17lCkrwatY3","orgId":"team_sCC8Et7ohQEhb3F9oF3Mbdyq","projectName":"hlj-car-export"}
+{
+  "projectId": "prj_VRrwzHwYXyCwcDUFe17lCkrwatY3",
+  "orgId": "team_sCC8Et7ohQEhb3F9oF3Mbdyq",
+  "projectName": "hlj-car-export",
+  "settings": {
+    "createdAt": 1780162359320,
+    "framework": "nextjs",
+    "devCommand": null,
+    "installCommand": "npm install",
+    "buildCommand": "npm run build",
+    "outputDirectory": ".next",
+    "rootDirectory": null,
+    "directoryListing": false,
+    "nodeVersion": "24.x"
+  }
+}

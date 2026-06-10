@@ -115,7 +115,7 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
       doorCount: true, driveType: true, maxHorsepower: true,
       maxTorqueNm: true, wheelbase: true, curbWeight: true,
       fuelConsumption: true, fuelTankCapacity: true, fuelGrade: true,
-      specId: true,
+      specId: true, soldAt: true,
     },
   });
 
@@ -146,7 +146,7 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
         select: {
           slug: true, brand: true, model: true, year: true,
           mileage: true, location: true, transmission: true,
-          fuel: true, salePrice: true, images: true,
+          fuel: true, salePrice: true, images: true, soldAt: true,
         },
         orderBy: { createdAt: "desc" },
         take: 4,
@@ -270,11 +270,19 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
                 <h1 className="text-2xl font-extrabold text-gray-900 mt-3">{vehicle.brand} {vehicle.model} {vehicle.year}</h1>
 
                 <div className="mt-6">
-                  <div className="text-4xl font-extrabold text-danger">${vehicle.salePrice.toLocaleString()}</div>
-                  <p className="text-xs text-gray-400 mt-1">{d(I18N.priceNote)}</p>
-                  <div className="flex gap-4 mt-2 text-xs text-gray-500">
-                    <span>{d(I18N.basePrice)}: ${vehicle.basePrice.toLocaleString()}</span>
-                  </div>
+                  {vehicle.soldAt ? (
+                    <div className="text-4xl font-extrabold text-gray-400">
+                      <span className="inline-block bg-gray-200 text-gray-500 px-4 py-1 rounded-full text-lg font-bold">Sold</span>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="text-4xl font-extrabold text-danger">${vehicle.salePrice.toLocaleString()}</div>
+                      <p className="text-xs text-gray-400 mt-1">{d(I18N.priceNote)}</p>
+                      <div className="flex gap-4 mt-2 text-xs text-gray-500">
+                        <span>{d(I18N.basePrice)}: ${vehicle.basePrice.toLocaleString()}</span>
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 {/* 基础参数 */}
@@ -313,10 +321,12 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
                   <div className="mt-6 p-4 bg-gray-50 rounded-xl text-sm text-gray-600 whitespace-pre-wrap">{vehicle.description}</div>
                 )}
 
-                <div className="mt-6">
-                  <a href={`/inquiry?slug=${encodeURIComponent(vehicle.brand + "-" + vehicle.model + "-" + vehicle.year)}`}
-                    className="block w-full text-center bg-accent text-white py-3 rounded-xl font-bold hover:bg-accent-dark transition-all">{d(I18N.inquire)}</a>
-                </div>
+                {!vehicle.soldAt && (
+                  <div className="mt-6">
+                    <a href={`/inquiry?slug=${encodeURIComponent(vehicle.brand + "-" + vehicle.model + "-" + vehicle.year)}`}
+                      className="block w-full text-center bg-accent text-white py-3 rounded-xl font-bold hover:bg-accent-dark transition-all">{d(I18N.inquire)}</a>
+                  </div>
+                )}
               </div>
             </div>
           </div>

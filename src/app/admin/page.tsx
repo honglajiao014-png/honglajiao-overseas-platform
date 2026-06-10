@@ -155,18 +155,20 @@ export default function AdminDashboard() {
         .then(r => { if (!r.ok) throw new Error(`${url} ${r.status}`); return r.json(); })
         .catch(e => { console.warn(`[admin] ${url} 请求失败:`, e.message); return null; });
 
-    const [s, v, sp, iq, o] = await Promise.all([
+    const [s, v, sp, iq, o, u] = await Promise.all([
       safeFetch("/api/admin/stats"),
       safeFetch("/api/admin/vehicles"),
       safeFetch("/api/admin/specs"),
       safeFetch("/api/admin/inquiries"),
       safeFetch("/api/admin/orders"),
+      safeFetch("/api/admin/users"),
     ]);
     if (s) setStats(s);
     if (v) setVehicles(v.vehicles || []);
     if (sp) setSpecs(sp.specs || []);
     if (iq) setInquiries(iq.inquiries || []);
     if (o) setOrders(o.orders || []);
+    if (u) setUsers(u.users || []);
 
     fetch("/api/admin/leads", { headers: h }).then(r => r.json()).then(d => setLeads(d.leads || [])).catch(() => {});
     setLoading(false);
