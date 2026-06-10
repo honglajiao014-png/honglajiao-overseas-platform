@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "node scripts/pre-deploy-check.js && prisma generate && prisma db push && next build",
+    "build": "node scripts/pre-deploy-check.js && prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
     "postinstall": "prisma generate",
