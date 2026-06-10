@@ -168,7 +168,16 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
   let specsData: any = null;
   const rawSpecs = vehicleSpec?.specs || vehicle.specsJson;
   if (rawSpecs) {
-    try { specsData = typeof rawSpecs === "string" ? JSON.parse(rawSpecs) : rawSpecs; } catch {}
+    try {
+      const parsed = typeof rawSpecs === "string" ? JSON.parse(rawSpecs) : rawSpecs;
+      specsData = Array.isArray(parsed)
+        ? parsed.reduce((best, cur) => {
+            const curYear = parseInt(String(cur?.releaseDate || cur?.["上市时间"] || "").match(/\d{4}/)?.[0] || "0");
+            const bestYear = parseInt(String(best?.releaseDate || best?.["上市时间"] || "").match(/\d{4}/)?.[0] || "0");
+            return Math.abs(curYear - (vehicle.year || 0)) < Math.abs(bestYear - (vehicle.year || 0)) ? cur : best;
+          }, parsed[0])
+        : parsed;
+    } catch {}
   }
 
   return (
@@ -260,7 +269,7 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
                 )}
 
                 {/* 规格参数分组折叠卡片 */}
-                {specsData && <SpecsGroups specs={specsData} />}
+                {specsData && <SpecsGroups specs={specsData} vehicleYear={vehicle.year} />}
 
                 <div className="mt-6">
                   <a href={`/inquiry?slug=${encodeURIComponent(vehicle.brand + "-" + vehicle.model + "-" + vehicle.year)}`}
@@ -504,22 +513,97 @@ const SPECS_KEY_LABEL: Record<string, string> = {
   energyType: "能源类型",
 };
 
-/** 判断值是否为空 */
+/** 判断值是否为空（兼容中英文） */
 function isEmpty(v: any): boolean {
   if (v === null || v === undefined) return true;
-  if (typeof v === "string") return v === "" || v === "-" || v === "0";
+  if (typeof v === "string") return v === "" || v === "-" || v === "0" || v === "无" || v === "暂无";
   if (typeof v === "number") return v === 0;
   if (typeof v === "boolean") return false;
   return false;
 }
 
-/** 格式化值 */
+/** 格式化值（兼容中英文） */
 function fmtSpecVal(v: any): string {
   if (typeof v === "boolean") return v ? "●" : "-";
+  if (typeof v === "string") {
+    if (v === "标配" || v === "●") return "●";
+    if (v === "选配" || v === "可选" || v === "○") return "○";
+    // 处理 "值:●" / "值:○" 混合格式 → "值 ●" / "值 ○"
+    const m = v.match(/^(.+):([●○])$/);
+    if (m) return `${m[1]} ${m[2]}`;
+    // 处理纯 ":●" / ":○" → "●" / "○"
+    if (v === ":●") return "●";
+    if (v === ":○") return "○";
+  }
   return String(v);
 }
 
-function SpecsGroups({ specs }: { specs: any }) {
+/** 中文扁平 JSON 的分组定义 */
+const CN_GROUPS: { name: string; icon: string; keys: string[] }[] = [
+  { name: "基本信息", icon: "📋", keys: ["品牌", "车系", "车款全称", "厂商", "生产方式", "上市时间", "能源形式", "级别", "年款", "环保标准"] },
+  { name: "发动机/动力", icon: "⚡", keys: ["进气形式", "排量(L)", "气缸排列形式", "气缸数", "每缸气门数", "配气机构", "最大马力(Ps)", "最大功率(kW)", "最大功率转速(rpm)", "最大扭矩(N·m)", "最大扭矩转速(rpm)", "燃油标号", "供油方式", "缸盖材料", "缸体材料", "工信部综合油耗(L/100km)", "电机类型", "电机功率(kW)", "电机扭矩(N·m)", "电池容量(kWh)", "电池类型", "续航里程(km)", "快充时间", "慢充时间"] },
+  { name: "变速箱/驱动", icon: "🔧", keys: ["变速箱类型", "变速箱描述", "挡位个数", "驱动方式", "前悬架类型", "后悬架类型", "转向助力类型", "车体结构", "驻车制动类型", "前制动器类型", "后制动器类型", "前轮胎规格", "后轮胎规格", "备胎规格", "整车质保"] },
+  { name: "车身尺寸", icon: "📐", keys: ["车身形式", "车门数", "座位数", "轴距(mm)", "长度(mm)", "宽度(mm)", "高度(mm)", "油箱容积(L)", "整备质量(kg)", "行李厢容积(L)", "货箱尺寸"] },
+  { name: "安全配置", icon: "🛡️", keys: ["驾驶座安全气囊", "副驾驶安全气囊", "前排侧气囊", "后排侧气囊", "头部气帘", "膝部气囊", "安全带未系提示", "ABS防抱死", "制动力分配(EBD)", "刹车辅助(EBA)", "牵引力控制(TCS)", "车身稳定控制(ESP)", "并线辅助", "车道偏离预警", "车道保持", "主动刹车", "前雷达", "后雷达", "倒车影像", "全��影像", "定速巡航", "自适应巡航", "上坡辅助", "陡坡缓降", "自动驻车", "胎压监测", "夜视系统", "疲劳驾驶提示"] },
+  { name: "外部配置", icon: "🚗", keys: ["天窗类型", "电动天窗", "全景天窗", "运动外观套件", "铝合金轮毂", "电动后备厢", "感应后备厢", "车顶行李架", "远程启动", "无钥匙启动", "无钥匙进入"] },
+  { name: "内部配置", icon: "🎮", keys: ["方向盘材质", "方向盘调节", "多功能方向盘", "方向盘换挡", "方向盘加热", "全液晶仪表盘", "HUD抬头显示", "行车电脑", "手机无线充电", "座椅材质", "座椅调节", "座椅加热", "座椅通风", "座椅按摩", "电动座椅记忆", "后排座椅放倒", "前/后中央扶手", "后排杯架", "中控屏尺寸", "蓝牙/车载电话", "手机互联/映射", "语音识别", "车联网", "OTA升级", "扬声器数量", "车内氛围灯", "后座出风口", "温度分区控制", "PM2.5过滤", "车载冰箱"] },
+  { name: "灯光配置", icon: "💡", keys: ["近光灯", "远光灯", "日间行车灯", "自适应远近光", "自动头灯", "转向辅助灯", "前雾灯", "大灯高度可调", "大灯清洗", "车内氛围灯"] },
+];
+
+function SpecsGroups({ specs, vehicleYear }: { specs: any; vehicleYear?: number }) {
+  // 检测是否为中文扁平 JSON（XLSX 导入格式，键如 "品牌"、"排量(L)"）
+  const keys = Object.keys(specs || {});
+  const isChineseFlat = keys.length > 0 && keys.some(k => /[一-鿿]/.test(k));
+
+  if (isChineseFlat) {
+    // 中文扁平 JSON：按分组折叠渲染
+    const fields = keys
+      .filter(k => !isEmpty(specs[k]))
+      .map(k => ({ key: k, label: k, value: fmtSpecVal(specs[k]) }));
+
+    if (fields.length === 0) return null;
+
+    // 将字段按 CN_GROUPS 分组，未匹配的归入"其他"
+    const grouped: Record<string, { icon: string; fields: typeof fields }> = {};
+    const unmatched: typeof fields = [];
+    for (const f of fields) {
+      const g = CN_GROUPS.find(g => g.keys.includes(f.key));
+      if (g) {
+        if (!grouped[g.name]) grouped[g.name] = { icon: g.icon, fields: [] };
+        grouped[g.name].fields.push(f);
+      } else {
+        unmatched.push(f);
+      }
+    }
+    if (unmatched.length > 0) grouped["其他"] = { icon: "📋", fields: unmatched };
+
+    const groupEntries = Object.entries(grouped);
+
+    return (
+      <div className="mt-6">
+        <h3 className="text-sm font-bold text-gray-800 mb-3">📊 详细参数</h3>
+        <div className="space-y-2">
+          {groupEntries.map(([gName, g], idx) => (
+            <details key={gName} className="bg-gray-50 rounded-xl border border-gray-100" open={idx < 3}>
+              <summary className="px-4 py-2.5 cursor-pointer text-sm font-semibold text-gray-700 hover:text-gray-900 select-none">
+                {g.icon} {gName}
+                <span className="text-xs text-gray-400 ml-2">({g.fields.length})</span>
+              </summary>
+              <div className="px-4 pb-3 grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
+                {g.fields.map(f => (
+                  <React.Fragment key={f.key}>
+                    <span className="text-gray-400">{f.label}</span>
+                    <span className="text-gray-700 truncate">{f.value}</span>
+                  </React.Fragment>
+                ))}
+              </div>
+            </details>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   // 按 group 收集字段
   const groups: Record<string, { key: string; label: string; value: string }[]> = {};
 
