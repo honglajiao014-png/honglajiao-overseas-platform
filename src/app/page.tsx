@@ -15,7 +15,6 @@ export default function Home() {
 
   // 从 API 获取车辆数据
   const [allVehicles, setAllVehicles] = useState<any[]>([]);
-  const [soldCount, setSoldCount] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
 
@@ -24,7 +23,6 @@ export default function Home() {
       .then(r => r.json())
       .then(data => {
         setAllVehicles(data.vehicles || []);
-        setSoldCount(data.soldCount || 0);
         setLoading(false);
       })
       .catch(e => {
@@ -157,7 +155,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-        {/* Hero 数据条 — 统计卡片 */}
+        {/* Hero 数据条 — 三个统计卡片 */}
         <div className="bg-gray-100 border-b border-gray-200">
           <div className="max-w-[1400px] mx-auto px-4 py-5">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
@@ -185,14 +183,6 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            {/* 已售统计 */}
-            {soldCount > 0 && (
-              <div className="mt-4 text-center">
-                <p className="text-sm text-gray-500">
-                  🎉 已成功出口 <span className="font-bold text-primary text-lg">{soldCount.toLocaleString()}</span> 辆车
-                </p>
-              </div>
-            )}
           </div>
         </div>
 
