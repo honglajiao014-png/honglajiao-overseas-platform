@@ -1779,3 +1779,11 @@ Total: 1, Success: 0, Failed: 1
 Total: 1, Success: 0, Failed: 1
   FAIL: 标致 标致408: Your project has exceeded the data transfer quota. Upgrade your plan to increase limits.
 [2026-06-10 22:05:03] Sync done
+[2026-06-10 22:10:00] Starting sync...
+Total: 1, Success: 0, Failed: 1
+  FAIL: 标致 标致408: Your project has exceeded the data transfer quota. Upgrade your plan to increase limits.
+[2026-06-10 22:10:05] Sync done
+[2026-06-10 22:15:00] Starting sync...
+Total: 1, Success: 0, Failed: 1
+  FAIL: 标致 标致408: Your project has exceeded the data transfer quota. Upgrade your plan to increase limits.
+[2026-06-10 22:15:01] Sync done

@@ -181,7 +181,7 @@ export async function POST(req: NextRequest) {
         if (specMatch) {
           specId = specMatch.specId;
           specsJson = specMatch.specsJson;
-          specConflict = specMatch.conflict;
+          specConflict = false; // DB 匹配无冲突概念
           console.log(`[Sync] 规格匹配成功: ${v.brand} ${v.model} → specId=${specMatch.specId}`);
         } else {
           console.log(`[Sync] 规格未匹配: ${v.brand} ${v.model}`);
