@@ -1,5 +1,4 @@
 {
-  "buildCommand": "node pre-deploy-check.js && next build",
   "framework": "nextjs",
   "headers": [
     {
