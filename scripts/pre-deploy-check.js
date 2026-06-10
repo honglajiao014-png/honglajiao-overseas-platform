@@ -108,7 +108,8 @@ try {
   fail(`layout.tsx 读取失败: ${e.message}`);
 }
 
-// 6. 校验 .gitignore 不忽略 .vercel
+// 6. 校验 .gitignore 不忽略 .vercel（Vercel 构建环境跳过）
+const isVercel = !!process.env.VERCEL;
 const gitignorePath = path.join(__dirname, "..", ".gitignore");
 try {
   const gitignore = fs.readFileSync(gitignorePath, "utf-8");
@@ -119,21 +120,33 @@ try {
     pass(".gitignore 未忽略 .vercel");
   }
 } catch (e) {
-  warn(`.gitignore 检查失败: ${e.message}`);
+  if (isVercel) {
+    pass(`.gitignore 检查跳过 (Vercel 构建环境)`);
+  } else {
+    warn(`.gitignore 检查失败: ${e.message}`);
+  }
 }
 
-// 7. 校验 git remote
+// 7. 校验 git remote（Vercel 构建环境跳过）
 const { execSync } = require("child_process");
 try {
   const remote = execSync("git remote get-url origin 2>/dev/null || echo ''", { encoding: "utf-8" }).trim();
   if (!remote) {
-    fail("git remote 未配置! 代码无法推送/回滚!");
-    console.error("  修复: git remote add origin <仓库URL>");
+    if (isVercel) {
+      pass(`git remote 检查跳过 (Vercel 构建环境)`);
+    } else {
+      fail("git remote 未配置! 代码无法推送/回滚!");
+      console.error("  修复: git remote add origin <仓库URL>");
+    }
   } else {
     pass(`git remote 已配置: ${remote}`);
   }
 } catch (e) {
-  fail(`git remote 检查失败: ${e.message}`);
+  if (isVercel) {
+    pass(`git remote 检查跳过 (Vercel 构建环境)`);
+  } else {
+    fail(`git remote 检查失败: ${e.message}`);
+  }
 }
 
 // 结果
