@@ -62,21 +62,44 @@ try {
   fail(`package.json 读取失败: ${e.message}`);
 }
 
-// 3. 校验 .vercel/project.json
+// 3. 校验 .vercel/project.json 或 .vercel/repo.json
 const vercelPath = path.join(__dirname, "..", ".vercel", "project.json");
-let vercel;
-try {
-  vercel = JSON.parse(fs.readFileSync(vercelPath, "utf-8"));
-  if (vercel.projectId === identity.projectId) {
-    pass(`.vercel/project.json 匹配: ${vercel.projectName} (${vercel.projectId})`);
+const repoPath = path.join(__dirname, "..", ".vercel", "repo.json");
+let vercelProjectId = null;
+let vercelProjectName = null;
+
+// 先试新版的 repo.json
+if (fs.existsSync(repoPath)) {
+  try {
+    const repo = JSON.parse(fs.readFileSync(repoPath, "utf-8"));
+    const proj = repo.projects?.[0];
+    if (proj) {
+      vercelProjectId = proj.id;
+      vercelProjectName = proj.name;
+    }
+  } catch (e) { /* fall through */ }
+}
+
+// 再试旧版的 project.json
+if (!vercelProjectId && fs.existsSync(vercelPath)) {
+  try {
+    const vercel = JSON.parse(fs.readFileSync(vercelPath, "utf-8"));
+    vercelProjectId = vercel.projectId;
+    vercelProjectName = vercel.projectName;
+  } catch (e) { /* fall through */ }
+}
+
+if (vercelProjectId) {
+  if (vercelProjectId === identity.projectId) {
+    pass(`.vercel 匹配: ${vercelProjectName} (${vercelProjectId})`);
   } else {
-    fail(`.vercel/project.json 不匹配! 期望 projectId: ${identity.projectId}, 实际: ${vercel.projectId}`);
-    console.error(`  当前链接到: ${vercel.projectName}`);
+    fail(`.vercel 不匹配! 期望 projectId: ${identity.projectId}, 实际: ${vercelProjectId}`);
+    console.error(`  当前链接到: ${vercelProjectName}`);
     console.error(`  应该链接到: ${identity.projectName}`);
     console.error(`  修复: npx vercel link --project ${identity.projectName} --yes`);
   }
-} catch (e) {
-  fail(`.vercel/project.json 缺失或损坏: ${e.message}`);
+} else {
+  fail(`.vercel/project.json 或 .vercel/repo.json 缺失或损坏`);
   console.error(`  修复: npx vercel link --project ${identity.projectName} --yes`);
 }
 
