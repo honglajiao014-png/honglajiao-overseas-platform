@@ -32,10 +32,22 @@
     }
   ],
   "rewrites": [
-    { "source": "/robots.txt", "destination": "/api/robots" },
-    { "source": "/sitemap.xml", "destination": "/api/sitemap" },
-    { "source": "/sitemap-en.xml", "destination": "/api/sitemap-en" },
-    { "source": "/sitemap-es.xml", "destination": "/api/sitemap-es" }
+    {
+      "source": "/robots.txt",
+      "destination": "/api/robots"
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "/api/sitemap"
+    },
+    {
+      "source": "/sitemap-en.xml",
+      "destination": "/api/sitemap-en"
+    },
+    {
+      "source": "/sitemap-es.xml",
+      "destination": "/api/sitemap-es"
+    }
   ],
   "crons": [
     {
