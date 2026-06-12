@@ -1,11 +1,30 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Header } from "@/components/Header";
 import { useT, T } from "@/i18n/useT";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
-export default function RegisterPage() {
+function RegisterForm() {
   const t = useT();
+  const sp = useSearchParams();
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const e = sp.get("error");
+    if (e) {
+      const map: Record<string, string> = {
+        google_not_configured: "Google 注册暂未配置，请使用邮箱密码注册",
+        token_exchange_failed: "Google 注册失败（令牌交换异常），请重试",
+        userinfo_failed: "Google 注册失败（获取账户信息异常），请重试",
+        no_email: "Google 账户未绑定邮箱，请使用邮箱密码注册",
+        no_code: "Google 注册参数缺失，请重试",
+      };
+      setError(map[e] || e);
+    }
+  }, [sp]);
 
   return (
     <main className="min-h-screen flex flex-col bg-gray-50">
@@ -16,6 +35,10 @@ export default function RegisterPage() {
             <h1 className="text-xl font-bold text-gray-900 mb-2">{t(T.registerPage.heading)}</h1>
             <p className="text-gray-500 text-sm">{t(T.registerPage.subheading)}</p>
           </div>
+
+          {error && (
+            <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">{error}</div>
+          )}
 
           <a
             href="/api/auth/oauth/google/start?next=/account"
@@ -36,5 +59,13 @@ export default function RegisterPage() {
         </div>
       </section>
     </main>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense>
+      <RegisterForm />
+    </Suspense>
   );
 }
