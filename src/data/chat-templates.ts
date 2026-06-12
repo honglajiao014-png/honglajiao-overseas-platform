@@ -1,8 +1,8 @@
 // ======================== 聊天话术模板 ========================
 // 按场景分类，每个场景含 en/fr/ar 三语
-// 联系方式自动注入：📧 junmu783@gmail.com / 💬 WhatsApp: +1 310-290-1842 / 💚 WeChat: MJ9588666
+// 联系方式自动注入：📧 info@honglajiao1688.com / 💬 WhatsApp: +1 310-290-1842 / 💚 WeChat: MJ9588666
 
-const CONTACT = `📧 junmu783@gmail.com\n💬 WhatsApp: +1 310-290-1842\n💚 WeChat: MJ9588666`;
+const CONTACT = `📧 info@honglajiao1688.com\n💬 WhatsApp: +1 310-290-1842\n💚 WeChat: MJ9588666`;
 
 export interface ChatTemplate {
   en: string;
@@ -267,35 +267,25 @@ Bonne journée !`,
 طاب يومك!`,
   },
 
-  // ======================== 千问挂了兜底 ========================
+  // ======================== 客服繁忙/千问挂了兜底 ========================
   notAvailable: {
-    en: `Sorry, our AI assistant is temporarily unavailable. Please contact us directly:\n${CONTACT}\n\nWe'll get back to you within 24 hours.`,
-
-    fr: `Désolé, notre assistant IA est temporairement indisponible. Veuillez nous contacter directement :\n${CONTACT}\n\nNous vous répondrons dans les 24 heures.`,
-
-    ar: `عذرًا، مساعدنا الذكي غير متاح مؤقتًا. يرجى التواصل معنا مباشرة:\n${CONTACT}\n\nسنرد عليك خلال 24 ساعة.`,
+    en: `Sorry, at the yard checking a shipment. I'll reply soon. Urgent? WhatsApp: +1 (310) 290-1842\n\n📧 info@honglajiao1688.com`,
+    fr: `Désolé, au dépôt en train de vérifier un chargement. Je réponds vite. Urgent ? WhatsApp: +1 (310) 290-1842\n\n📧 info@honglajiao1688.com`,
+    ar: `عذرًا، أنا في المستودع أفحص شحنة. سأرد قريبًا. urgent؟ واتساب: +1 (310) 290-1842\n\n📧 info@honglajiao1688.com`,
   },
 
-  // ======================== 自动转人工兜底 ========================
+  // ======================== 转人工兜底 (MJ 口吻) ========================
   escalationAuto: {
-    en: `I'm transferring you to our team for better assistance. Please leave your email or WhatsApp below, and we'll get back to you within 2 hours. Or email us directly: 511972546@qq.com
-
-A real person will review your conversation and follow up personally. Thank you for your patience.`,
-    fr: `Je vous transfère à notre équipe pour une meilleure assistance. Veuillez laisser votre e-mail ou WhatsApp ci-dessous, et nous vous répondrons dans les 2 heures. Ou écrivez-nous directement : 511972546@qq.com
-
-Une personne réelle examinera votre conversation et vous répondra personnellement. Merci de votre patience.`,
-    ar: `سأقوم بتحويلك إلى فريقنا للحصول على مساعدة أفضل. يرجى ترك بريدك الإلكتروني أو واتساب أدناه، وسنرد عليك في غضون ساعتين. أو راسلنا مباشرة على: 511972546@qq.com
-
-سيقوم شخص حقيقي بمراجعة محادثتك والمتابعة شخصيًا. شكرًا لصبرك.`,
-    zh: `正在为您转接团队以获得更好的帮助。请留下您的邮箱或WhatsApp，我们会在2小时内回复您。或直接发邮件至：511972546@qq.com。真人客服将查看您的对话记录并亲自跟进。感谢您的耐心。`,
+    en: `Hey, MJ here — I'll take over from here. Leave your WhatsApp or email and I'll get back to you fast. Or reach me directly:\n\nWhatsApp: +1 (310) 290-1842\n📧 info@honglajiao1688.com\n💚 WeChat: MJ9588666\n\nI'll personally handle your inquiry. Talk soon.`,
+    fr: `Salut, c'est MJ — je prends le relais. Laissez votre WhatsApp ou email, je vous réponds rapidement. Ou contactez-moi directement:\n\nWhatsApp: +1 (310) 290-1842\n📧 info@honglajiao1688.com\n💚 WeChat: MJ9588666\n\nJe traiterai personnellement votre demande. À bientôt.`,
+    ar: `مرحبًا، أنا MJ — سأتولى الأمر من هنا. اترك واتسابك أو بريدك الإلكتروني وسأرد عليك بسرعة. أو تواصل معي مباشرة:\n\nWhatsApp: +1 (310) 290-1842\n📧 info@honglajiao1688.com\n💚 WeChat: MJ9588666\n\nسأتعامل مع استفسارك شخصيًا. نتحدث قريبًا.`,
+    zh: `嗨，我是 MJ，我来接手。留个 WhatsApp 或邮箱，我尽快回复你。或者直接找我：\n\nWhatsApp: +1 (310) 290-1842\n📧 info@honglajiao1688.com\n💚 微信: MJ9588666\n\n你的询价我亲自跟。回聊。`,
   },
 
   // ======================== 空回复兜底 ========================
   emptyReply: {
-    en: `Thank you for your message. For a faster response, please contact us:\n${CONTACT}`,
-
-    fr: `Merci pour votre message. Pour une réponse plus rapide, veuillez nous contacter :\n${CONTACT}`,
-
-    ar: `شكرًا على رسالتك. للحصول على رد أسرع، يرجى التواصل معنا:\n${CONTACT}`,
+    en: `Sorry, at the yard checking a shipment. I'll reply soon. Urgent? WhatsApp: +1 (310) 290-1842\n\n📧 info@honglajiao1688.com`,
+    fr: `Désolé, au dépôt en train de vérifier un chargement. Je réponds vite. Urgent ? WhatsApp: +1 (310) 290-1842\n\n📧 info@honglajiao1688.com`,
+    ar: `عذرًا، أنا في المستودع أفحص شحنة. سأرد قريبًا. urgent؟ واتساب: +1 (310) 290-1842\n\n📧 info@honglajiao1688.com`,
   },
 };
