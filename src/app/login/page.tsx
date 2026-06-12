@@ -1,16 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Header } from "@/components/Header";
 import { useT, T } from "@/i18n/useT";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
-export default function LoginPage() {
+function LoginForm() {
   const t = useT();
+  const sp = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // 显示 URL 中的错误信息（如 Google OAuth 未配置）
+  useEffect(() => {
+    const e = sp.get("error");
+    if (e) {
+      const map: Record<string, string> = {
+        google_not_configured: "Google 登录暂未配置，请使用邮箱密码登录",
+        token_exchange_failed: "Google 登录失败（令牌交换异常），请重试",
+        userinfo_failed: "Google 登录失败（获取账户信息异常），请重试",
+        no_email: "Google 账户未绑定邮箱，请使用邮箱密码登录",
+        no_code: "Google 登录参数缺失，请重试",
+      };
+      setError(map[e] || e);
+    }
+  }, [sp]);
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,5 +122,13 @@ export default function LoginPage() {
         </div>
       </section>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   );
 }
