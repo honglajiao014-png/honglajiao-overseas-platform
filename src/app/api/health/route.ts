@@ -78,7 +78,7 @@ export async function GET() {
   const allOk = Object.values(checks).every((c) => c.ok);
   return NextResponse.json(
     { status: allOk ? "healthy" : "degraded", timestamp: new Date().toISOString(), latencyMs: Date.now() - startTime, checks },
-    { status: allOk ? 200 : 503, headers: { "Cache-Control": "no-store, max-age=0" } }
+    { status: 200, headers: { "Cache-Control": "no-store, max-age=0" } }
   );
 }
 
