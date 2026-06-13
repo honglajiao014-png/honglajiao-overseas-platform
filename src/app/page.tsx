@@ -87,7 +87,7 @@ export default function Home() {
       case "price_asc": result.sort((a, b) => (a.salePrice||0) - (b.salePrice||0)); break;
       case "price_desc": result.sort((a, b) => (b.salePrice||0) - (a.salePrice||0)); break;
       case "year_desc": result.sort((a, b) => b.year - a.year); break;
-      case "mileage_asc": result.sort((a, b) => (a.mileage||0) - (b.mileage||0)); break;
+      case "mileage_asc": result.sort((a, b) => (a.mileageKm||0) - (b.mileageKm||0)); break;
     }
 
     return result;
@@ -458,7 +458,7 @@ export default function Home() {
                     <div className="flex flex-wrap gap-x-3 gap-y-1 text-sm text-gray-500 mb-4">
                       <span>{v.year}{t(T.homeFilter.yearSuffix)}</span>
                       <span className="text-gray-300">|</span>
-                      <span>{v.mileage ? `${v.mileage.toLocaleString()} km` : '-'}</span>
+                      <span>{v.mileageKm ? `${v.mileageKm.toLocaleString()} km` : '-'}</span>
                       <span className="text-gray-300">|</span>
                       <span>{v.location || 'China'}</span>
                       <span className="text-gray-300">|</span>
