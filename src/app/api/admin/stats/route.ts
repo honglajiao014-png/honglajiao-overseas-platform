@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
       prisma.vehicle.count({ where: { soldAt: { not: null }, deleted: false } }),
       prisma.vehicle.count({ where: { published: true, soldAt: null, deleted: false } }),
       prisma.user.count(),
-      prisma.inquiry.count({ where: { status: "new" } }),
+      prisma.inquiry.count({ where: { status: "NEW" } }),
       prisma.order.count({ where: { status: "completed" } }),
       prisma.vehicleSpec.count(),
       prisma.vehicle.count({ where: { status: "SUBMITTED", deleted: false } }),
