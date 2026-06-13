@@ -7,7 +7,7 @@
     "build": "node scripts/pre-deploy-check.js && prisma generate && prisma db push && next build",
     "start": "next start",
     "lint": "eslint",
-    "postinstall": "prisma generate",
+    "postinstall": "[ \"$VERCEL\" = \"1\" ] || prisma generate",
     "db:push": "prisma db push",
     "db:seed": "npx tsx prisma/seed.ts",
     "pre-deploy": "node scripts/pre-deploy-check.js",

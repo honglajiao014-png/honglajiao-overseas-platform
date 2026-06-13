@@ -1,24 +1,572 @@
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
-model ChatMessage {
-  id          String      @id @default(cuid())
-  sessionId   String
-  role        String
-  content     String
-  userId      String?
-  createdAt   DateTime    @default(now())
-  ChatSession ChatSession @relation(fields: [sessionId], references: [id])
-  User        User?       @relation(fields: [userId], references: [id])
+// ─── 用户基础表 ───
+model User {
+  id           String     @id @default(cuid())
+  username     String     @unique
+  phone        String?
+  email        String?
+  role         UserRole   @default(DEALER)
+  status       UserStatus @default(PENDING)
+  passwordHash String?
+  avatar        String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 
-  @@index([sessionId])
+  dealerProfile DealerProfile?
+  vehicles      Vehicle[]
+  inquiries     Inquiry[]
+  auditLogs     AuditLog[]
+  qualityIssues QualityIssue[]
 }
 
+enum UserRole {
+  DEALER
+  ADMIN
+  SYSTEM
+}
+
+enum UserStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  BANNED
+}
+
+// ─── 车商企业资料 ───
+model DealerProfile {
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  companyName     String
+  unifiedCode     String? // 统一社会信用代码
+  legalPerson     String? // 法人代表
+  contactPhone    String
+  contactEmail    String?
+  wechat          String? // 微信号
+  qq              String? // QQ号
+  douyin          String? // 抖音号
+  province        String?
+  city            String?
+  address         String?
+  businessLicense String? // 营业执照图片 URL
+  verifiedAt      DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+// ─── 车辆主表 ───
+model Vehicle {
+  id               String        @id @default(cuid())
+  dealerId         String
+  brand            String // 品牌
+  model            String // 车型
+  year             Int? // 生产年份
+  registrationYear Int? // 上牌年份 (deprecated, 用 registrationDate)
+  manufactureDate  DateTime? // 出厂日期（年/月/日）
+  registrationDate DateTime? // 发证日期（年/月/日）
+  mileageKm        Int? // 公里数（乘用车/摩托/卡车）
+  fuelType         FuelType? // 燃油类型（乘用车/卡车/摩托）
+  displacement     Float? // 排量(L)
+  transmission     Transmission? // 变速箱（乘用车/卡车）
+  steering         Steering      @default(LHD) // 左舵/右舵
+  vin              String? // VIN 码（乘用车）
+  condition        String? // 车况描述
+  repairRecords    String? // 维修记录
+  repairAttachments String? // 维修附件URL（JSON数组）
+  exteriorColor    String? // 外观颜色
+  interiorColor    String? // 内饰颜色
+  price            Float // 裸车价
+  currency         Currency      @default(USD) // 币种
+  priceTerm        PriceTerm     @default(EXW) // 价格条款
+  locationCity     String? // 车辆所在地
+  locationProvince String? // 所在省份
+  exportPort       String? // 出口港/详细地址
+  contactPhone     String? // 车辆联系人电话（必填）
+  contactWechat    String? // 微信
+  contactQQ        String? // QQ
+  contactEmail     String? // 联系邮箱
+  inspectionNotes  String? // 综合评估备注（Agent 填充）
+  bodyStyle        BodyStyle? // 车身类型
+
+  // ─── 新能源专用字段 ───
+  batteryType      String? // 电池类型：三元锂/磷酸铁锂/其他
+  rangeKm          Int? // 续航里程(km)
+  motorPowerKw     Float? // 电机功率(kW)
+  chargeType       String? // 充电方式：快充/慢充/换电
+
+  // ─── 卡车/客车专用字段 ───
+  loadCapacityTons Float? // 载重(吨)
+  seatCount        Int? // 座位数
+  vehicleLengthM   Float? // 车身长度(米)
+
+  // ─── 工程机械专用字段 ───
+  equipmentType    EquipmentType? // 设备子类型
+  workingHours     Int? // 工作小时数
+  tonnage          Float? // 吨位
+  engineModel      String? // 发动机型号
+
+  // ─── 摩托车专用字段 ───
+  displacementCc   Int? // 排量(cc)
+  motorcycleType   String? // 类型：街车/越野/踏板/三轮
+
+  // ─── 汽车配件专用字段 ───
+  partCategory     PartCategory? // 配件类别
+  partCondition    PartCondition? // 成色
+  compatibleModels String? // 适用车型
+  quantity         Int? // 数量
+
+  // ─── XLSX 规格匹配 ───
+  specId           String? // 匹配到的 VehicleSpec.id
+  specsJson        String? // 匹配到的规格 JSON 字符串
+  specConflict     Boolean  @default(false) // 车商值与 XLSX 匹配结果冲突
+  spec             VehicleSpec? @relation(fields: [specId], references: [id])
+  soldAt           DateTime? // 售出时间
+
+  // ─── 车源信息增强 ───
+  series           String? // 车系
+  engineNo         String? // 发动机号后6位
+  keyCount         Int? // 钥匙数量
+  isOnSite         Boolean @default(true) // 是否现车
+  isTransferable   Boolean @default(true) // 是否可过户
+  isExportable     Boolean @default(true) // 是否可出口
+  isDocComplete    Boolean @default(true) // 手续是否齐全
+  accidentRecord   String? // 事故记录
+  floodRecord      String? // 泡水记录
+  fireRecord       String? // 火烧记录
+  isPledged        Boolean @default(false) // 是否抵押
+  isCommercial     Boolean @default(false) // 是否营运
+  dealerPrice      Float? // 车商底价（内部）
+
+  // ─── 证件资料（内部留存） ───
+  docLicenseFront     String? // 行驶证主页 URL
+  docLicenseBack      String? // 行驶证副页 URL
+  docGreenBookFront   String? // 绿本主页 URL
+  docGreenBookTransfer String? // 绿本过户页 URL
+
+  // ─── 海外站定价（国内站写入时实时计算）───
+  slug           String? @unique // 海外站 URL slug
+  basePrice      Float? // USD 底价
+  markup         Float? // 加价金额
+  salePrice      Float? // USD 售价
+  profit         Float? // 利润
+  originalPrice  Float? // 原始 RMB 价格
+  type           String? @default("Used Passenger Car") // 海外站车辆类型
+  published      Boolean @default(true) // 海外站是否发布
+  featured       Boolean @default(false) // 海外站是否精选
+  deleted        Boolean @default(false) // 海外站软删除标记
+  supplier       String? // 海外站供应商名
+  location       String? // 海外站位置描述
+  sourceId       String? // 国内站来源 ID（判重用）
+  sourceSite     String? // 来源站点标记
+  uploadedAt     DateTime? // 海外站上传时间
+  // 海外站扩展车况
+  driveType       String? // 驱动方式
+  doorCount       Int? // 车门数
+  wheelbase       Int? // 轴距
+  curbWeight      Int? // 整备质量
+  fuelConsumption Float? // 油耗
+  maxTorqueNm     Int? // 最大扭矩
+  maxHorsepower   Int? // 最大马力
+  fuelTankCapacity Int? // 油箱容量
+  fuelGrade       String? // 燃油标号
+  soldTo          String? // 售出给谁
+  description     String? // 海外站描述
+
+  status           VehicleStatus @default(DRAFT)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  dealer        User                        @relation(fields: [dealerId], references: [id])
+  images        VehicleImage[]
+  eligibilities VehicleCountryEligibility[]
+  inquiries     Inquiry[]
+  auditLogs     AuditLog[]
+  qualityIssues QualityIssue[]
+  defects       VehicleDefect[]
+  videos        VehicleVideo[]
+}
+
+// ─── 车身类型 ───
+enum BodyStyle {
+  SEDAN         // 四门轿车
+  SUV           // 越野/SUV
+  MPV           // 商务车/MPV
+  HATCHBACK     // 两厢轿车
+  WAGON         // 旅行车
+  COUPE         // 轿跑/跑车
+  PICKUP        // 皮卡
+  TRUCK         // 货车/卡车
+  VAN           // 面包车/厢式货车
+  BUS           // 客车/中巴
+  MINIVAN       // 微型面包车
+  NEW_ENERGY    // 新能源（纯电/混动）
+  MOTORCYCLE    // 摩托车
+  MACHINERY     // 工程机械
+  AUTO_PARTS    // 汽车配件
+  OTHER         // 其他
+}
+
+enum FuelType {
+  PETROL
+  DIESEL
+  HYBRID
+  ELECTRIC
+  PLUGIN_HYBRID
+  CNG
+  LPG
+}
+
+// ─── 工程机械子类型 ───
+enum EquipmentType {
+  EXCAVATOR   // 挖掘机
+  LOADER      // 装载机
+  BULLDOZER   // 推土机
+  CRANE       // 起重机
+  ROLLER      // 压路机
+  FORKLIFT    // 叉车
+  GRADER      // 平地机
+  DUMPER      // 自卸车
+  MIXER       // 搅拌车
+  TRACTOR     // 拖拉机
+  OTHER_EQ    // 其他设备
+}
+
+// ─── 配件类别 ───
+enum PartCategory {
+  ENGINE       // 发动机
+  TRANSMISSION // 变速箱
+  CHASSIS      // 底盘件
+  ELECTRONIC   // 电子配件
+  EXTERIOR     // 外观件
+  INTERIOR     // 内饰件
+  OTHER_PART   // 其他配件
+}
+
+// ─── 配件成色 ───
+enum PartCondition {
+  NEW
+  USED
+  REFURBISHED
+}
+
+enum Transmission {
+  MANUAL
+  AUTOMATIC
+  CVT
+  DCT
+  AMT
+}
+
+enum Steering {
+  LHD
+  RHD
+}
+
+enum Currency {
+  USD
+  CNY
+  EUR
+  NGN
+  GHS
+  KES
+}
+
+enum PriceTerm {
+  EXW
+  FOB
+}
+
+enum VehicleStatus {
+  DRAFT
+  SUBMITTED
+  REJECTED
+  APPROVED
+  PUBLISHED
+  PENDING_ARCHIVE
+  ARCHIVED
+}
+
+// ─── 车辆图片 ───
+model VehicleImage {
+  id            String        @id @default(cuid())
+  vehicleId     String
+  angleType     ImageAngle // 图片角度类型
+  url           String // 图片存储 URL
+  clarityScore  Float? // 清晰度评分 0-1
+  clarityStatus ClarityStatus @default(PENDING) // 清晰度审核状态
+  isPrimary     Boolean       @default(false)
+  sortOrder     Int           @default(0)
+  createdAt     DateTime      @default(now())
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id])
+}
+
+enum ImageAngle {
+  FRONT
+  REAR
+  FRONT_LEFT_45
+  FRONT_RIGHT_45
+  REAR_LEFT_45
+  REAR_RIGHT_45
+  LEFT_SIDE
+  RIGHT_SIDE
+  DASHBOARD
+  MILEAGE_DASHBOARD
+  ENGINE_BAY
+  VIN_PLATE
+  INTERIOR_FRONT
+  INTERIOR_REAR
+  TRUNK
+  DAMAGE
+}
+
+enum ClarityStatus {
+  PENDING
+  CLEAR
+  BLURRY
+  WRONG_ANGLE
+  REJECTED
+}
+
+// ─── 非洲进口国政策表 ───
+model CountryPolicy {
+  id                  String   @id @default(cuid())
+  countryCode         String   @unique // ISO 3166-1 alpha-2
+  countryNameZh       String // 中文名
+  countryNameEn       String // 英文名
+  steering            Steering @default(LHD) // 要求左舵/右舵
+  maxAgeYears         Int? // 最大车龄(年)
+  maxMileageKm        Int? // 最大里程
+  minEmissionStandard String? // 最低排放标准 如 "Euro 4"
+  maxDisplacement     Float? // 最大排量(L)
+  minDisplacement     Float? // 最小排量(L)
+  bannedFuelTypes     String? // 禁止的燃油类型 JSON 数组
+  importDutyRate      Float? // 进口关税税率
+  specialNotes        String? // 特殊说明
+  isActive            Boolean  @default(true)
+  updatedAt           DateTime @updatedAt
+  createdAt           DateTime @default(now())
+
+  eligibilities VehicleCountryEligibility[]
+}
+
+// ─── 车辆与国家匹配结果 ───
+model VehicleCountryEligibility {
+  id              String   @id @default(cuid())
+  vehicleId       String
+  countryPolicyId String
+  eligible        Boolean // 是否可选
+  reason          String? // 不可选原因
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  vehicle       Vehicle       @relation(fields: [vehicleId], references: [id])
+  countryPolicy CountryPolicy @relation(fields: [countryPolicyId], references: [id])
+
+  @@unique([vehicleId, countryPolicyId])
+}
+
+// ─── 汇率快照 ───
+model ExchangeRate {
+  id             String   @id @default(cuid())
+  baseCurrency   Currency @default(USD)
+  targetCurrency Currency
+  rate           Float // 1 base = ? target
+  source         String   @default("manual") // 数据来源
+  fetchedAt      DateTime @default(now())
+  createdAt      DateTime @default(now())
+}
+
+// ─── 询盘表 ───
+model Inquiry {
+  id           String        @id @default(cuid())
+  vehicleId    String
+  buyerId      String // 关联 User (买家)
+  buyerName    String? // 买家姓名
+  buyerEmail   String?
+  buyerPhone   String?
+  buyerCountry String? // 买家所在国家
+  message      String?
+  status       InquiryStatus @default(NEW)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id])
+  buyer   User    @relation(fields: [buyerId], references: [id])
+}
+
+enum InquiryStatus {
+  NEW
+  READ
+  REPLIED
+  CLOSED
+}
+
+// ─── 审核日志 ───
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String // 操作人
+  vehicleId String? // 关联车辆
+  action    String // 操作类型
+  detail    String? // 操作详情
+  createdAt DateTime @default(now())
+
+  user    User     @relation(fields: [userId], references: [id])
+  vehicle Vehicle? @relation(fields: [vehicleId], references: [id])
+}
+
+// ─── 每日归档任务记录 ───
+model ArchiveJob {
+  id            String        @id @default(cuid())
+  startedAt     DateTime      @default(now())
+  completedAt   DateTime?
+  vehiclesTotal Int           @default(0)
+  vehiclesDone  Int           @default(0)
+  status        ArchiveStatus @default(RUNNING)
+  errorLog      String?
+  createdAt     DateTime      @default(now())
+}
+
+enum ArchiveStatus {
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+// ─── 质检漏洞/异常记录 ───
+model QualityIssue {
+  id          String        @id @default(cuid())
+  vehicleId   String?
+  userId      String? // 发现人
+  issueType   String // 问题类型
+  severity    IssueSeverity @default(MEDIUM)
+  description String // 问题描述
+  resolved    Boolean       @default(false)
+  resolvedAt  DateTime?
+  createdAt   DateTime      @default(now())
+
+  vehicle Vehicle? @relation(fields: [vehicleId], references: [id])
+  user    User?    @relation(fields: [userId], references: [id])
+}
+
+enum IssueSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+// ─── 瑕疵类型 ───
+enum DefectType {
+  SCRATCH
+  DENT
+  RUST
+  PAINT_DIFFERENCE
+  ACCIDENT_REPAIR
+  REPLACED_PART
+  WATER_LEAK
+  ABNORMAL_NOISE
+  WARNING_LIGHT
+  FUNCTION_MISSING
+  OTHER
+}
+
+// ─── 瑕疵严重度 ───
+enum Severity {
+  LIGHT
+  MEDIUM
+  SEVERE
+}
+
+// ─── 视频类型 ───
+enum VideoType {
+  ENGINE_START
+  WALK_AROUND
+  INTERIOR_SCAN
+  DEFECT_CLOSEUP
+  OTHER
+}
+
+// ─── 车辆瑕疵 ───
+model VehicleDefect {
+  id          String     @id @default(cuid())
+  vehicleId   String
+  area        String // 部位代码
+  areaLabel   String // 部位中文名
+  defectType  DefectType
+  severity    Severity
+  isRepaired  Boolean    @default(false)
+  description String
+  photoUrl    String?
+  createdAt   DateTime   @default(now())
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+}
+
+// ─── 同步失败待重试 ───
+model PendingSync {
+  id          String   @id @default(cuid())
+  vehicleId   String   @unique
+  error       String?
+  retryCount  Int      @default(0)
+  nextRetryAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+}
+
+// ─── 车型规格库（XLSX 导入） ───
+model VehicleSpec {
+  id        String   @id @default(cuid())
+  brand     String
+  model     String
+  yearRange String?
+  manufacturer String?
+  vehicleType  String?
+  releaseDate  String?
+  energyType   String?
+  specs     Json     @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Vehicle Vehicle[]
+
+  @@unique([brand, model])
+}
+
+// ─── 未匹配规格记录 ───
+model UnmatchedSpec {
+  id        String   @id @default(cuid())
+  brand     String
+  model     String
+  year      Int?
+  vehicleId String?
+  createdAt DateTime @default(now())
+}
+
+// ─── 车辆视频 ───
+model VehicleVideo {
+  id        String    @id @default(cuid())
+  vehicleId String
+  videoType VideoType
+  url       String
+  createdAt DateTime  @default(now())
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+}
+
+// ═══════════════════════════════════════════
+// 海外站独有表
+// ═══════════════════════════════════════════
+
+// ─── 聊天会话 ───
 model ChatSession {
   id               String        @id @default(cuid())
   userId           String?
@@ -32,13 +580,26 @@ model ChatSession {
   formFilled       Boolean       @default(false)
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
-  ChatMessage      ChatMessage[]
-  User             User?         @relation(fields: [userId], references: [id])
+  messages         ChatMessage[]
 
   @@index([intentLevel])
   @@index([userId])
 }
 
+// ─── 聊天消息 ───
+model ChatMessage {
+  id          String      @id @default(cuid())
+  sessionId   String
+  role        String
+  content     String
+  userId      String?
+  createdAt   DateTime    @default(now())
+  session     ChatSession @relation(fields: [sessionId], references: [id])
+
+  @@index([sessionId])
+}
+
+// ─── 客户线索 ───
 model CustomerLead {
   id          String    @id @default(cuid())
   name        String?
@@ -61,21 +622,7 @@ model CustomerLead {
   @@index([intentLevel])
 }
 
-model Inquiry {
-  id          String   @id @default(cuid())
-  name        String
-  contact     String
-  country     String?
-  vehicleType String?
-  message     String
-  vehicleId   String?
-  userId      String?
-  status      String   @default("new")
-  createdAt   DateTime @default(now())
-  User        User?    @relation(fields: [userId], references: [id])
-  Vehicle     Vehicle? @relation(fields: [vehicleId], references: [id])
-}
-
+// ─── 订单 ───
 model Order {
   id           String   @id @default(cuid())
   vehicleId    String
@@ -87,131 +634,9 @@ model Order {
   status       String   @default("pending")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  User         User?    @relation(fields: [userId], references: [id])
-  Vehicle      Vehicle  @relation(fields: [vehicleId], references: [id])
 }
 
-model User {
-  id          String        @id @default(cuid())
-  email       String        @unique
-  password    String
-  name        String
-  role        String        @default("dealer")
-  phone       String?
-  company     String?
-  country     String?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  avatar      String?
-  ChatMessage ChatMessage[]
-  ChatSession ChatSession[]
-  Inquiry     Inquiry[]
-  Order       Order[]
-  Vehicle     Vehicle[]
-}
-
-model Vehicle {
-  id               String       @id @default(cuid())
-  slug             String       @unique
-  brand            String
-  model            String
-  year             Int
-  type             String       @default("Used Passenger Car")
-  mileage          Int?
-  transmission     String?
-  fuel             String?
-  steering         String?
-  color            String?
-  condition        String       @default("Excellent")
-  supplier         String?
-  location         String       @default("China")
-  images           String[]     @default([])
-  basePrice        Float        @default(0)
-  markup           Float        @default(0)
-  salePrice        Float        @default(0)
-  profit           Float        @default(0)
-  status           String       @default("available")
-  soldAt           DateTime?
-  soldTo           String?
-  dealerId         String?
-  published        Boolean      @default(true)
-  featured         Boolean      @default(false)
-  deleted          Boolean      @default(false)
-  description      String?
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
-  specId           String?
-  specConflict     Boolean      @default(false)
-  batteryType      String?
-  bodyStyle        String?
-  compatibleModels String?
-  displacement     Float?
-  displacementCc   Int?
-  engineModel      String?
-  engineNo         String?
-  equipmentType    String?
-  exteriorColor    String?
-  fuelType         String?
-  interiorColor    String?
-  keyCount         Int?
-  loadCapacityTons Float?
-  motorPowerKw     Float?
-  motorcycleType   String?
-  originalPrice    Float?
-  partCategory     String?
-  partCondition    String?
-  quantity         Int?
-  rangeKm          Int?
-  seatCount        Int?
-  series           String?
-  sourceId         String?
-  sourceSite       String?
-  specsJson        String?
-  tonnage          Float?
-  uploadedAt       DateTime     @default(now())
-  vehicleLengthM   Float?
-  workingHours     Int?
-  driveType        String?
-  doorCount        Int?
-  wheelbase        Int?
-  curbWeight       Int?
-  fuelConsumption  Float?
-  maxTorqueNm      Int?
-  maxHorsepower    Int?
-  fuelTankCapacity Int?
-  fuelGrade        String?
-  Inquiry          Inquiry[]
-  Order            Order[]
-  User             User?        @relation(fields: [dealerId], references: [id])
-  VehicleSpec      VehicleSpec? @relation(fields: [specId], references: [id])
-}
-
-model VehicleSpec {
-  id           String    @id @default(cuid())
-  brand        String
-  model        String
-  yearRange    String    @default("2016-2026")
-  manufacturer String?
-  vehicleType  String?
-  releaseDate  String?
-  energyType   String?
-  specs        String    @default("{}")
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  Vehicle      Vehicle[]
-
-  @@unique([brand, model])
-}
-
-model UnmatchedSpec {
-  id        String   @id @default(cuid())
-  brand     String
-  model     String
-  year      Int?
-  vehicleId String?
-  createdAt DateTime @default(now())
-}
-
+// ─── 验证码 ───
 model VerificationCode {
   id        String   @id @default(cuid())
   email     String

@@ -9,7 +9,7 @@ const path = require('path');
 
 const EXPECTED = {
   site: 'honglajiao1688.com',
-  projectId: 'prj_VRrwzHwYXyCwcDUFe17lCkrwatY3',
+  projectId: 'prj_qn2uFNcst8wIh61BdojmhM1lSaxj',
   type: 'overseas',
 };
 
