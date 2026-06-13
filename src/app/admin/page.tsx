@@ -12,7 +12,7 @@ interface Stats {
   dealerCount?: number; todayVehicles?: number;
 }
 
-interface Vehicle { id: string; slug: string; brand: string; model: string; year: number; type: string; mileageKm: number | null; transmission: string | null; fuelType: string | null; steering: string | null; color: string | null; condition: string; supplier: string | null; location: string | null; images: string[]; basePrice: number; markup: number; salePrice: number; profit: number; status: string; published: boolean; featured: boolean; description: string | null; specId: string | null; createdAt: string; }
+interface Vehicle { id: string; slug: string; brand: string; model: string; year: number; type: string; mileageKm: number | null; transmission: string | null; fuelType: string | null; steering: string | null; color: string | null; condition: string; supplier: string | null; location: string | null; images: string[]; basePrice: number; markup: number; salePrice: number; profit: number; status: string; published: boolean; featured: boolean; description: string | null; specId: string | null; soldAt: string | null; createdAt: string; }
 
 interface VehicleSpec { id: string; brand: string; model: string; yearRange: string; vehicleType: string | null; energyType: string | null; specs: string; }
 
@@ -398,12 +398,13 @@ export default function AdminDashboard() {
                       <td className="px-4 py-3">
                         <select value={v.status} onChange={e => updateStatus(v.id, e.target.value)}
                           className={`text-xs font-semibold rounded-full px-2 py-1 border-0 ${
-                            v.status === "available" ? "bg-green-100 text-green-700" :
-                            v.status === "sold" ? "bg-red-100 text-red-700" : "bg-gray-100 text-gray-700"
+                            v.status === "PUBLISHED" ? "bg-green-100 text-green-700" :
+                            v.soldAt ? "bg-red-100 text-red-700" : "bg-gray-100 text-gray-700"
                           }`}>
-                          <option value="available">Available</option>
-                          <option value="sold">Sold</option>
-                          <option value="pending">Pending</option>
+                          <option value="PUBLISHED">Published</option>
+                          <option value="APPROVED">Approved</option>
+                          <option value="SUBMITTED">Submitted</option>
+                          <option value="DRAFT">Draft</option>
                         </select>
                       </td>
                       <td className="px-4 py-3">
