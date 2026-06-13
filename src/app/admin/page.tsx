@@ -12,7 +12,7 @@ interface Stats {
   dealerCount?: number; todayVehicles?: number;
 }
 
-interface Vehicle { id: string; slug: string; brand: string; model: string; year: number; type: string; mileage: number | null; transmission: string | null; fuel: string | null; steering: string | null; color: string | null; condition: string; supplier: string | null; location: string | null; images: string[]; basePrice: number; markup: number; salePrice: number; profit: number; status: string; published: boolean; featured: boolean; description: string | null; User?: { name: string; company: string } | null; specId: string | null; createdAt: string; }
+interface Vehicle { id: string; slug: string; brand: string; model: string; year: number; type: string; mileageKm: number | null; transmission: string | null; fuelType: string | null; steering: string | null; color: string | null; condition: string; supplier: string | null; location: string | null; images: string[]; basePrice: number; markup: number; salePrice: number; profit: number; status: string; published: boolean; featured: boolean; description: string | null; specId: string | null; createdAt: string; }
 
 interface VehicleSpec { id: string; brand: string; model: string; yearRange: string; vehicleType: string | null; energyType: string | null; specs: string; }
 
@@ -389,7 +389,7 @@ export default function AdminDashboard() {
                         <div className="text-xs text-gray-400">{v.type} · {v.steering || "LHD"}</div>
                       </td>
                       <td className="px-4 py-3">{v.year}</td>
-                      <td className="px-4 py-3">{v.mileage ? `${v.mileage.toLocaleString()}km` : "-"}</td>
+                      <td className="px-4 py-3">{v.mileageKm ? `${v.mileageKm.toLocaleString()}km` : "-"}</td>
                       <td className="px-4 py-3">${v.basePrice.toLocaleString()}</td>
                       <td className="px-4 py-3 text-accent font-bold">${v.salePrice.toLocaleString()}</td>
                       <td className="px-4 py-3">
@@ -816,7 +816,7 @@ export default function AdminDashboard() {
           <div><label className="text-xs text-gray-500">品牌</label><input value={form.brand} onChange={e => setForm(f => ({ ...f, brand: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
           <div><label className="text-xs text-gray-500">车型</label><input value={form.model} onChange={e => setForm(f => ({ ...f, model: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
           <div><label className="text-xs text-gray-500">年份</label><input type="number" value={form.year} onChange={e => setForm(f => ({ ...f, year: +e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
-          <div><label className="text-xs text-gray-500">里程</label><input value={form.mileage ?? ""} onChange={e => setForm(f => ({ ...f, mileage: +e.target.value || null }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
+          <div><label className="text-xs text-gray-500">里程</label><input value={form.mileageKm ?? ""} onChange={e => setForm(f => ({ ...f, mileageKm: +e.target.value || null }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
           <div><label className="text-xs text-gray-500">底价 $</label><input type="number" value={form.basePrice} onChange={e => setForm(f => ({ ...f, basePrice: +e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
           <div>
             <label className="text-xs text-gray-500">预计售价（自动计算）</label>
@@ -830,7 +830,7 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div><label className="text-xs text-gray-500">变速箱</label><input value={form.transmission ?? ""} onChange={e => setForm(f => ({ ...f, transmission: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
-          <div><label className="text-xs text-gray-500">燃料类型</label><input value={form.fuel ?? ""} onChange={e => setForm(f => ({ ...f, fuel: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
+          <div><label className="text-xs text-gray-500">燃料类型</label><input value={form.fuelType ?? ""} onChange={e => setForm(f => ({ ...f, fuelType: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
           <div className="col-span-2"><label className="text-xs text-gray-500">描述</label><textarea value={form.description ?? ""} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={3} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
         </div>
         <div className="flex justify-end gap-3 mt-6">
@@ -846,14 +846,14 @@ export default function AdminDashboard() {
     if (!showNewVehicle) return null;
     const [form, setForm] = useState({
       brand: "", model: "", year: 2024, type: "Used Passenger Car",
-      mileage: 0, transmission: "Automatic", fuel: "Petrol",
+      mileageKm: 0, transmission: "Automatic", fuelType: "Petrol",
       steering: "LHD", color: "", supplier: "", location: "China",
       basePrice: 0, description: "",
       // 自动填充扩展字段
       displacement: null as number | null,
       engineModel: "", bodyStyle: "", seatCount: null as number | null,
       vehicleLengthM: null as number | null, motorPowerKw: null as number | null,
-      series: "", fuelType: "",
+      series: "",
     });
     const [saving, setSaving] = useState(false);
     const [showAutoFill, setShowAutoFill] = useState(false);
@@ -872,16 +872,15 @@ export default function AdminDashboard() {
         vehicleLengthM: data.vehicleFields.vehicleLengthM ?? f.vehicleLengthM,
         motorPowerKw: data.vehicleFields.motorPowerKw ?? f.motorPowerKw,
         series: data.vehicleFields.series ?? f.series,
-        fuelType: data.vehicleFields.fuelType ?? f.fuelType,
         // 自动映射变速箱和燃料
         transmission: data.vehicleFields.transmission
           ? (["Automatic","Manual","CVT","DCT"].find(t => data.vehicleFields.transmission.toLowerCase().includes(t.toLowerCase())) || data.vehicleFields.transmission)
           : f.transmission,
-        fuel: data.vehicleFields.fuelType
+        fuelType: data.vehicleFields.fuelType
           ? (data.vehicleFields.fuelType.includes("电动") ? "Electric" :
              data.vehicleFields.fuelType.includes("柴油") ? "Diesel" :
              data.vehicleFields.fuelType.includes("混合") ? "Hybrid" : "Petrol")
-          : f.fuel,
+          : f.fuelType,
       }));
       setShowAutoFill(false);
     };
@@ -936,13 +935,13 @@ export default function AdminDashboard() {
           <div><label className="text-xs text-gray-500">品牌 *</label><input value={form.brand} onChange={e => setForm(f => ({ ...f, brand: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
           <div><label className="text-xs text-gray-500">车型 *</label><input value={form.model} onChange={e => setForm(f => ({ ...f, model: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
           <div><label className="text-xs text-gray-500">年份</label><input type="number" value={form.year} onChange={e => setForm(f => ({ ...f, year: +e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
-          <div><label className="text-xs text-gray-500">里程</label><input type="number" value={form.mileage} onChange={e => setForm(f => ({ ...f, mileage: +e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
+          <div><label className="text-xs text-gray-500">里程</label><input type="number" value={form.mileageKm} onChange={e => setForm(f => ({ ...f, mileageKm: +e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" /></div>
           <div><label className="text-xs text-gray-500">变速箱</label>
             <select value={form.transmission} onChange={e => setForm(f => ({ ...f, transmission: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1">
               <option>Automatic</option><option>Manual</option><option>CVT</option><option>DCT</option>
             </select></div>
           <div><label className="text-xs text-gray-500">燃料</label>
-            <select value={form.fuel} onChange={e => setForm(f => ({ ...f, fuel: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1">
+              <select value={form.fuelType} onChange={e => setForm(f => ({ ...f, fuelType: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm mt-1">
               <option>Petrol</option><option>Diesel</option><option>Electric</option><option>Hybrid</option>
             </select></div>
           <div><label className="text-xs text-gray-500">方向盘位置</label>

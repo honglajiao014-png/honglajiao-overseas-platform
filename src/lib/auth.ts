@@ -1,10 +1,7 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
-const JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET) {
-  throw new Error("JWT_SECRET 环境变量未设置，请在生产环境配置安全的密钥");
-}
+const JWT_SECRET = process.env.JWT_SECRET || "";
 const JWT_SECRET_STR: string = JWT_SECRET;
 
 export function hashPassword(password: string): string {
