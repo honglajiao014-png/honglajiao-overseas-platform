@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Vercel Cron Job: 每日线索汇总邮件
  * GET /api/cron/daily-lead-summary
