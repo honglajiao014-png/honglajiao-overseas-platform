@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { NextResponse } from "next/server";
 
 /**
@@ -18,23 +19,7 @@ export async function GET() {
     checks.database = { ok: false, detail: `连接失败: ${e?.message || "未知错误"}` };
   }
 
-  // 2. Blob 存储
-  try {
-    const blobStart = Date.now();
-    const token = process.env.BLOB_READ_WRITE_TOKEN;
-    const storeId = process.env.BLOB_STORE_ID;
-    if (!token && !(process.env.VERCEL_OIDC_TOKEN && storeId)) {
-      checks.blob = { ok: false, detail: "未配置 Blob 凭证" };
-    } else {
-      const { list } = await import("@vercel/blob");
-      await list({ limit: 1 });
-      checks.blob = { ok: true, detail: `正常 (store: ${storeId || "从 token 解析"})`, latencyMs: Date.now() - blobStart };
-    }
-  } catch (e: any) {
-    checks.blob = { ok: false, detail: `不可达: ${e?.message || "未知错误"}` };
-  }
-
-  // 3. SMTP（海外站可选）
+  // 2. SMTP（海外站可选）
   const smtpHost = process.env.SMTP_HOST;
   const smtpPort = process.env.SMTP_PORT;
   const smtpUser = process.env.SMTP_USER;

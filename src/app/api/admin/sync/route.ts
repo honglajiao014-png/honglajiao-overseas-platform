@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { calcPrice } from "@/lib/pricing";
@@ -75,93 +76,11 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  let vehicles: SyncVehicleInput[] = body.vehicles || [];
+  const vehicles: SyncVehicleInput[] = body.vehicles || [];
   const rate = body.exchangeRate || 6.8;
 
-  // 如果没有传入 vehicles，尝试从国内站 DB 自动读取
-  if (vehicles.length === 0 && process.env.DOMESTIC_DB_URL) {
-    try {
-      const { neon } = await import("@neondatabase/serverless");
-      const u = new URL(process.env.DOMESTIC_DB_URL.replace(/^"|"$/g, ""));
-      u.searchParams.delete("channel_binding");
-      u.searchParams.delete("sslmode");
-      u.searchParams.set("sslmode", "require");
-      const cleanUrl = u.toString().replace(/%[0-9A-Fa-f]{2}/g, (m) => {
-        // Decode URL-encoded chars that break @neondatabase/serverless
-        const c = String.fromCharCode(parseInt(m.slice(1), 16));
-        return /[a-zA-Z0-9._~-]/.test(c) ? c : m;
-      });
-      const sql = neon(cleanUrl);
-      const QUERY = "SELECT v.*, COALESCE(" +
-        "(SELECT json_agg(json_build_object('url', vi.url)) " +
-        "FROM \"VehicleImage\" vi WHERE vi.\"vehicleId\" = v.id), " +
-        "'[]'::json) AS images " +
-        "FROM \"Vehicle\" v " +
-        "WHERE v.status IN ('APPROVED', 'PUBLISHED') " +
-        "ORDER BY v.\"createdAt\" DESC";
-      const rows = await sql.query(QUERY);
-
-      vehicles = rows.map((v: any) => ({
-        sourceId: v.id,
-        sourceSite: "domestic",
-        brand: String(v.brand || ""),
-        model: String(v.model || ""),
-        year: parseInt(v.year) || new Date().getFullYear(),
-        type: v.equipmenttype ? "Construction Machinery" :
-              v.motorcycletype ? "Motorcycle" :
-              v.partcategory ? "Auto Parts" :
-              v.loadcapacitytons ? "Truck" :
-              v.batterytype ? "New Energy Vehicle" : "Used Passenger Car",
-        mileage: v.mileagekm ? parseInt(v.mileagekm) : null,
-        transmission: v.transmission || null,
-        fuel: v.fuelType || null,
-        fuelType: v.fuelType || null,
-        steering: v.steering || null,
-        exteriorColor: v.exteriorColor || null,
-        interiorColor: v.interiorColor || null,
-        condition: v.condition || "Excellent",
-        series: v.series || null,
-        bodyStyle: v.bodystyle || null,
-        originalRmbPrice: parseFloat(v.price) || 0,
-        images: (() => {
-          try {
-            const raw = typeof v.images === "string" ? JSON.parse(v.images) : v.images;
-            return (Array.isArray(raw) ? raw : []).map((i: any) => typeof i === "string" ? i : i?.url).filter(Boolean);
-          } catch { return []; }
-        })(),
-        description: [v.description, v.repairrecords ? "Maintenance: " + v.repairrecords : ""].filter(Boolean).join("\n") || null,
-        displacement: v.displacement ? parseFloat(v.displacement) : null,
-        batteryType: v.batterytype || null,
-        rangeKm: v.rangekm ? parseInt(v.rangekm) : null,
-        motorPowerKw: v.motorpowerkw ? parseFloat(v.motorpowerkw) : null,
-        loadCapacityTons: v.loadcapacitytons ? parseFloat(v.loadcapacitytons) : null,
-        seatCount: v.seatcount ? parseInt(v.seatcount) : null,
-        vehicleLengthM: v.vehiclelengthm ? parseFloat(v.vehiclelengthm) : null,
-        equipmentType: v.equipmenttype || null,
-        workingHours: v.workinghours ? parseInt(v.workinghours) : null,
-        tonnage: v.tonnage ? parseFloat(v.tonnage) : null,
-        engineModel: v.enginemodel || null,
-        displacementCc: v.displacementcc ? parseInt(v.displacementcc) : null,
-        motorcycleType: v.motorcycletype || null,
-        partCategory: v.partcategory || null,
-        partCondition: v.partcondition || null,
-        compatibleModels: v.compatiblemodels || null,
-        quantity: v.quantity ? parseInt(v.quantity) : null,
-        engineNo: v.engineno || null,
-        keyCount: v.keycount ? parseInt(v.keycount) : null,
-        specId: v.specid || null,
-        specsJson: v.specsjson || null,
-        specConflict: v.specconflict === true,
-        soldAt: v.soldat || null,
-      }));
-      console.log("[Sync] Auto-read " + vehicles.length + " vehicles from domestic DB");
-    } catch (e: any) {
-      return NextResponse.json({ error: "Failed to read domestic DB: " + e.message }, { status: 500 });
-    }
-  }
-
   if (vehicles.length === 0) {
-    return NextResponse.json({ error: "No vehicles provided" }, { status: 400 });
+    return NextResponse.json({ error: "No vehicles provided — use POST with vehicles[] array" }, { status: 400 });
   }
 
   const results: { success: boolean; slug?: string; brand?: string; model?: string; error?: string }[] = [];

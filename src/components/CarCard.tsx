@@ -5,10 +5,10 @@ interface CarCardProps {
   brand: string;
   model: string;
   year: number;
-  mileage: number | null;
+  mileageKm: number | null;
   location: string | null;
   transmission: string | null;
-  fuel: string | null;
+  fuelType: string | null;
   salePrice: number;
   images: string[];
   /** "horizontal" 用于列表，"vertical" 用于推荐卡片 */
@@ -16,7 +16,7 @@ interface CarCardProps {
   soldAt?: Date | string | null;
 }
 
-export function CarCard({ slug, brand, model, year, mileage, location, transmission, fuel, salePrice, images, variant = "horizontal", soldAt }: CarCardProps) {
+export function CarCard({ slug, brand, model, year, mileageKm, location, transmission, fuelType, salePrice, images, variant = "horizontal", soldAt }: CarCardProps) {
   if (variant === "vertical") {
     return (
       <Link
@@ -36,10 +36,10 @@ export function CarCard({ slug, brand, model, year, mileage, location, transmiss
           </h3>
           <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1.5 text-[11px] text-gray-500">
             <span>{year}</span>
-            {mileage ? <span>{mileage.toLocaleString()}km</span> : null}
+            {mileageKm ? <span>{mileageKm.toLocaleString()}km</span> : null}
             <span>{location || "China"}</span>
             {transmission ? <span>{transmission}</span> : null}
-            {fuel ? <span>{fuel}</span> : null}
+            {fuelType ? <span>{fuelType}</span> : null}
           </div>
           <div className="mt-3 text-lg font-extrabold text-red-500">
             {soldAt ? (
@@ -73,10 +73,10 @@ export function CarCard({ slug, brand, model, year, mileage, location, transmiss
           </h3>
           <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs text-gray-500">
             <span>{year}</span>
-            <span>{mileage ? `${mileage.toLocaleString()}km` : "-"}</span>
+            <span>{mileageKm ? `${mileageKm.toLocaleString()}km` : "-"}</span>
             <span>{location || "China"}</span>
             <span>{transmission || "-"}</span>
-            <span>{fuel || "-"}</span>
+            <span>{fuelType || "-"}</span>
           </div>
         </div>
         <div className="flex items-end justify-between mt-3">

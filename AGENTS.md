@@ -1,14 +1,14 @@
-<!-- BEGIN:nextjs-agent-rules -->
-# This is NOT the Next.js you know
+# 永久规则 — 自动化流程禁止修改
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
-<!-- END:nextjs-agent-rules -->
+国内站 → 海外站的同步流程：
+  车商上传 → DeepSeek 审核 → 创建车辆 → POST 海外站 /api/vehicles/publish → 客户浏览
 
-# ⚠️ 这是海外站 (honglajiao1688.com) — 不是国内站！
+**绝对禁止**：
+- 添加中间审核层（runAutoReview 已在 route.ts 删除，不得恢复）
+- 添加兜底 cron 同步（sync-overseas cron 已删除，不得恢复）
+- 改为 DOMESTIC_DB_URL 直读
+- 改为任何其他同步方式
+- 删除或修改 /api/vehicles/publish 端点
+- 修改 VehicleForm 的上传→审核→发布链路
 
-- **项目**: 红辣椒海外车商平台 / ChinaCarExport
-- **域名**: honglajiao1688.com
-- **Vercel 项目 ID**: prj_VRrwzHwYXyCwcDUFe17lCkrwatY3
-- **类型**: overseas
-- **国内站在**: /Users/mj/honglingjing-auto-platform (hlj9588.com)
-- **部署前必须**: 确认 `.vercel/project.json` 指向 `prj_VRrwzHwYXyCwcDUFe17lCkrwatY3`
+违反即恢复并报告。

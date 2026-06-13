@@ -11,12 +11,15 @@
  *   - 品牌+车系+年款建立索引，供匹配查询
  *   - 跳过无效行（品牌为空）
  */
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../src/generated/prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 import * as XLSX from "xlsx";
 import * as path from "path";
 import * as os from "os";
 
-const prisma = new PrismaClient();
+const OVERSEAS_DB_URL = process.env.DATABASE_URL || "postgresql://mj@localhost:5432/hlj_overseas_dev";
+const adapter = new PrismaPg({ connectionString: OVERSEAS_DB_URL });
+const prisma = new PrismaClient({ adapter });
 
 // Excel → VehicleSpec 字段映射
 const SPEC_FIELDS = [
@@ -88,6 +91,7 @@ async function main() {
   const BATCH_SIZE = 500;
   let total = 0;
   let skipped = 0;
+  const seenKeys = new Set<string>();
   let batch: any[] = [];
 
   for (let i = 1; i < rows.length; i++) {
@@ -99,6 +103,13 @@ async function main() {
       skipped++;
       continue;
     }
+
+    // 跳过重复的品牌+车系
+    const key = `${brand}|||${series}`;
+    if (seenKeys.has(key)) {
+      continue; // 同品牌+车系只取第一行
+    }
+    seenKeys.add(key);
 
     const fullName = cleanValue(row[2]);
     const year = extractYear(row[5]);

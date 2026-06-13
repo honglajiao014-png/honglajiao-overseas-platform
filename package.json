@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "node scripts/pre-deploy-check.js && prisma generate && prisma db push && next build",
+    "build": "node scripts/pre-deploy-check.js && npx prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
     "postinstall": "[ \"$VERCEL\" = \"1\" ] || prisma generate",
@@ -19,14 +19,14 @@
     "deploy:rollback": "node scripts/deploy-guard.js rollback"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^1.1.0",
-    "@prisma/adapter-neon": "^7.8.0",
+    "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "bcryptjs": "^2.4.3",
     "exceljs": "^4.4.0",
     "jsonwebtoken": "^9.0.3",
-    "next": "16.2.6",
+    "next": "^16.2.9",
     "nodemailer": "^8.0.10",
+    "pg": "^8.21.0",
     "prisma": "^7.8.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",

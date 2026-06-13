@@ -12,8 +12,8 @@ import { BRANDS, PRICE_RANGES, AGE_RANGES, MILEAGE_RANGES, TRANSMISSION_OPTIONS,
 
 interface VehicleBrief {
   slug: string; brand: string; model: string; year: number;
-  mileage: number | null; location: string | null;
-  transmission: string | null; fuel: string | null;
+  mileageKm: number | null; location: string | null;
+  transmission: string | null; fuelType: string | null;
   bodyStyle: string | null; salePrice: number;
   images: string[]; createdAt: string;
 }
@@ -72,12 +72,12 @@ export default function CarsPage() {
 
     if (mileageRange >= 0 && MILEAGE_RANGES[mileageRange]) {
       const r = MILEAGE_RANGES[mileageRange];
-      if (r.min !== undefined) result = result.filter(v => (v.mileage || 0) >= r.min!);
-      if (r.max !== undefined) result = result.filter(v => (v.mileage || 0) <= r.max!);
+      if (r.min !== undefined) result = result.filter(v => (v.mileageKm || 0) >= r.min!);
+      if (r.max !== undefined) result = result.filter(v => (v.mileageKm || 0) <= r.max!);
     }
 
     if (transmissionFilter !== "不限") result = result.filter(v => v.transmission === transmissionFilter);
-    if (fuelFilter !== "不限") result = result.filter(v => v.fuel === fuelFilter);
+    if (fuelFilter !== "不限") result = result.filter(v => v.fuelType === fuelFilter);
     if (bodyTypeFilter !== "不限") result = result.filter(v => v.bodyStyle === bodyTypeFilter);
 
     switch (sortBy) {
@@ -85,7 +85,7 @@ export default function CarsPage() {
       case "price_asc": result.sort((a, b) => a.salePrice - b.salePrice); break;
       case "price_desc": result.sort((a, b) => b.salePrice - a.salePrice); break;
       case "year_desc": result.sort((a, b) => b.year - a.year); break;
-      case "mileage_asc": result.sort((a, b) => (a.mileage || 0) - (b.mileage || 0)); break;
+      case "mileage_asc": result.sort((a, b) => (a.mileageKm || 0) - (b.mileageKm || 0)); break;
     }
 
     return result;

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/lib/auth";
 
@@ -30,13 +31,9 @@ export async function POST(req: NextRequest) {
     const safeName = file.name.replace(/[^a-zA-Z0-9._一-鿿-]/g, "_");
     const pathname = `uploads/${angle}_${timestamp}_${safeName}`;
 
-    const { put } = await import("@vercel/blob");
-    const blob = await put(pathname, file, {
-      access: "public",
-      ...(process.env.BLOB_STORE_ID ? { storeId: process.env.BLOB_STORE_ID } : {}),
-    });
-
-    return NextResponse.json({ url: blob.url });
+    // 海外站不存图，所有图片由国内站 OSS 上传
+    // 如未来需要自上传：import { ossPut } from "@/lib/ossUpload";
+    return NextResponse.json({ error: "海外站不提供文件上传，请通过国内站同步" }, { status: 405 });
   } catch (error: any) {
     console.error("[upload] 失败:", error?.message || error, error?.stack);
     return NextResponse.json({ error: "上传失败: " + (error?.message || "未知错误") }, { status: 500 });

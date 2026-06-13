@@ -53,7 +53,7 @@ export async function GET(req: NextRequest) {
         exteriorColor: true,
         interiorColor: true,
         condition: true,
-        images: true,
+        images: { select: { url: true } },
         basePrice: true,
         salePrice: true,
         location: true,
@@ -66,5 +66,11 @@ export async function GET(req: NextRequest) {
     prisma.vehicle.count({ where }),
   ]);
 
-  return NextResponse.json({ vehicles, total, limit, offset });
+  // images 转型: VehicleImage[] → string[]
+  const transformed = vehicles.map(v => ({
+    ...v,
+    images: (v.images as any[]).map((img: { url: string }) => img.url),
+  }));
+
+  return NextResponse.json({ vehicles: transformed, total, limit, offset });
 }

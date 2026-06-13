@@ -103,10 +103,10 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
     where: { slug, deleted: false },
     select: {
       brand: true, model: true, year: true, type: true, dealerId: true,
-      mileage: true, transmission: true, fuel: true,
+      mileageKm: true, transmission: true, fuelType: true,
       steering: true, exteriorColor: true, interiorColor: true,
       condition: true, basePrice: true, salePrice: true,
-      images: true, location: true, series: true,
+      images: { select: { url: true } }, location: true, series: true,
       bodyStyle: true, description: true, equipmentType: true,
       workingHours: true, tonnage: true, loadCapacityTons: true,
       seatCount: true, engineModel: true, batteryType: true,
@@ -140,14 +140,14 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
         where: {
           dealerId: vehicle.dealerId,
           slug: { not: slug },
-          status: { in: ["available", "APPROVED", "PUBLISHED"] },
+          status: { in: ["APPROVED", "PUBLISHED"] },
           published: true,
           deleted: false,
         },
         select: {
           slug: true, brand: true, model: true, year: true,
-          mileage: true, location: true, transmission: true,
-          fuel: true, salePrice: true, images: true, soldAt: true,
+          mileageKm: true, location: true, transmission: true,
+          fuelType: true, salePrice: true, images: { select: { url: true } }, soldAt: true,
         },
         orderBy: { createdAt: "desc" },
         take: 4,
@@ -228,7 +228,7 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
           displacement: "排量(L)",
           engineModel: "发动机型号",
           transmission: "变速箱类型",
-          fuel: "能源形式",
+          fuelType: "能源形式",
           bodyStyle: "车身形式",
           seatCount: "座位数",
           driveType: "驱动方式",
@@ -262,7 +262,7 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <div className="lg:col-span-7">
-              <CarGallery images={vehicle.images} brand={vehicle.brand} model={vehicle.model} />
+              <CarGallery images={vehicle.images.map((i: any) => i.url)} brand={vehicle.brand} model={vehicle.model} />
             </div>
 
             <div className="lg:col-span-5">
@@ -290,9 +290,9 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
                 <div className="mt-6 space-y-3">
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     <Spec l={d(I18N.year)} v={String(vehicle.year)} />
-                    <Spec l={d(I18N.mileage)} v={fmtKm(vehicle.mileage)} />
+                    <Spec l={d(I18N.mileage)} v={fmtKm(vehicle.mileageKm)} />
                     <Spec l={d(I18N.trans)} v={vehicle.transmission || "-"} />
-                    <Spec l={d(I18N.fuel)} v={vehicle.fuel || "-"} />
+                    <Spec l={d(I18N.fuel)} v={vehicle.fuelType || "-"} />
                     <Spec l={d(I18N.steering)} v={steer} />
                     <Spec l={d(I18N.color)} v={vehicle.exteriorColor || "-"} />
                     {vehicle.displacement && <Spec l={d(I18N.displacement)} v={`${vehicle.displacement}L`} />}
@@ -363,10 +363,10 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
             brand: { "@type": "Brand", name: vehicle.brand },
             model: vehicle.model,
             vehicleModelDate: String(vehicle.year),
-            mileageFromOdometer: vehicle.mileage
-              ? { "@type": "QuantitativeValue", value: vehicle.mileage, unitCode: "KMT" }
+            mileageFromOdometer: vehicle.mileageKm
+              ? { "@type": "QuantitativeValue", value: vehicle.mileageKm, unitCode: "KMT" }
               : undefined,
-            fuelType: vehicle.fuel || undefined,
+            fuelType: vehicle.fuelType || undefined,
             vehicleTransmission: vehicle.transmission || undefined,
             vehicleConfiguration: (() => {
               const parts: string[] = [];
@@ -384,7 +384,7 @@ export default async function CarDetailPage({ params }: { params: Promise<{ slug
               availability: "https://schema.org/InStock",
               url: `https://honglajiao1688.com/cars/${slug}`,
             },
-            image: vehicle.images?.length ? vehicle.images : undefined,
+            image: vehicle.images?.length ? vehicle.images.map((i: any) => i.url) : undefined,
             ...(vehicle.description ? { description: vehicle.description.slice(0, 5000) } : {}),
           }),
         }}

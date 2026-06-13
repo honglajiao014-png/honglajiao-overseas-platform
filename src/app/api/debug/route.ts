@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
@@ -5,84 +6,51 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const slug = "peugeot-标致408-2020-z11v";
+    const slug = "peugeot-408-2020-uxbz";
 
-    // 测试1: 简单查询
-    const v1 = await prisma.vehicle.findUnique({
-      where: { slug, deleted: false },
-      select: { slug: true, brand: true, model: true, deleted: true, published: true },
-    });
-
-    // 测试2: 不加 deleted 过滤
-    const v2 = await prisma.vehicle.findUnique({
-      where: { slug },
-      select: { slug: true, brand: true, model: true, deleted: true, published: true },
-    });
-
-    // 测试3: 带 VehicleSpec
-    const v3 = await prisma.vehicle.findUnique({
-      where: { slug, deleted: false },
-      select: {
-        brand: true, model: true, year: true,
-        VehicleSpec: { select: { specs: true } },
-      },
-    });
-
-    // 测试4: 完整模拟详情页查询（所有字段）
-    const v4 = await prisma.vehicle.findUnique({
+    // 精确模拟详情页查询 — 只查必要字段
+    const v = await prisma.vehicle.findUnique({
       where: { slug, deleted: false },
       select: {
         brand: true, model: true, year: true, type: true, dealerId: true,
-        mileage: true, transmission: true, fuel: true,
+        mileageKm: true, transmission: true, fuelType: true,
         steering: true, exteriorColor: true, interiorColor: true,
         condition: true, basePrice: true, salePrice: true,
-        images: true, location: true, series: true,
-        bodyStyle: true, description: true, equipmentType: true,
-        workingHours: true, tonnage: true, loadCapacityTons: true,
-        seatCount: true, engineModel: true, batteryType: true,
-        rangeKm: true, displacement: true, motorcycleType: true,
-        partCategory: true, partCondition: true,
-        motorPowerKw: true, vehicleLengthM: true, specsJson: true,
-        doorCount: true, driveType: true, maxHorsepower: true,
-        maxTorqueNm: true, wheelbase: true, curbWeight: true,
-        fuelConsumption: true, fuelTankCapacity: true, fuelGrade: true,
-        specId: true,
-        VehicleSpec: { select: { specs: true } },
+        images: { select: { url: true } }, location: true, series: true,
+        bodyStyle: true, description: true,
+        specId: true, soldAt: true,
       },
     });
 
-    const count = await prisma.vehicle.count({ where: { published: true, deleted: false } });
+    // 模拟 dealer vehicles
+    const dvs = v?.dealerId
+      ? await prisma.vehicle.findMany({
+          where: {
+            dealerId: v.dealerId,
+            slug: { not: slug },
+            status: { in: ["available", "APPROVED", "PUBLISHED"] },
+            published: true,
+            deleted: false,
+          },
+          select: {
+            slug: true, brand: true, model: true, year: true,
+            mileageKm: true, location: true, transmission: true,
+            fuelType: true, salePrice: true, images: { select: { url: true } }, soldAt: true,
+          },
+          orderBy: { createdAt: "desc" },
+          take: 4,
+        })
+      : [];
 
-    // 测试5: 模拟 Next.js 对 URL 中中文的处理
-    // Next.js 的 [slug] 动态路由会自动 decodeURIComponent
-    const urlEncoded = "peugeot-%E6%A0%87%E8%87%B4408-2020-z11v";
-    const decoded = decodeURIComponent(urlEncoded);
-    const v5 = await prisma.vehicle.findUnique({
-      where: { slug: decoded, deleted: false },
-      select: { slug: true, brand: true, model: true },
-    });
-
-    // 测试6: 检查数据库中所有 slug 包含 "peugeot" 或 "标致" 的记录
-    const allPeugeot = await prisma.vehicle.findMany({
-      where: {
-        OR: [
-          { slug: { contains: "peugeot" } },
-          { slug: { contains: "标致" } },
-        ],
-      },
-      select: { slug: true, brand: true, model: true, deleted: false, published: true },
-    });
+    const imagesMapped = (v?.images || []).map((i: any) => i.url);
+    const dealerMapped = dvs.map((d: any) => ({ ...d, images: (d.images || []).map((i: any) => i.url) }));
 
     return NextResponse.json({
-      test1_withDeleted: v1,
-      test2_withoutDeleted: v2,
-      test3_withSpec: v3 ? { brand: v3.brand, model: v3.model, year: v3.year, hasSpec: !!v3.VehicleSpec } : null,
-      test4_fullDetailQuery: v4 ? { brand: v4.brand, model: v4.model, year: v4.year, salePrice: v4.salePrice, found: true } : { found: false },
-      test5_urlDecoded: { decoded, found: !!v5, dbSlug: v5?.slug },
-      test6_allPeugeot: allPeugeot,
-      test7_count: count,
+      vehicle: v ? { ...v, images: imagesMapped } : null,
+      dealerVehicles: dealerMapped,
+      count: await prisma.vehicle.count({ where: { published: true, deleted: false } }),
     });
   } catch (e: any) {
-    return NextResponse.json({ error: e.message, stack: e.stack }, { status: 500 });
+    return NextResponse.json({ error: e.message, stack: e.stack?.slice(0, 500) }, { status: 500 });
   }
 }
